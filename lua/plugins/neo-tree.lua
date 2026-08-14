@@ -1,0 +1,149 @@
+return {
+  "nvim-neo-tree/neo-tree.nvim",
+  branch = "v3.x",
+  lazy = false, -- Garante carregamento na inicialização para interceptar `nvim .`
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "nvim-tree/nvim-web-devicons",
+    "MunifTanjim/nui.nvim",
+  },
+  cmd = "Neotree",
+  keys = {
+    { "<C-n>", "<cmd>Neotree toggle<cr>", desc = "Abrir/Fechar Explorador de Arquivos (Neo-tree)" },
+    { "<leader>e", "<cmd>Neotree focus<cr>", desc = "Focar no Explorador de Arquivos" },
+    { "<leader>ef", "<cmd>Neotree reveal<cr>", desc = "Revelar Arquivo Atual no Explorador" },
+    { "<leader>eb", "<cmd>Neotree buffers<cr>", desc = "Explorador de Buffers Abertos" },
+    { "<leader>eg", "<cmd>Neotree git_status<cr>", desc = "Explorador de Status do Git" },
+  },
+  config = function()
+    -- Desativa netrw padrão do Neovim
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+
+    require("neo-tree").setup({
+      close_if_last_window = true,
+      popup_border_style = "rounded",
+      enable_git_status = true,
+      enable_diagnostics = true,
+      open_files_do_not_replace_types = { "terminal", "trouble", "qf" },
+      sort_case_insensitive = true,
+      sources = { "filesystem", "buffers", "git_status" },
+      source_selector = {
+        winbar = true,
+        statusline = false,
+        sources = {
+          { source = "filesystem", display_name = " 󰉓 Arquivos " },
+          { source = "buffers", display_name = " 󰈚 Buffers " },
+          { source = "git_status", display_name = " 󰊢 Git " },
+        },
+      },
+      default_component_configs = {
+        container = {
+          enable_character_fade = true,
+        },
+        indent = {
+          indent_size = 2,
+          padding = 1,
+          with_markers = true,
+          indent_marker = "│",
+          last_indent_marker = "└",
+          highlight = "NeoTreeIndentMarker",
+          with_expanders = true,
+          expander_collapsed = "",
+          expander_expanded = "",
+          expander_highlight = "NeoTreeExpander",
+        },
+        icon = {
+          folder_closed = "",
+          folder_open = "",
+          folder_empty = "󰜌",
+          default = "󰈔",
+          highlight = "NeoTreeFileIcon",
+        },
+        modified = {
+          symbol = "●",
+          highlight = "NeoTreeModified",
+        },
+        name = {
+          trailing_slash = false,
+          use_git_status_colors = true,
+          highlight = "NeoTreeFileName",
+        },
+        git_status = {
+          symbols = {
+            added     = "✚",
+            modified  = "",
+            deleted   = "✖",
+            renamed   = "󰁕",
+            untracked = "",
+            ignored   = "",
+            unstaged  = "󰄱",
+            staged    = "",
+            conflict  = "",
+          },
+        },
+      },
+      window = {
+        position = "left",
+        width = 34,
+        mapping_options = {
+          noremap = true,
+          nowait = true,
+        },
+        mappings = {
+          ["<space>"] = "none",
+          ["<cr>"] = "open",
+          ["l"] = "open",
+          ["h"] = "close_node",
+          ["v"] = "open_vsplit",
+          ["s"] = "open_split",
+          ["t"] = "open_tabnew",
+          ["C"] = "close_node",
+          ["z"] = "close_all_nodes",
+          ["a"] = {
+            "add",
+            config = {
+              show_path = "none",
+            },
+          },
+          ["A"] = "add_directory",
+          ["d"] = "delete",
+          ["r"] = "rename",
+          ["y"] = "copy_to_clipboard",
+          ["x"] = "cut_to_clipboard",
+          ["p"] = "paste_from_clipboard",
+          ["c"] = "copy",
+          ["m"] = "move",
+          ["q"] = "close_window",
+          ["R"] = "refresh",
+          ["?"] = "show_help",
+          ["<"] = "prev_source",
+          [">"] = "next_source",
+          ["H"] = "toggle_hidden",
+          ["I"] = "toggle_gitignore",
+        },
+      },
+      filesystem = {
+        hijack_netrw_behavior = "open_default", -- Abre a árvore à esquerda e um buffer de edição vazio à direita!
+        filtered_items = {
+          visible = false,
+          hide_dotfiles = false,
+          hide_gitignored = false,
+          hide_hidden = true,
+          hide_by_name = {
+            ".git",
+          },
+          never_show = {
+            ".DS_Store",
+          },
+        },
+        follow_current_file = {
+          enabled = true,
+          leave_dirs_open = false,
+        },
+        group_empty_dirs = true, -- Compacta pacotes vazios (Spring Boot: com/example/demo)
+        use_libuv_file_watcher = true,
+      },
+    })
+  end,
+}
