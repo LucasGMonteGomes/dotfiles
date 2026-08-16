@@ -2,7 +2,7 @@ return {
   "akinsho/toggleterm.nvim",
   cmd = { "ToggleTerm", "TermExec", "ToggleTermToggleAll" },
   keys = {
-    { "<C-l>", "<cmd>ToggleTerm<cr>", desc = "Abrir/Fechar Terminal Flutuante", mode = { "n", "t" } },
+    { "<C-l>", "<cmd>ToggleTerm<cr>", desc = "Abrir Terminal Flutuante", mode = "n" },
     { "<leader>tt", "<cmd>ToggleTerm<cr>", desc = "Alternar Terminal Flutuante" },
     { "<leader>th", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", desc = "Terminal Horizontal (Inferior)" },
     { "<leader>tv", "<cmd>ToggleTerm size=65 direction=vertical<cr>", desc = "Terminal Vertical (Lateral)" },
@@ -20,7 +20,6 @@ return {
           return math.floor(vim.o.columns * 0.4)
         end
       end,
-      open_mapping = [[<C-l>]],
       hide_numbers = true,
       shade_filetypes = {},
       shade_terminals = true,
@@ -36,6 +35,12 @@ return {
       auto_scroll = true,
       float_opts = {
         border = "curved",
+        width = function()
+          return math.floor(vim.o.columns * 0.90)
+        end,
+        height = function()
+          return math.floor(vim.o.lines * 0.85)
+        end,
         winblend = 0,
       },
       winbar = {
@@ -46,7 +51,7 @@ return {
     -- Atalhos de navegação dentro do modo Terminal (:terminal)
     function _G.set_terminal_keymaps()
       local opts = { buffer = 0, silent = true }
-      vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], opts) -- Esc duas vezes para voltar ao modo Normal
+      vim.keymap.set("t", "<Esc>", [[<C-\><C-n><Cmd>ToggleTerm<CR>]], opts)
       vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
       vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
       vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
