@@ -13,7 +13,6 @@ return {
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp",
       "mfussenegger/nvim-jdtls",
     },
     config = function()
@@ -24,23 +23,19 @@ return {
         ensure_installed = {
           "jdtls",
           "rust_analyzer",
-          "ts_ls",
           "lua_ls",
-          "marksman",
-          "gopls",
+          "docker_language_server",
         },
         automatic_installation = true,
       })
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-      if has_cmp then
-        capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-      end
 
       local java_home = [[C:\Program Files\Java\jdk-21]]
       local java_bin = java_home .. [[\bin]]
       local jdtls = require("jdtls")
+      local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
+      java_extended_capabilities.resolveAdditionalTextEditsSupport = true
 
       -- Java (jdtls)
       vim.lsp.config("jdtls", {
@@ -51,7 +46,7 @@ return {
         capabilities = capabilities,
         commands = jdtls.commands,
         init_options = {
-          extendedClientCapabilities = jdtls.extendedClientCapabilities,
+          extendedClientCapabilities = java_extended_capabilities,
         },
         root_markers = { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" },
         settings = {
@@ -82,12 +77,6 @@ return {
         root_markers = { "Cargo.toml", "rust-project.json", ".git" },
       })
 
-      -- TypeScript / JavaScript (ts_ls)
-      vim.lsp.config("ts_ls", {
-        capabilities = capabilities,
-        root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-      })
-
       -- Lua
       vim.lsp.config("lua_ls", {
         capabilities = capabilities,
@@ -99,27 +88,31 @@ return {
         },
       })
 
-      -- Markdown
-      vim.lsp.config("marksman", {
+      -- Dockerfile e Docker Compose
+      vim.lsp.config("docker_language_server", {
         capabilities = capabilities,
-        root_markers = { ".marksman.toml", ".git" },
-      })
-
-      -- Go
-      vim.lsp.config("gopls", {
-        capabilities = capabilities,
-        root_markers = { "go.work", "go.mod", ".git" },
+        init_options = {
+          telemetry = "off",
+        },
       })
 
       -- Ativa os servidores LSP
       vim.lsp.enable("jdtls")
       vim.lsp.enable("rust_analyzer")
-      vim.lsp.enable("ts_ls")
       vim.lsp.enable("lua_ls")
-      vim.lsp.enable("marksman")
-      vim.lsp.enable("gopls")
+      vim.lsp.enable("docker_language_server")
 
-      vim.diagnostic.config({ virtual_text = true })
+      vim.diagnostic.config({
+        virtual_text = false,
+        severity_sort = true,
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        float = {
+          border = "rounded",
+          source = "if_many",
+        },
+      })
 
       local function organize_imports(bufnr)
         local win = vim.fn.bufwinid(bufnr)
@@ -180,11 +173,60 @@ return {
         vim.lsp.buf.format({ bufnr = bufnr, async = false })
       end
 
+      local function enable_java_completion_while_typing(client)
+        local completion = client.server_capabilities.completionProvider
+        if not completion then
+          return
+        end
+
+        completion.triggerCharacters = completion.triggerCharacters or {}
+
+        local registered = {}
+        for _, character in ipairs(completion.triggerCharacters) do
+          registered[character] = true
+        end
+
+        local identifier_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+        for index = 1, #identifier_characters do
+          local character = identifier_characters:sub(index, index)
+          if not registered[character] then
+            table.insert(completion.triggerCharacters, character)
+            registered[character] = true
+          end
+        end
+      end
+
       -- Atalhos de teclado quando qualquer LSP conectar ao buffer
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
         callback = function(ev)
           local opts = { buffer = ev.buf, silent = true }
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+
+          if client and client:supports_method("textDocument/completion") then
+            if client.name == "jdtls" then
+              enable_java_completion_while_typing(client)
+            end
+
+            vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+
+            vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get, {
+              buffer = ev.buf,
+              silent = true,
+              desc = "LSP: abrir autocomplete",
+            })
+            vim.keymap.set("i", "<CR>", function()
+              if vim.fn.pumvisible() == 1 then
+                return "<C-y>"
+              end
+              return _G.MiniPairs and MiniPairs.cr() or "<CR>"
+            end, {
+              buffer = ev.buf,
+              expr = true,
+              desc = "Aceitar autocomplete ou criar nova linha",
+            })
+          end
+
           vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
           vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
@@ -205,8 +247,12 @@ return {
             silent = true,
             desc = "Organizar imports e formatar",
           })
-          vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-          vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+          vim.keymap.set("n", "[d", function()
+            vim.diagnostic.jump({ count = -1, float = true })
+          end, opts)
+          vim.keymap.set("n", "]d", function()
+            vim.diagnostic.jump({ count = 1, float = true })
+          end, opts)
           vim.keymap.set("n", "df", vim.diagnostic.open_float, opts)
         end,
       })

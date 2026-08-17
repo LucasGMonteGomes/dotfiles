@@ -35,15 +35,18 @@ vim.opt.completeopt = "menuone,noselect,fuzzy,nosort"
 vim.opt.shortmess:append("c")
 vim.opt.clipboard:append("unnamedplus")
 vim.opt.isfname:append("@-@")
-vim.opt.guicursor = ""
+vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:block"
 vim.opt.scrolloff = 8
+vim.opt.cursorline = true
+vim.opt.cursorlineopt = "line,number"
 
 vim.opt.colorcolumn = "0"
 vim.opt.signcolumn = "yes"
 vim.o.cmdheight = 0
 vim.opt.mouse = "a"
 vim.opt.termguicolors = true
-vim.opt.guifont = "JetBrainsMono Nerd Font:h11,JetBrains Mono:h11"
+-- Usado por interfaces graficas; no terminal, a fonte e definida pelo Windows Terminal.
+vim.opt.guifont = "JetBrainsMono Nerd Font Mono:h13"
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("HighlightYank", { clear = true }),

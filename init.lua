@@ -1,13 +1,12 @@
 -- Caminho: C:\Users\Lucas\AppData\Local\nvim\init.lua
 
-require("vim._core.ui2").enable({})
-
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 require("options")
 require("keymaps")
 require("commands")
+require("docker_tools").setup()
 require("spring_initializr").setup()
 require("maven_dependency").setup()
 require("java_codegen").setup()

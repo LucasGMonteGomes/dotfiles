@@ -12,8 +12,6 @@ return {
     { "<C-n>", "<cmd>Neotree toggle<cr>", desc = "Abrir/Fechar Explorador de Arquivos (Neo-tree)" },
     { "<C-A-f>", "<cmd>Neotree focus<cr>", desc = "Focar no Explorador de Arquivos" },
     { "<C-A-o>", "<cmd>Neotree reveal<cr>", desc = "Revelar Arquivo Atual no Explorador" },
-    { "<C-A-v>", "<cmd>Neotree buffers<cr>", desc = "Explorador de Buffers Abertos" },
-    { "<C-A-g>", "<cmd>Neotree git_status<cr>", desc = "Explorador de Status do Git" },
   },
   config = function()
     -- Desativa netrw padrão do Neovim
@@ -24,18 +22,13 @@ return {
       close_if_last_window = true,
       popup_border_style = "rounded",
       enable_git_status = true,
-      enable_diagnostics = true,
+      enable_diagnostics = false,
       open_files_do_not_replace_types = { "terminal", "trouble", "qf" },
       sort_case_insensitive = true,
-      sources = { "filesystem", "buffers", "git_status" },
+      sources = { "filesystem" },
       source_selector = {
-        winbar = true,
+        winbar = false,
         statusline = false,
-        sources = {
-          { source = "filesystem", display_name = " 󰉓 Arquivos " },
-          { source = "buffers", display_name = " 󰈚 Buffers " },
-          { source = "git_status", display_name = " 󰊢 Git " },
-        },
       },
       default_component_configs = {
         container = {
@@ -92,8 +85,8 @@ return {
         },
         mappings = {
           ["<space>"] = "none",
-          ["<cr>"] = "open",
-          ["l"] = "open",
+          ["<cr>"] = "open_or_expand",
+          ["l"] = "open_or_expand",
           ["h"] = "close_node",
           ["v"] = "open_vsplit",
           ["s"] = "open_split",
@@ -117,13 +110,25 @@ return {
           ["q"] = "close_window",
           ["R"] = "refresh",
           ["?"] = "show_help",
-          ["<"] = "prev_source",
-          [">"] = "next_source",
           ["H"] = "toggle_hidden",
           ["I"] = "toggle_gitignore",
         },
       },
       filesystem = {
+        commands = {
+          open_or_expand = function(state)
+            local node = state.tree:get_node()
+            local commands = require("neo-tree.sources.filesystem.commands")
+
+            local is_source_root = node and node.type == "directory" and node.name == "src"
+            if is_source_root and not node:is_expanded() then
+              commands.expand_all_subnodes(state, node)
+              return
+            end
+
+            commands.open(state)
+          end,
+        },
         hijack_netrw_behavior = "open_default", -- Abre a árvore à esquerda e um buffer de edição vazio à direita!
         filtered_items = {
           visible = false,
@@ -141,7 +146,7 @@ return {
           enabled = true,
           leave_dirs_open = false,
         },
-        group_empty_dirs = true, -- Compacta pacotes vazios (Spring Boot: com/example/demo)
+        group_empty_dirs = false, -- Exibe cada pasta separadamente (java/com/example/demo)
         use_libuv_file_watcher = true,
       },
     })

@@ -104,12 +104,32 @@ local function configure_field_picker()
   ui.java_codegen_picker_configured = true
 end
 
-local function has_java_client(bufnr)
-  return #vim.lsp.get_clients({
+local function get_java_client(bufnr)
+  return vim.lsp.get_clients({
     bufnr = bufnr,
     name = "jdtls",
-    method = "textDocument/codeAction",
-  }) > 0
+  })[1]
+end
+
+local function apply_action(action, client, bufnr, params)
+  if not action then
+    notify("O JDTLS nao retornou uma acao valida", vim.log.levels.ERROR)
+    return
+  end
+
+  if action.edit then
+    vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+  end
+
+  if action.command then
+    local command = type(action.command) == "table" and action.command or action
+    client:exec_cmd(command, {
+      bufnr = bufnr,
+      client_id = client.id,
+      method = "textDocument/codeAction",
+      params = params,
+    })
+  end
 end
 
 local function run(generator)
@@ -118,22 +138,57 @@ local function run(generator)
     notify("Este gerador so pode ser usado em arquivos Java", vim.log.levels.WARN)
     return
   end
-  if not has_java_client(bufnr) then
+  local client = get_java_client(bufnr)
+  if not client then
     notify("O servidor Java ainda nao esta conectado a este arquivo", vim.log.levels.WARN)
     return
   end
 
-  vim.lsp.buf.code_action({
-    apply = true,
-    context = {
-      diagnostics = {},
-      only = { generator.kind },
-      triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked,
-    },
-    filter = function(action)
-      return action.kind == generator.kind and action.title:find(generator.title, 1, true) == 1
-    end,
-  })
+  local winid = vim.fn.bufwinid(bufnr)
+  local params = vim.lsp.util.make_range_params(winid, client.offset_encoding)
+  params.context = {
+    diagnostics = {},
+    only = { generator.kind },
+    triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked,
+  }
+
+  -- O JDTLS responde a estas requisicoes, mas em algumas versoes nao anuncia
+  -- codeActionProvider. Por isso fazemos a requisicao diretamente em vez de
+  -- usar vim.lsp.buf.code_action(), que recusaria chamar o servidor.
+  client:request("textDocument/codeAction", params, function(err, actions)
+    if err then
+      notify("Nao foi possivel gerar " .. generator.label .. ": " .. err.message, vim.log.levels.ERROR)
+      return
+    end
+
+    local selected
+    for _, action in ipairs(actions or {}) do
+      if action.kind == generator.kind and action.title:find(generator.title, 1, true) == 1 then
+        selected = action
+        break
+      end
+    end
+
+    if not selected then
+      notify("Nenhuma opcao para gerar " .. generator.label .. " neste ponto da classe", vim.log.levels.WARN)
+      return
+    end
+
+    if selected.edit or selected.command then
+      apply_action(selected, client, bufnr, params)
+      return
+    end
+
+    -- A acao do JDTLS normalmente vem apenas com `data`; resolvemos a acao
+    -- mesmo quando o servidor nao declarou codeAction/resolve nas capacidades.
+    client:request("codeAction/resolve", selected, function(resolve_err, resolved)
+      if resolve_err then
+        notify("Nao foi possivel preparar " .. generator.label .. ": " .. resolve_err.message, vim.log.levels.ERROR)
+        return
+      end
+      apply_action(resolved, client, bufnr, params)
+    end, bufnr)
+  end, bufnr)
 end
 
 function M.constructor()
@@ -166,6 +221,9 @@ function M.setup()
     desc = "Gerar construtor para os campos selecionados",
   })
   vim.api.nvim_create_user_command("JavaGenerateAccessors", M.accessors, {
+    desc = "Gerar getters e setters",
+  })
+  vim.api.nvim_create_user_command("JavaGetSet", M.accessors, {
     desc = "Gerar getters e setters",
   })
   vim.api.nvim_create_user_command("JavaGenerateEqualsHashCode", M.equals_hashcode, {

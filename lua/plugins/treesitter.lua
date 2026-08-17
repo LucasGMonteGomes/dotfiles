@@ -11,13 +11,7 @@ return {
     require("nvim-treesitter.configs").setup({
       ensure_installed = {
         "java",
-        "go",
         "rust",
-        "typescript",
-        "javascript",
-        "tsx",
-        "html",
-        "css",
         "json",
         "yaml",
         "toml",

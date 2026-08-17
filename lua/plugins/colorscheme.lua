@@ -7,7 +7,7 @@ return {
     require("onedark").setup({
       -- Paleta One Dark Islands (JetBrains Islands UI) adaptada ao Neovim.
       style = "darker",
-      transparent = false,
+      transparent = true,
       term_colors = true,
       colors = {
         black = "#181a1f",
@@ -35,6 +35,8 @@ return {
         PmenuSel = { fg = "$fg", bg = "$bg2", fmt = "bold" },
         Visual = { bg = "$bg2" },
         CursorLine = { bg = "$bg1" },
+        CursorLineNr = { fg = "$yellow", bg = "$bg1", fmt = "bold" },
+        MiniIndentscopeSymbol = { fg = "$bg3" },
         WinSeparator = { fg = "$bg3" },
       },
       code_style = {

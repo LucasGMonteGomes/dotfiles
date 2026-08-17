@@ -46,19 +46,6 @@ return {
         map("n", "<C-b>", function()
           gs.blame_line({ full = true })
         end, "Git: autoria da linha")
-        map("n", "<C-y>", gs.toggle_current_line_blame, "Git: alternar autoria nas linhas")
-        map("n", "<C-o>", gs.stage_buffer, "Git: adicionar arquivo ao stage")
-        map("n", "<C-A-q>", function()
-          local answer = vim.fn.confirm(
-            "Descartar todas as alteracoes Git deste arquivo?",
-            "&Nao\n&Sim",
-            1
-          )
-          if answer == 2 then
-            gs.reset_buffer()
-          end
-        end, "Git: desfazer alteracoes do arquivo")
-        map("n", "<C-A-d>", gs.diffthis, "Git: comparar arquivo com o indice")
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Git: selecionar bloco alterado")
       end,
     },
@@ -76,10 +63,18 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     keys = {
-      { "<C-t>", "<cmd>DiffviewOpen<CR>", desc = "Git: visualizar todas as alteracoes" },
-      { "<C-h>", "<cmd>DiffviewFileHistory %<CR>", desc = "Git: historico do arquivo" },
-      { "<C-k>", "<cmd>DiffviewFileHistory<CR>", desc = "Git: historico do projeto" },
-      { "<C-j>", "<cmd>DiffviewClose<CR>", desc = "Git: fechar visualizacao" },
+      {
+        "<C-A-v>",
+        function()
+          local view = require("diffview.lib").get_current_view()
+          if view then
+            view:close()
+          else
+            vim.cmd("DiffviewOpen")
+          end
+        end,
+        desc = "Git: abrir/fechar alterações",
+      },
     },
     opts = {
       enhanced_diff_hl = true,

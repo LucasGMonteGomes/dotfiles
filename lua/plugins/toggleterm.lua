@@ -1,11 +1,8 @@
 return {
   "akinsho/toggleterm.nvim",
-  cmd = { "ToggleTerm", "TermExec", "ToggleTermToggleAll" },
+  cmd = { "ToggleTerm", "TermExec", "ToggleTermToggleAll", "LazyDocker" },
   keys = {
-    { "<C-m>", "<cmd>ToggleTerm<cr>", desc = "Abrir Terminal Flutuante", mode = "n" },
-    { "<C-A-h>", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", desc = "Terminal Horizontal (Inferior)" },
-    { "<C-A-t>", "<cmd>ToggleTerm size=65 direction=vertical<cr>", desc = "Terminal Vertical (Lateral)" },
-    { "<C-A-e>", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal Flutuante" },
+    { "<C-m>", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Abrir Terminal Inferior", mode = "n" },
   },
   config = function()
     local shell = vim.fn.executable("pwsh") == 1 and "pwsh"
@@ -14,7 +11,7 @@ return {
     require("toggleterm").setup({
       size = function(term)
         if term.direction == "horizontal" then
-          return 15
+          return 12
         elseif term.direction == "vertical" then
           return math.floor(vim.o.columns * 0.4)
         end
@@ -26,9 +23,9 @@ return {
       start_in_insert = true,
       insert_mappings = true,
       terminal_mappings = true,
-      persist_size = true,
+      persist_size = false,
       persist_mode = true,
-      direction = "float", -- Abre por padrão como janela flutuante centralizada
+      direction = "horizontal", -- Abre por padrão em um split no canto inferior
       close_on_exit = true,
       shell = shell,
       auto_scroll = true,
@@ -46,6 +43,21 @@ return {
         enabled = false,
       },
     })
+
+    local LazyDocker = require("toggleterm.terminal").Terminal:new({
+      cmd = "lazydocker",
+      direction = "horizontal",
+      size = 20,
+      hidden = true,
+    })
+
+    vim.api.nvim_create_user_command("LazyDocker", function()
+      if vim.fn.executable("lazydocker") == 0 then
+        vim.notify("lazydocker não está instalado ou não foi encontrado no PATH", vim.log.levels.ERROR)
+        return
+      end
+      LazyDocker:toggle()
+    end, { desc = "Abrir gerenciador visual do Docker" })
 
     -- Atalhos de navegação dentro do modo Terminal (:terminal)
     function _G.set_terminal_keymaps()

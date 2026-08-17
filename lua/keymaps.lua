@@ -7,6 +7,19 @@ vim.keymap.set({ "n", "v" }, "<C-x>", [["_d]], { desc = "Apagar sem copiar" })
 vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Voltar para o modo NORMAL" })
 vim.keymap.set("n", "<C-c>", "i", { desc = "Entrar no modo INSERT" })
 
+-- Esc pode fechar o menu de autocomplete, mas nao troca INSERT por NORMAL.
+-- A troca entre os dois modos fica exclusivamente no Ctrl+C.
+vim.keymap.set("i", "<Esc>", function()
+  if vim.fn.pumvisible() == 1 then
+    return "<C-e>"
+  end
+  return ""
+end, {
+  expr = true,
+  replace_keycodes = true,
+  desc = "Fechar autocomplete sem sair do modo INSERT",
+})
+
 vim.keymap.set("n", "<C-z>", "u", { desc = "Desfazer ultima alteracao" })
 vim.keymap.set("i", "<C-z>", "<C-o>u", { desc = "Desfazer ultima alteracao" })
 vim.keymap.set("n", "<C-A-z>", "<C-r>", { desc = "Refazer ultima alteracao" })
