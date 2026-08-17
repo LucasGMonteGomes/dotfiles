@@ -21,11 +21,6 @@ return {
         MiniFiles.open()
       end, { desc = "Abrir Mini Files" })
 
-      vim.keymap.set("n", "<leader>-", function()
-        MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
-        MiniFiles.reveal_cwd()
-      end, { desc = "Abrir Mini Files no arquivo atual" })
-
       require("mini.notify").setup({
         content = {
           format = function(notification)
@@ -45,31 +40,16 @@ return {
       MiniPick.setup()
       MiniExtra.setup()
 
-      vim.keymap.set("n", "<leader>pf", function()
-        MiniPick.builtin.files()
-      end, { desc = "Mini: buscar arquivos" })
-
-      vim.keymap.set("n", "<leader>ps", function()
-        MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
-      end, { desc = "Mini: buscar palavra" })
-
-      vim.keymap.set("n", "<leader>vh", function()
+      vim.keymap.set("n", "<C-A-j>", function()
         MiniPick.builtin.help()
       end, { desc = "Mini: buscar ajuda" })
 
-      vim.keymap.set("n", "<leader>xx", function()
-        MiniExtra.pickers.diagnostic()
-      end, { desc = "Mini: listar diagnósticos" })
-
-      vim.keymap.set("n", "<leader>pk", function()
+      vim.keymap.set("n", "<C-A-k>", function()
         MiniExtra.pickers.keymaps()
       end, { desc = "Mini: buscar atalhos" })
 
-      vim.keymap.set("n", "<leader>gg", "<cmd>tabnew | Git | only<CR>", {
+      vim.keymap.set("n", "<C-A-m>", "<cmd>tabnew | Git | only<CR>", {
         desc = "Git: abrir Fugitive em nova aba",
-      })
-      vim.keymap.set("n", "<leader>gd", "<cmd>Gvdiffsplit<CR>", {
-        desc = "Git: abrir diff vertical",
       })
     end,
   },

@@ -14,6 +14,7 @@ return {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
+      "mfussenegger/nvim-jdtls",
     },
     config = function()
       require("mason").setup()
@@ -39,6 +40,7 @@ return {
 
       local java_home = [[C:\Program Files\Java\jdk-21]]
       local java_bin = java_home .. [[\bin]]
+      local jdtls = require("jdtls")
 
       -- Java (jdtls)
       vim.lsp.config("jdtls", {
@@ -47,6 +49,10 @@ return {
           PATH = java_bin .. ";" .. vim.env.PATH,
         },
         capabilities = capabilities,
+        commands = jdtls.commands,
+        init_options = {
+          extendedClientCapabilities = jdtls.extendedClientCapabilities,
+        },
         root_markers = { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" },
         settings = {
           java = {
@@ -184,9 +190,16 @@ return {
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
           vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
           vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-          vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
+          vim.keymap.set("n", "<C-l>", vim.lsp.buf.code_action, {
+            buffer = ev.buf,
+            silent = true,
+            desc = "LSP: acoes de codigo",
+          })
+          vim.keymap.set("n", "<C-A-r>", vim.lsp.buf.rename, {
+            buffer = ev.buf,
+            silent = true,
+            desc = "LSP: renomear simbolo",
+          })
           vim.keymap.set("n", "<C-A-l>", organize_imports_and_format, {
             buffer = ev.buf,
             silent = true,

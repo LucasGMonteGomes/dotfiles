@@ -2,11 +2,10 @@ return {
   "akinsho/toggleterm.nvim",
   cmd = { "ToggleTerm", "TermExec", "ToggleTermToggleAll" },
   keys = {
-    { "<C-l>", "<cmd>ToggleTerm<cr>", desc = "Abrir Terminal Flutuante", mode = "n" },
-    { "<leader>tt", "<cmd>ToggleTerm<cr>", desc = "Alternar Terminal Flutuante" },
-    { "<leader>th", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", desc = "Terminal Horizontal (Inferior)" },
-    { "<leader>tv", "<cmd>ToggleTerm size=65 direction=vertical<cr>", desc = "Terminal Vertical (Lateral)" },
-    { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal Flutuante" },
+    { "<C-m>", "<cmd>ToggleTerm<cr>", desc = "Abrir Terminal Flutuante", mode = "n" },
+    { "<C-A-h>", "<cmd>ToggleTerm size=15 direction=horizontal<cr>", desc = "Terminal Horizontal (Inferior)" },
+    { "<C-A-t>", "<cmd>ToggleTerm size=65 direction=vertical<cr>", desc = "Terminal Vertical (Lateral)" },
+    { "<C-A-e>", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal Flutuante" },
   },
   config = function()
     local shell = vim.fn.executable("pwsh") == 1 and "pwsh"

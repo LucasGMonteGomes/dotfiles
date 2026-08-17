@@ -10,10 +10,10 @@ return {
   cmd = "Neotree",
   keys = {
     { "<C-n>", "<cmd>Neotree toggle<cr>", desc = "Abrir/Fechar Explorador de Arquivos (Neo-tree)" },
-    { "<leader>e", "<cmd>Neotree focus<cr>", desc = "Focar no Explorador de Arquivos" },
-    { "<leader>ef", "<cmd>Neotree reveal<cr>", desc = "Revelar Arquivo Atual no Explorador" },
-    { "<leader>eb", "<cmd>Neotree buffers<cr>", desc = "Explorador de Buffers Abertos" },
-    { "<leader>eg", "<cmd>Neotree git_status<cr>", desc = "Explorador de Status do Git" },
+    { "<C-A-f>", "<cmd>Neotree focus<cr>", desc = "Focar no Explorador de Arquivos" },
+    { "<C-A-o>", "<cmd>Neotree reveal<cr>", desc = "Revelar Arquivo Atual no Explorador" },
+    { "<C-A-v>", "<cmd>Neotree buffers<cr>", desc = "Explorador de Buffers Abertos" },
+    { "<C-A-g>", "<cmd>Neotree git_status<cr>", desc = "Explorador de Status do Git" },
   },
   config = function()
     -- Desativa netrw padrão do Neovim

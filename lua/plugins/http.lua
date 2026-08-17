@@ -3,47 +3,46 @@ return {
   event = { "SessionLoadPost", "VimLeavePre" },
   ft = { "http", "rest" },
   keys = {
-    { "<leader>Rs", desc = "HTTP: enviar requisicao" },
-    { "<leader>Ra", desc = "HTTP: enviar todas as requisicoes" },
-    { "<leader>Rr", desc = "HTTP: repetir ultima requisicao" },
-    { "<leader>Rb", desc = "HTTP: abrir scratchpad" },
+    { "<C-A-r>", desc = "HTTP: executar requisicao atual" },
+    { "<C-A-a>", desc = "HTTP: executar todas as requisicoes" },
+    { "<C-A-p>", desc = "HTTP: repetir ultima requisicao" },
+    { "<C-A-n>", desc = "HTTP: abrir nova requisicao" },
   },
   opts = {
     global_keymaps = {
       ["Send request"] = {
-        "<leader>Rs",
+        "<C-A-r>",
         function()
           require("kulala").run()
         end,
         mode = { "n", "v" },
         ft = { "http", "rest" },
-        desc = "HTTP: enviar requisicao",
+        desc = "HTTP: executar requisicao atual",
       },
       ["Send all requests"] = {
-        "<leader>Ra",
+        "<C-A-a>",
         function()
           require("kulala").run_all()
         end,
         mode = { "n", "v" },
         ft = { "http", "rest" },
-        desc = "HTTP: enviar todas as requisicoes",
+        desc = "HTTP: executar todas as requisicoes",
       },
       ["Replay the last request"] = {
-        "<leader>Rr",
+        "<C-A-p>",
         function()
           require("kulala").replay()
         end,
         desc = "HTTP: repetir ultima requisicao",
       },
       ["Open scratchpad"] = {
-        "<leader>Rb",
+        "<C-A-n>",
         function()
           require("kulala").scratchpad()
         end,
-        desc = "HTTP: abrir scratchpad",
+        desc = "HTTP: abrir nova requisicao",
       },
     },
-    global_keymaps_prefix = "<leader>R",
     kulala_keymaps_prefix = "",
     default_env = "default",
     treesitter = {

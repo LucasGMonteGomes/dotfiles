@@ -186,7 +186,7 @@ function M.setup()
   vim.api.nvim_create_user_command("SpringInitializr", M.open, {
     desc = "Criar um projeto pela API do Spring Initializr",
   })
-  vim.keymap.set("n", "<leader>si", M.open, { desc = "Spring: criar projeto (Initializr)" })
+  vim.keymap.set("n", "<C-A-i>", M.open, { desc = "Spring: criar projeto (Initializr)" })
 end
 
 return M

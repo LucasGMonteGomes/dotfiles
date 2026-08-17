@@ -9,6 +9,8 @@ require("options")
 require("keymaps")
 require("commands")
 require("spring_initializr").setup()
+require("maven_dependency").setup()
+require("java_codegen").setup()
 
 -- 1. Bootstrap do Lazy.nvim (Baixa o gerenciador de plugins)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

@@ -11,16 +11,13 @@ return {
     { "<C-p>", "<cmd>Telescope find_files<cr>", desc = "Buscar Arquivos (Find Files)" },
     { "<C-f>", "<cmd>Telescope live_grep<cr>", desc = "Buscar Texto no Projeto (Live Grep)" },
 
-    -- Atalhos produtivos com Leader (Espaço + f)
-    { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Buscar Arquivos" },
-    { "<leader>fa", "<cmd>Telescope find_files hidden=true no_ignore=true<cr>", desc = "Buscar Todos Arquivos (inc. ocultos)" },
-    { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Buscar Texto no Projeto" },
-    { "<leader>fw", "<cmd>Telescope grep_string<cr>", desc = "Buscar Palavra sob o Cursor" },
-    { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buscar Buffers Abertos" },
-    { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Arquivos Recentes" },
-    { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Listar Erros e Avisos (LSP)" },
-    { "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Buscar Símbolos no Arquivo (Classes, Métodos)" },
-    { "<leader>fS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Buscar Símbolos no Projeto Inteiro" },
+    { "<C-a>", "<cmd>Telescope find_files hidden=true no_ignore=true<cr>", desc = "Buscar Todos Arquivos (inc. ocultos)" },
+    { "<C-A-w>", "<cmd>Telescope grep_string<cr>", desc = "Buscar Palavra sob o Cursor" },
+    { "<C-A-b>", "<cmd>Telescope buffers<cr>", desc = "Buscar Buffers Abertos" },
+    { "<C-e>", "<cmd>Telescope oldfiles<cr>", desc = "Arquivos Recentes" },
+    { "<C-A-x>", "<cmd>Telescope diagnostics<cr>", desc = "Listar Erros e Avisos (LSP)" },
+    { "<C-A-s>", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Buscar Símbolos no Arquivo (Classes, Métodos)" },
+    { "<C-A-y>", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Buscar Símbolos no Projeto Inteiro" },
   },
   config = function()
     local telescope = require("telescope")
