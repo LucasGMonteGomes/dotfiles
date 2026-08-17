@@ -1,33 +1,21 @@
 return {
-  "ellisonleao/gruvbox.nvim",
+  "navarasu/onedark.nvim",
+  name = "onedark",
   priority = 1000,
   lazy = false,
   config = function()
-    require("gruvbox").setup({
-      terminal_colors = true,
-      undercurl = true,
-      underline = true,
-      bold = true,
-      italic = {
-        strings = true,
-        emphasis = true,
-        comments = true,
-        operators = false,
-        folds = true,
+    require("onedark").setup({
+      style = "dark",
+      transparent = false,
+      term_colors = true,
+      code_style = {
+        comments = "italic",
+        keywords = "none",
+        functions = "none",
+        strings = "none",
+        variables = "none",
       },
-      strikethrough = true,
-      invert_selection = false,
-      invert_signs = false,
-      invert_tabline = false,
-      invert_intend_guides = false,
-      inverse = true,
-      contrast = "hard", -- "hard", "soft" ou "" (padrão)
-      palette_overrides = {},
-      overrides = {},
-      dim_inactive = false,
-      transparent_mode = false,
     })
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("gruvbox")
+    require("onedark").load()
   end,
 }

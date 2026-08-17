@@ -20,7 +20,14 @@ return {
 
       local mason_lspconfig = require("mason-lspconfig")
       mason_lspconfig.setup({
-        ensure_installed = { "jdtls", "rust_analyzer", "ts_ls" },
+        ensure_installed = {
+          "jdtls",
+          "rust_analyzer",
+          "ts_ls",
+          "lua_ls",
+          "marksman",
+          "gopls",
+        },
         automatic_installation = true,
       })
 
@@ -30,13 +37,31 @@ return {
         capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
       end
 
-      local data_dir = vim.fn.stdpath("cache") .. "/jdtls/workspace"
+      local java_home = [[C:\Program Files\Java\jdk-21]]
+      local java_bin = java_home .. [[\bin]]
 
       -- Java (jdtls)
       vim.lsp.config("jdtls", {
-        cmd = { "jdtls", "-data", data_dir },
+        cmd_env = {
+          JAVA_HOME = java_home,
+          PATH = java_bin .. ";" .. vim.env.PATH,
+        },
         capabilities = capabilities,
         root_markers = { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" },
+        settings = {
+          java = {
+            configuration = {
+              updateBuildConfiguration = "automatic",
+              runtimes = {
+                {
+                  name = "JavaSE-21",
+                  path = java_home,
+                  default = true,
+                },
+              },
+            },
+          },
+        },
         root_dir = function(bufnr, on_dir)
           local root = vim.fs.root(bufnr, { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" })
             or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
@@ -57,10 +82,38 @@ return {
         root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
       })
 
+      -- Lua
+      vim.lsp.config("lua_ls", {
+        capabilities = capabilities,
+        root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
+        settings = {
+          Lua = {
+            diagnostics = { globals = { "vim" } },
+          },
+        },
+      })
+
+      -- Markdown
+      vim.lsp.config("marksman", {
+        capabilities = capabilities,
+        root_markers = { ".marksman.toml", ".git" },
+      })
+
+      -- Go
+      vim.lsp.config("gopls", {
+        capabilities = capabilities,
+        root_markers = { "go.work", "go.mod", ".git" },
+      })
+
       -- Ativa os servidores LSP
       vim.lsp.enable("jdtls")
       vim.lsp.enable("rust_analyzer")
       vim.lsp.enable("ts_ls")
+      vim.lsp.enable("lua_ls")
+      vim.lsp.enable("marksman")
+      vim.lsp.enable("gopls")
+
+      vim.diagnostic.config({ virtual_text = true })
 
       local function organize_imports(bufnr)
         local win = vim.fn.bufwinid(bufnr)
@@ -141,6 +194,7 @@ return {
           })
           vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
           vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+          vim.keymap.set("n", "df", vim.diagnostic.open_float, opts)
         end,
       })
     end,

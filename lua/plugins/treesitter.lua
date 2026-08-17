@@ -11,9 +11,11 @@ return {
     require("nvim-treesitter.configs").setup({
       ensure_installed = {
         "java",
+        "go",
         "rust",
         "typescript",
         "javascript",
+        "tsx",
         "html",
         "css",
         "json",
@@ -23,6 +25,8 @@ return {
         "markdown",
         "markdown_inline",
         "bash",
+        "http",
+        "dockerfile",
         "lua",
         "vim",
         "vimdoc",
