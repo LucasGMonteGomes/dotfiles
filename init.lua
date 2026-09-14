@@ -1,15 +1,21 @@
 -- Caminho: C:\Users\Lucas\AppData\Local\nvim\init.lua
 
+vim.loader.enable()
+-- A fonte Nerd Font ja esta instalada e e usada pelo Windows Terminal.
+-- Este indicador habilita os glifos completos em plugins que o consultam.
+vim.g.have_nerd_font = true
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-require("options")
-require("keymaps")
-require("commands")
-require("docker_tools").setup()
-require("spring_initializr").setup()
-require("maven_dependency").setup()
-require("java_codegen").setup()
+require("config.options")
+require("config.keymaps")
+require("config.commands")
+require("features.docker").setup()
+require("features.java.spring").setup()
+require("features.java.maven").setup()
+require("features.java.codegen").setup()
+require("features.markdown").setup()
 
 -- 1. Bootstrap do Lazy.nvim (Baixa o gerenciador de plugins)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

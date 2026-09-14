@@ -2,16 +2,18 @@ return {
   "akinsho/toggleterm.nvim",
   cmd = { "ToggleTerm", "TermExec", "ToggleTermToggleAll", "LazyDocker" },
   keys = {
-    { "<C-m>", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Abrir Terminal Inferior", mode = "n" },
+    { "<C-t>", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Abrir/fechar terminal inferior", mode = "n" },
   },
   config = function()
-    local shell = vim.fn.executable("pwsh") == 1 and "pwsh"
-      or (vim.fn.executable("powershell") == 1 and "powershell" or vim.o.shell)
+    -- Remove apenas o banner do PowerShell. O profile continua ativo, então o
+    -- prompt e as ferramentas já configuradas pelo usuário são preservados.
+    local shell = vim.fn.executable("pwsh") == 1 and "pwsh -NoLogo"
+      or (vim.fn.executable("powershell") == 1 and "powershell -NoLogo" or vim.o.shell)
 
     require("toggleterm").setup({
       size = function(term)
         if term.direction == "horizontal" then
-          return 12
+          return 10
         elseif term.direction == "vertical" then
           return math.floor(vim.o.columns * 0.4)
         end
@@ -63,10 +65,13 @@ return {
     function _G.set_terminal_keymaps()
       local opts = { buffer = 0, silent = true }
       vim.keymap.set("t", "<Esc>", [[<C-\><C-n><Cmd>ToggleTerm<CR>]], opts)
+      vim.keymap.set("t", "<C-t>", [[<C-\><C-n><Cmd>ToggleTerm<CR>]], opts)
       vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
       vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
       vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
       vim.keymap.set("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
+      vim.keymap.set("t", "<C-Tab>", [[<C-\><C-n><C-w>w]], opts)
+      vim.keymap.set("t", "\27[9;5u", [[<C-\><C-n><C-w>w]], opts)
     end
 
     vim.api.nvim_create_autocmd("TermOpen", {

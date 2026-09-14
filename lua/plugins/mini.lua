@@ -4,6 +4,13 @@ return {
     version = false,
     lazy = false,
     config = function()
+      -- Mesma base de icones do repositório de referência. O mock faz com que
+      -- Snacks, Lualine e outros plugins usem um único conjunto consistente.
+      require("mini.icons").setup({
+        style = "glyph",
+      })
+      MiniIcons.mock_nvim_web_devicons()
+
       require("mini.cmdline").setup({
         autocorrect = { enable = false },
       })
@@ -29,8 +36,11 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         group = scope_group,
         pattern = {
-          "neo-tree",
-          "TelescopePrompt",
+          "snacks_layout_box",
+          "snacks_picker_input",
+          "snacks_picker_list",
+          "oil",
+          "trouble",
           "lazy",
           "mason",
           "help",

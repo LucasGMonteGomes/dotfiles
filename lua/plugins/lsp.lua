@@ -25,6 +25,7 @@ return {
           "rust_analyzer",
           "lua_ls",
           "docker_language_server",
+          "markdown_oxide",
         },
         automatic_installation = true,
       })
@@ -96,11 +97,23 @@ return {
         },
       })
 
+      -- Markdown e Zettelkasten: links, backlinks, titulos e referencias.
+      local markdown_capabilities = vim.deepcopy(capabilities)
+      markdown_capabilities.workspace = markdown_capabilities.workspace or {}
+      markdown_capabilities.workspace.didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      }
+      vim.lsp.config("markdown_oxide", {
+        capabilities = markdown_capabilities,
+        root_markers = { ".moxide.toml", ".obsidian", ".git" },
+      })
+
       -- Ativa os servidores LSP
       vim.lsp.enable("jdtls")
       vim.lsp.enable("rust_analyzer")
       vim.lsp.enable("lua_ls")
       vim.lsp.enable("docker_language_server")
+      vim.lsp.enable("markdown_oxide")
 
       vim.diagnostic.config({
         virtual_text = false,
