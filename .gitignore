@@ -1,0 +1,29 @@
+# Neovim
+nvim/undodir/
+*.swp
+*.swo
+*.tmp
+
+# Arquivos locais e caches
+.cache/
+.DS_Store
+Thumbs.db
+*~
+
+# Variáveis e credenciais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+
+# Históricos de shells
+.bash_history
+.zsh_history
+python_history
+
+# Credenciais e dados privados
+.ssh/
+.gnupg/
+docker-config.json

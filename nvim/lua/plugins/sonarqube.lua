@@ -7,14 +7,33 @@ return {
   config = function()
     local extension_path = vim.fn.stdpath("data")
       .. "/mason/packages/sonarlint-language-server/extension"
-    local java = [[C:\Program Files\Java\jdk-21\bin\java.exe]]
+    local java = vim.fn.exepath("java")
+    local server_jar = extension_path .. "/server/sonarlint-ls.jar"
+
+    if java == "" then
+      vim.notify(
+        "SonarLint desativado: Java não foi encontrado no PATH",
+        vim.log.levels.WARN,
+        { title = "SonarQube" }
+      )
+      return
+    end
+
+    if not (vim.uv or vim.loop).fs_stat(server_jar) then
+      vim.notify(
+        "SonarLint ainda não está instalado. Execute :MasonInstall sonarlint-language-server e reinicie o Neovim.",
+        vim.log.levels.WARN,
+        { title = "SonarQube" }
+      )
+      return
+    end
 
     require("sonarqube").setup({
       lsp = {
         cmd = {
           java,
           "-jar",
-          extension_path .. "/server/sonarlint-ls.jar",
+          server_jar,
           "-stdio",
           "-analyzers",
           extension_path .. "/analyzers/sonarjava.jar",
