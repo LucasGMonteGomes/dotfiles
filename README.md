@@ -165,7 +165,3 @@ Se quiser tornar isso permanente, coloque o `export` no final de
 - `Ctrl+R`: histórico fuzzy do Bash/PowerShell;
 - `reload`: recarrega o perfil do shell;
 - `ep`: abre a configuração do shell no editor.
-
-Antes de substituir qualquer configuração novamente, guarde também este pacote
-em seu repositório privado de dotfiles. Não adicione tokens nem chaves privadas
-ao repositório.
