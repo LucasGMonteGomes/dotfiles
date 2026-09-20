@@ -1,8 +1,11 @@
--- Caminho: C:\Users\Lucas\AppData\Local\nvim\init.lua
+-- Caminho no Linux: ~/.config/nvim/init.lua
+
+if vim.fn.has("nvim-0.12") == 0 then
+  error("Esta configuração requer Neovim 0.12 ou mais recente")
+end
 
 vim.loader.enable()
--- A fonte Nerd Font ja esta instalada e e usada pelo Windows Terminal.
--- Este indicador habilita os glifos completos em plugins que o consultam.
+-- Os glifos dependem de uma Nerd Font configurada no emulador de terminal.
 vim.g.have_nerd_font = true
 
 vim.g.mapleader = " "

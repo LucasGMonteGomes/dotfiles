@@ -5,10 +5,16 @@ return {
     { "<C-t>", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Abrir/fechar terminal inferior", mode = "n" },
   },
   config = function()
-    -- Remove apenas o banner do PowerShell. O profile continua ativo, então o
-    -- prompt e as ferramentas já configuradas pelo usuário são preservados.
-    local shell = vim.fn.executable("pwsh") == 1 and "pwsh -NoLogo"
-      or (vim.fn.executable("powershell") == 1 and "powershell -NoLogo" or vim.o.shell)
+    -- No Debian usa o shell da sessão (normalmente Bash). Para forçar outro,
+    -- defina NVIM_TERMINAL_SHELL, por exemplo: export NVIM_TERMINAL_SHELL=pwsh.
+    local shell = vim.env.NVIM_TERMINAL_SHELL
+    if not shell or shell == "" then
+      if vim.fn.has("win32") == 1 and vim.fn.executable("pwsh") == 1 then
+        shell = "pwsh -NoLogo"
+      else
+        shell = vim.env.SHELL or vim.o.shell
+      end
+    end
 
     require("toggleterm").setup({
       size = function(term)

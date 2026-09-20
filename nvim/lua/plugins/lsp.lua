@@ -32,25 +32,36 @@ return {
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-      local java_home = [[C:\Program Files\Java\jdk-21]]
-      local java_bin = java_home .. [[\bin]]
+      local java_executable = vim.fn.exepath("java")
+      local java_home = vim.env.JAVA_HOME
+      if java_executable ~= "" and (not java_home or java_home == "") then
+        local real_java = (vim.uv or vim.loop).fs_realpath(java_executable) or java_executable
+        java_home = vim.fs.dirname(vim.fs.dirname(real_java))
+      end
+
       local jdtls = require("jdtls")
       local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
       java_extended_capabilities.resolveAdditionalTextEditsSupport = true
 
       -- Java (jdtls)
-      vim.lsp.config("jdtls", {
-        cmd_env = {
-          JAVA_HOME = java_home,
-          PATH = java_bin .. ";" .. vim.env.PATH,
-        },
+      local jdtls_config = {
         capabilities = capabilities,
         commands = jdtls.commands,
         init_options = {
           extendedClientCapabilities = java_extended_capabilities,
         },
         root_markers = { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" },
-        settings = {
+        root_dir = function(bufnr, on_dir)
+          local root = vim.fs.root(bufnr, { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" })
+            or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
+            or vim.fn.getcwd()
+          on_dir(root)
+        end,
+      }
+
+      if java_home and java_home ~= "" then
+        jdtls_config.cmd_env = { JAVA_HOME = java_home }
+        jdtls_config.settings = {
           java = {
             configuration = {
               updateBuildConfiguration = "automatic",
@@ -63,14 +74,18 @@ return {
               },
             },
           },
-        },
-        root_dir = function(bufnr, on_dir)
-          local root = vim.fs.root(bufnr, { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" })
-            or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
-            or vim.fn.getcwd()
-          on_dir(root)
-        end,
-      })
+        }
+      else
+        vim.schedule(function()
+          vim.notify(
+            "Java não foi encontrado. Instale openjdk-21-jdk ou defina JAVA_HOME.",
+            vim.log.levels.WARN,
+            { title = "Neovim / JDTLS" }
+          )
+        end)
+      end
+
+      vim.lsp.config("jdtls", jdtls_config)
 
       -- Rust (rust_analyzer)
       vim.lsp.config("rust_analyzer", {
