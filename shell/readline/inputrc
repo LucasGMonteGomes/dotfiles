@@ -1,0 +1,2 @@
+$include /etc/inputrc
+"\C-h": backward-kill-word
