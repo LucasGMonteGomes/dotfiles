@@ -5,7 +5,7 @@ if ((Test-Path -LiteralPath $localBin) -and
     $env:PATH = "$localBin$([IO.Path]::PathSeparator)$env:PATH"
 }
 
-$promptConfigPath = Join-Path $HOME '.config/powershell/lucas.omp.json'
+$promptConfigPath = Join-Path $HOME '.config/oh-my-posh/lucas.omp.json'
 
 if (Get-Module -ListAvailable -Name posh-git) {
     Import-Module posh-git -ErrorAction SilentlyContinue
