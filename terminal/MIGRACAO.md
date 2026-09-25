@@ -13,5 +13,8 @@ O script `apply-gnome-terminal.sh` traduz somente as partes equivalentes:
 - espaçamento vertical 1,2 quando a versão instalada oferece essa chave;
 - transparência de 15% quando suportada.
 
-O perfil anterior é clonado antes das mudanças e permanece na lista de perfis.
-O script informa o UUID anterior e o diretório do backup ao terminar.
+Na primeira execução, o perfil padrão é clonado para criar o **Lucas One Dark**,
+e o perfil anterior permanece na lista de perfis. Nas execuções seguintes, o
+script encontra o perfil pelo nome e reaplica as configurações nele, sem criar
+duplicatas. Em ambos os casos o perfil afetado é salvo em
+`~/.config-backups/gnome-terminal-*` antes de qualquer mudança.

@@ -18,7 +18,8 @@ qualquer alteração (inclusive o `lazy-lock.json` atualizado pelo `:Lazy sync`)
 aparece no `git status`. Por isso, mantenha o repositório no mesmo lugar depois
 de instalar; se movê-lo, execute `./install.sh` de novo. As configurações
 antigas são movidas para `~/.config-backups` pelo instalador.
-O script do GNOME Terminal cria um perfil novo; o perfil anterior não é apagado.
+O script do GNOME Terminal cria o perfil **Lucas One Dark** na primeira execução
+e apenas o atualiza nas seguintes; o perfil anterior não é apagado.
 
 ## 1. Instalar os programas necessários
 
