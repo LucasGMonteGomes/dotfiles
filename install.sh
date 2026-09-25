@@ -87,6 +87,19 @@ do_install_nvim() {
   echo "Neovim vinculado em $destination"
 }
 
+# Tema do Oh My Posh compartilhado pelos prompts do Bash e do PowerShell.
+do_install_prompt_theme() {
+  local destination="$HOME/.config/oh-my-posh/lucas.omp.json"
+  local legacy="$HOME/.config/powershell/lucas.omp.json"
+
+  link_path "$bundle_dir/shell/oh-my-posh/lucas.omp.json" "$destination"
+  # Versões anteriores do instalador vinculavam o tema junto ao PowerShell.
+  if [[ -L "$legacy" && "$(readlink -- "$legacy")" == "$bundle_dir/shell/powershell/lucas.omp.json" ]]; then
+    rm -- "$legacy"
+  fi
+  echo "Tema do Oh My Posh vinculado em $destination"
+}
+
 do_install_bash() {
   local destination="$HOME/.config/shell/lucas-terminal.bash"
   local bashrc="$HOME/.bashrc"
@@ -109,10 +122,8 @@ do_install_bash() {
 
 do_install_powershell() {
   local destination_dir="$HOME/.config/powershell"
-  local file
-  for file in Microsoft.PowerShell_profile.ps1 lucas.omp.json; do
-    link_path "$bundle_dir/shell/powershell/$file" "$destination_dir/$file"
-  done
+  link_path "$bundle_dir/shell/powershell/Microsoft.PowerShell_profile.ps1" \
+    "$destination_dir/Microsoft.PowerShell_profile.ps1"
   echo "Perfil do PowerShell vinculado em $destination_dir"
 }
 
@@ -137,6 +148,9 @@ fi
 $install_nvim && do_install_nvim
 $install_bash && do_install_bash
 $install_powershell && do_install_powershell
+if $install_bash || $install_powershell; then
+  do_install_prompt_theme
+fi
 
 check_commands
 if [[ -d "$backup_root" ]]; then

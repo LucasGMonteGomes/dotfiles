@@ -78,7 +78,8 @@ Sem opções, o instalador vincula:
 - `~/.inputrc`, que inclui o `/etc/inputrc` e faz `Ctrl+Backspace` apagar a
   palavra anterior;
 - `~/.config/powershell/Microsoft.PowerShell_profile.ps1`;
-- `~/.config/powershell/lucas.omp.json`.
+- `~/.config/oh-my-posh/lucas.omp.json`, tema do prompt usado pelo Bash e pelo
+  PowerShell (vinculado por `--bash` ou `--powershell`).
 
 Para instalar somente uma parte:
 

@@ -89,7 +89,7 @@ if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate bash)"
 fi
 
-prompt_config="$HOME/.config/powershell/lucas.omp.json"
+prompt_config="$HOME/.config/oh-my-posh/lucas.omp.json"
 if command -v oh-my-posh >/dev/null 2>&1 && [[ -f "$prompt_config" ]]; then
   eval "$(oh-my-posh init bash --config "$prompt_config")"
 fi
