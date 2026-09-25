@@ -42,7 +42,8 @@ return {
           keymaps = {
             init_selection = "<C-space>",
             node_incremental = "<C-space>",
-            scope_incremental = "<C-s>",
+            -- <C-s> no modo visual pertence ao stage de selecao do gitsigns.
+            scope_incremental = false,
             node_decremental = "<bs>",
           },
         },

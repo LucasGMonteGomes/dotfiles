@@ -1,6 +1,6 @@
 return {
     {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         build = ":MasonUpdate",
         cmd = {
             "Mason",
@@ -17,14 +17,12 @@ return {
         "neovim/nvim-lspconfig",
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
+            "mason-org/mason.nvim",
+            "mason-org/mason-lspconfig.nvim",
             "mfussenegger/nvim-jdtls",
             "b0o/SchemaStore.nvim",
         },
         config = function()
-            require("mason").setup()
-
             local mason_lspconfig = require("mason-lspconfig")
             mason_lspconfig.setup({
                 ensure_installed = {
@@ -35,7 +33,8 @@ return {
                     "docker_language_server",
                     "markdown_oxide",
                 },
-                automatic_installation = true,
+                -- Os servidores sao ativados explicitamente com vim.lsp.enable abaixo.
+                automatic_enable = false,
             })
 
             local capabilities = vim.lsp.protocol.make_client_capabilities()

@@ -1,5 +1,4 @@
 -- Atalhos globais do editor.
-vim.g.mapleader = " "
 
 vim.keymap.set("x", "p", [["_dP]], { desc = "Paste over selection without losing yanked text" })
 
