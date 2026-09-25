@@ -76,7 +76,7 @@ gsettings set "$new_schema" bold-is-bright false
 gsettings set "$new_schema" palette "['#282C34', '#E06C75', '#98C379', '#E5C07B', '#61AFEF', '#C678DD', '#56B6C2', '#ABB2BF', '#5C6370', '#E06C75', '#98C379', '#E5C07B', '#61AFEF', '#C678DD', '#56B6C2', '#FFFFFF']"
 
 if gsettings list-keys "$new_schema" | grep -Fqx cell-height-scale; then
-  gsettings set "$new_schema" cell-height-scale 1.2
+  gsettings set "$new_schema" cell-height-scale 1.0
 fi
 if gsettings list-keys "$new_schema" | grep -Fqx cell-width-scale; then
   gsettings set "$new_schema" cell-width-scale 1.0
