@@ -141,19 +141,32 @@ encontrado. O pacote `wl-clipboard` instalado acima o fornece.
 
 ## 4. PowerShell 7 no Linux (opcional)
 
-O Bash já recebeu as funções, os aliases do Docker, `fzf`, `zoxide`, `mise` e o
-tema. Instale o PowerShell apenas se você também quiser continuar usando
-`pwsh`. Use o repositório oficial da Microsoft conforme a documentação:
+O Bash continua sendo o shell do sistema. O PowerShell é usado só no perfil
+**Lucas PowerShell** do GNOME Terminal, que traz a lista de sugestões do
+histórico enquanto você digita (`PredictionViewStyle ListView`).
 
-- <https://learn.microsoft.com/pt-br/powershell/scripting/install/install-debian>
+Instale pelo repositório oficial da Microsoft
+(<https://learn.microsoft.com/pt-br/powershell/scripting/install/install-debian>):
 
-Depois instale os módulos do perfil:
+```bash
+source /etc/os-release
+curl -fsSLO "https://packages.microsoft.com/config/debian/$VERSION_ID/packages-microsoft-prod.deb"
+sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
+sudo apt update && sudo apt install -y powershell
+```
+
+Depois instale os módulos do perfil, vincule-o e crie o perfil do terminal:
 
 ```bash
 pwsh -NoLogo -Command \
   'Install-Module posh-git,Terminal-Icons,PSFzf -Scope CurrentUser -Force'
-pwsh
+./install.sh --powershell
+./terminal/apply-gnome-terminal.sh
 ```
+
+No GNOME Terminal, abra uma aba com o perfil **Lucas PowerShell** pelo menu ao
+lado do botão de nova aba. O **Lucas One Dark** continua sendo o padrão e abre
+o Bash.
 
 Para fazer o terminal integrado do Neovim abrir o PowerShell em vez do Bash:
 
