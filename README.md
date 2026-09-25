@@ -13,7 +13,11 @@ contém tokens, chaves SSH ou senhas.
 | Windows Terminal | Script que cria um perfil novo no GNOME Terminal com a fonte e a paleta One Dark |
 | Neovim | Caminhos do Java descobertos automaticamente pelo `PATH`/`JAVA_HOME` e terminal integrado usando o shell do Linux |
 
-As configurações antigas são copiadas para `~/.config-backups` pelo instalador.
+O instalador cria links simbólicos de `~/.config` para este repositório, então
+qualquer alteração (inclusive o `lazy-lock.json` atualizado pelo `:Lazy sync`)
+aparece no `git status`. Por isso, mantenha o repositório no mesmo lugar depois
+de instalar; se movê-lo, execute `./install.sh` de novo. As configurações
+antigas são movidas para `~/.config-backups` pelo instalador.
 O script do GNOME Terminal cria um perfil novo; o perfil anterior não é apagado.
 
 ## 1. Instalar os programas necessários
@@ -67,7 +71,7 @@ chmod +x install.sh terminal/apply-gnome-terminal.sh
 exec bash
 ```
 
-Sem opções, o instalador configura:
+Sem opções, o instalador vincula:
 
 - `~/.config/nvim`;
 - `~/.config/shell/lucas-terminal.bash` e sua carga pelo `~/.bashrc`;

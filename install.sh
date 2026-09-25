@@ -21,8 +21,9 @@ Sem opções, instala Neovim, Bash e o perfil opcional do PowerShell.
   --check       verifica os principais programas
   --help        exibe esta ajuda
 
-As configurações existentes são copiadas para ~/.config-backups antes de
-qualquer substituição.
+Os arquivos são instalados como links simbólicos para este repositório, então
+alterações feitas em ~/.config aparecem no git. Configurações existentes são
+movidas para ~/.config-backups antes de qualquer substituição.
 EOF
 }
 
@@ -34,6 +35,26 @@ backup_path() {
     mkdir -p "$backup_root/$(dirname -- "$relative")"
     cp -a -- "$source" "$backup_root/$relative"
   fi
+}
+
+# Cria um link simbólico de destination para source. Um destino existente que
+# ainda não aponta para o repositório é movido para o diretório de backup.
+link_path() {
+  local source=$1
+  local destination=$2
+  local relative=${destination#"$HOME"/}
+
+  if [[ -L "$destination" && "$(readlink -- "$destination")" == "$source" ]]; then
+    return
+  fi
+
+  if [[ -e "$destination" || -L "$destination" ]]; then
+    mkdir -p "$backup_root/$(dirname -- "$relative")"
+    mv -- "$destination" "$backup_root/$relative"
+  fi
+
+  mkdir -p "$(dirname -- "$destination")"
+  ln -s -- "$source" "$destination"
 }
 
 check_commands() {
@@ -62,14 +83,8 @@ check_commands() {
 
 do_install_nvim() {
   local destination="$HOME/.config/nvim"
-  backup_path "$destination"
-  mkdir -p "$HOME/.config"
-  if [[ -e "$destination" ]]; then
-    mv -- "$destination" "$destination.pre-debian-dotfiles-$timestamp"
-  fi
-  mkdir -p "$destination"
-  cp -a -- "$bundle_dir/nvim/." "$destination/"
-  echo "Neovim instalado em $destination"
+  link_path "$bundle_dir/nvim" "$destination"
+  echo "Neovim vinculado em $destination"
 }
 
 do_install_bash() {
@@ -77,10 +92,8 @@ do_install_bash() {
   local bashrc="$HOME/.bashrc"
   local source_line='[ -f "$HOME/.config/shell/lucas-terminal.bash" ] && . "$HOME/.config/shell/lucas-terminal.bash"'
 
-  backup_path "$destination"
+  link_path "$bundle_dir/shell/bash/lucas-terminal.bash" "$destination"
   backup_path "$bashrc"
-  mkdir -p "$(dirname -- "$destination")"
-  cp -- "$bundle_dir/shell/bash/lucas-terminal.bash" "$destination"
   touch "$bashrc"
 
   if ! grep -Fqx "$source_line" "$bashrc"; then
@@ -89,17 +102,16 @@ do_install_bash() {
       printf '%s\n' "$source_line"
     } >> "$bashrc"
   fi
-  echo "Bash configurado por $destination"
+  echo "Bash vinculado em $destination"
 }
 
 do_install_powershell() {
   local destination_dir="$HOME/.config/powershell"
-  backup_path "$destination_dir/Microsoft.PowerShell_profile.ps1"
-  backup_path "$destination_dir/lucas.omp.json"
-  mkdir -p "$destination_dir"
-  cp -- "$bundle_dir/shell/powershell/Microsoft.PowerShell_profile.ps1" "$destination_dir/"
-  cp -- "$bundle_dir/shell/powershell/lucas.omp.json" "$destination_dir/"
-  echo "Perfil do PowerShell instalado em $destination_dir"
+  local file
+  for file in Microsoft.PowerShell_profile.ps1 lucas.omp.json; do
+    link_path "$bundle_dir/shell/powershell/$file" "$destination_dir/$file"
+  done
+  echo "Perfil do PowerShell vinculado em $destination_dir"
 }
 
 if (($# == 0)); then
