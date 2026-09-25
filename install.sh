@@ -16,7 +16,7 @@ Uso: ./install.sh [opções]
 Sem opções, instala Neovim, Bash e o perfil opcional do PowerShell.
 
   --nvim        instala somente ~/.config/nvim
-  --bash        instala somente a integração do Bash
+  --bash        instala somente a integração do Bash e o ~/.inputrc
   --powershell  instala somente o perfil do PowerShell 7
   --check       verifica os principais programas
   --help        exibe esta ajuda
@@ -93,6 +93,7 @@ do_install_bash() {
   local source_line='[ -f "$HOME/.config/shell/lucas-terminal.bash" ] && . "$HOME/.config/shell/lucas-terminal.bash"'
 
   link_path "$bundle_dir/shell/bash/lucas-terminal.bash" "$destination"
+  link_path "$bundle_dir/shell/readline/inputrc" "$HOME/.inputrc"
   backup_path "$bashrc"
   touch "$bashrc"
 
@@ -103,6 +104,7 @@ do_install_bash() {
     } >> "$bashrc"
   fi
   echo "Bash vinculado em $destination"
+  echo "Readline vinculado em $HOME/.inputrc"
 }
 
 do_install_powershell() {

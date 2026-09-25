@@ -75,6 +75,8 @@ Sem opções, o instalador vincula:
 
 - `~/.config/nvim`;
 - `~/.config/shell/lucas-terminal.bash` e sua carga pelo `~/.bashrc`;
+- `~/.inputrc`, que inclui o `/etc/inputrc` e faz `Ctrl+Backspace` apagar a
+  palavra anterior;
 - `~/.config/powershell/Microsoft.PowerShell_profile.ps1`;
 - `~/.config/powershell/lucas.omp.json`.
 
