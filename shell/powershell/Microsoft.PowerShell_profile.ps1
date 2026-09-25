@@ -111,7 +111,6 @@ if ((Get-Module -ListAvailable -Name PSFzf) -and
 # Atalhos ----------------------------------------------------------------------
 if (Get-Command nvim -ErrorAction SilentlyContinue) { Set-Alias vim nvim }
 if (Get-Command git -ErrorAction SilentlyContinue)  { Set-Alias g git }
-if (Get-Command rg -ErrorAction SilentlyContinue)   { Set-Alias grep rg }
 if (Get-Command bat -ErrorAction SilentlyContinue)  { Set-Alias b bat }
 elseif (Get-Command batcat -ErrorAction SilentlyContinue) { Set-Alias b batcat }
 

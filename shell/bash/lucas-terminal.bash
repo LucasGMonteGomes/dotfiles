@@ -23,7 +23,9 @@ fi
 # Atalhos de ferramentas.
 command -v nvim >/dev/null 2>&1 && alias vim='nvim'
 command -v git >/dev/null 2>&1 && alias g='git'
-command -v rg >/dev/null 2>&1 && alias grep='rg'
+# grep continua sendo o GNU grep: as flags do rg são diferentes e quebrariam
+# comandos copiados de documentações. Use rg pelo próprio nome.
+alias grep='grep --color=auto'
 if command -v batcat >/dev/null 2>&1; then
   alias b='batcat'
 elif command -v bat >/dev/null 2>&1; then
