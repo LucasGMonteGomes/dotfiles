@@ -28,6 +28,13 @@ profile_schema() {
 # gsettings imprime a lista como "['id', ...]" ou "@as []"; só os UUIDs importam.
 mapfile -t profile_ids < <(gsettings get "$profiles_schema" list | grep -oE '[0-9a-f-]{36}' || true)
 
+# Um perfil padrão ausente da lista fica invisível e o terminal cai nas
+# configurações de fábrica; ele volta para a lista na gravação abaixo.
+default_id=$(gsettings get "$profiles_schema" default | grep -oE '[0-9a-f-]{36}' || true)
+if [[ -n "$default_id" && " ${profile_ids[*]} " != *" $default_id "* ]]; then
+  profile_ids+=("$default_id")
+fi
+
 profile_id=
 for id in "${profile_ids[@]}"; do
   if [[ "$(gsettings get "$(profile_schema "$id")" visible-name)" == "'$profile_name'" ]]; then
@@ -50,10 +57,12 @@ else
   dconf dump "$profiles_path/:$old_id/" | dconf load "$profiles_path/:$profile_id/"
 
   profile_ids+=("$profile_id")
-  updated_profiles=$(printf "'%s', " "${profile_ids[@]}")
-  gsettings set "$profiles_schema" list "[${updated_profiles%, }]"
   action="criado"
 fi
+# Regrava a lista sempre, descartando entradas que não são UUIDs.
+dconf dump "$profiles_path/" > "$backup_dir/profiles-list.dconf"
+updated_profiles=$(printf "'%s', " "${profile_ids[@]}")
+gsettings set "$profiles_schema" list "[${updated_profiles%, }]"
 new_schema=$(profile_schema "$profile_id")
 
 gsettings set "$new_schema" visible-name "$profile_name"
