@@ -16,28 +16,47 @@ if ! gsettings list-schemas | grep -Fqx "$profiles_schema"; then
   exit 1
 fi
 
-old_id=$(gsettings get "$profiles_schema" default | tr -d "'")
-new_id=$(uuidgen | tr '[:upper:]' '[:lower:]')
-old_path="/org/gnome/terminal/legacy/profiles:/:$old_id/"
-new_path="/org/gnome/terminal/legacy/profiles:/:$new_id/"
-new_schema="$profile_schema_name:$new_path"
+profile_name='Lucas One Dark'
+profiles_path='/org/gnome/terminal/legacy/profiles:'
 timestamp=$(date +%Y%m%d-%H%M%S)
 backup_dir="$HOME/.config-backups/gnome-terminal-$timestamp"
 
+profile_schema() {
+  printf '%s:%s/:%s/' "$profile_schema_name" "$profiles_path" "$1"
+}
+
+# gsettings imprime a lista como "['id', ...]" ou "@as []"; só os UUIDs importam.
+mapfile -t profile_ids < <(gsettings get "$profiles_schema" list | grep -oE '[0-9a-f-]{36}' || true)
+
+profile_id=
+for id in "${profile_ids[@]}"; do
+  if [[ "$(gsettings get "$(profile_schema "$id")" visible-name)" == "'$profile_name'" ]]; then
+    profile_id=$id
+    break
+  fi
+done
+
 mkdir -p "$backup_dir"
-dconf dump "$old_path" > "$backup_dir/original-profile.dconf"
-printf '%s\n' "$old_id" > "$backup_dir/original-profile-id"
-dconf dump "$old_path" | dconf load "$new_path"
-
-current_profiles=$(gsettings get "$profiles_schema" list)
-if [[ "$current_profiles" == '[]' ]]; then
-  updated_profiles="['$new_id']"
+if [[ -n "$profile_id" ]]; then
+  # Reaplicar o script atualiza o perfil existente em vez de criar outro.
+  dconf dump "$profiles_path/:$profile_id/" > "$backup_dir/existing-profile.dconf"
+  printf '%s\n' "$profile_id" > "$backup_dir/existing-profile-id"
+  action="atualizado"
 else
-  updated_profiles="${current_profiles%]}, '$new_id']"
-fi
-gsettings set "$profiles_schema" list "$updated_profiles"
+  old_id=$(gsettings get "$profiles_schema" default | tr -d "'")
+  profile_id=$(uuidgen | tr '[:upper:]' '[:lower:]')
+  dconf dump "$profiles_path/:$old_id/" > "$backup_dir/original-profile.dconf"
+  printf '%s\n' "$old_id" > "$backup_dir/original-profile-id"
+  dconf dump "$profiles_path/:$old_id/" | dconf load "$profiles_path/:$profile_id/"
 
-gsettings set "$new_schema" visible-name 'Lucas One Dark'
+  profile_ids+=("$profile_id")
+  updated_profiles=$(printf "'%s', " "${profile_ids[@]}")
+  gsettings set "$profiles_schema" list "[${updated_profiles%, }]"
+  action="criado"
+fi
+new_schema=$(profile_schema "$profile_id")
+
+gsettings set "$new_schema" visible-name "$profile_name"
 gsettings set "$new_schema" use-system-font false
 gsettings set "$new_schema" font 'JetBrainsMono Nerd Font Mono 10'
 gsettings set "$new_schema" use-theme-colors false
@@ -60,9 +79,11 @@ if gsettings list-keys "$new_schema" | grep -Fqx background-transparency-percent
   gsettings set "$new_schema" background-transparency-percent 15
 fi
 
-gsettings set "$profiles_schema" default "$new_id"
+gsettings set "$profiles_schema" default "$profile_id"
 
-echo "Perfil 'Lucas One Dark' criado e definido como padrão."
-echo "O perfil anterior ($old_id) foi preservado."
+echo "Perfil '$profile_name' $action e definido como padrão."
+if [[ -n "${old_id:-}" ]]; then
+  echo "O perfil anterior ($old_id) foi preservado."
+fi
 echo "Backup: $backup_dir"
 echo 'Feche e abra o GNOME Terminal para conferir o resultado.'
