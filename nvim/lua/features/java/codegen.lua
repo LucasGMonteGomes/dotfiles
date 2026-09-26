@@ -6,9 +6,22 @@ local generators = {
     kind = "source.generate.constructors",
     label = "construtor",
   },
+  -- As tres acoes de acessores tem o mesmo kind; o argumento `kind` do
+  -- comando as diferencia (0 = getters, 1 = setters, 2 = ambos).
   accessors = {
     kind = "source.generate.accessors",
+    accessor_kind = 2,
     label = "getters e setters",
+  },
+  getters = {
+    kind = "source.generate.accessors",
+    accessor_kind = 0,
+    label = "getters",
+  },
+  setters = {
+    kind = "source.generate.accessors",
+    accessor_kind = 1,
+    label = "setters",
   },
   equals_hashcode = {
     kind = "source.generate.hashCodeEquals",
@@ -32,7 +45,8 @@ local function notify(message, level)
   vim.notify(message, level or vim.log.levels.INFO, { title = "Java" })
 end
 
--- Prompts do nvim-jdtls que passam pelo seletor de campos. `preselect` define o que ja vem marcado:
+-- Prompts do nvim-jdtls (e o de getters/setters, implementado abaixo) que
+-- passam pelo seletor de campos. `preselect` define o que ja vem marcado:
 -- "suggested" usa a sugestao do jdtls (no toString, so os campos, sem
 -- getClass/hashCode) e marca todos quando nao ha sugestao; "none" nao marca
 -- nada. `empty` define o Enter sem nenhum item marcado: "none" gera sem itens
@@ -42,6 +56,7 @@ local field_prompts = {
   { pattern = "super class constructor", title = "Construtores da superclasse", preselect = "suggested", empty = "cancel" },
   { pattern = "equals/hashCode", title = "Campos do equals e hashCode", preselect = "suggested", empty = "cancel" },
   { pattern = "toString", title = "Campos do toString", preselect = "suggested", empty = "cancel" },
+  { pattern = "accessors", title = "Campos dos getters e setters", preselect = "suggested", empty = "cancel" },
   { pattern = "delegate for method", title = "Metodos a delegar", preselect = "none", empty = "cancel" },
   { pattern = "Method to override", title = "Metodos a sobrescrever/implementar", preselect = "none", empty = "cancel" },
 }
@@ -174,6 +189,56 @@ local function configure_field_picker()
   ui.java_codegen_picker_configured = true
 end
 
+-- Getters e setters com escolha de campos. O jdtls oferece o protocolo
+-- (java/resolveUnimplementedAccessors e java/generateAccessors) aos clientes
+-- que anunciam advancedGenerateAccessorsSupport (plugins/lsp.lua), como o VS
+-- Code; o nvim-jdtls nao implementa o comando, entao ele e registrado aqui.
+local function generate_accessors_prompt(command, ctx)
+  local client = vim.lsp.get_client_by_id(ctx.client_id)
+  local params = command.arguments and command.arguments[1]
+  if not client or not params then
+    return
+  end
+
+  coroutine.wrap(function()
+    local co = coroutine.running()
+    local function request(method, request_params)
+      client:request(method, request_params, function(err, result)
+        coroutine.resume(co, err, result)
+      end, ctx.bufnr)
+      return coroutine.yield()
+    end
+
+    local err, accessors = request("java/resolveUnimplementedAccessors", params)
+    if err then
+      notify("Nao foi possivel listar os campos: " .. err.message, vim.log.levels.ERROR)
+      return
+    end
+    if not accessors or #accessors == 0 then
+      notify("Todos os campos ja tem os metodos pedidos", vim.log.levels.INFO)
+      return
+    end
+
+    local selected = choose(accessors, function(accessor)
+      local methods = {}
+      if accessor.generateGetter then
+        table.insert(methods, "get")
+      end
+      if accessor.generateSetter then
+        table.insert(methods, "set")
+      end
+      return string.format("%s: %s  (%s)", accessor.fieldName, accessor.typeName, table.concat(methods, "/"))
+    end, prompt_config("accessors"))
+
+    local generate_err, edit = request("java/generateAccessors", { context = params, accessors = selected })
+    if generate_err then
+      notify("Nao foi possivel gerar os getters/setters: " .. generate_err.message, vim.log.levels.ERROR)
+    elseif edit then
+      vim.lsp.util.apply_workspace_edit(edit, client.offset_encoding)
+    end
+  end)()
+end
+
 local function get_java_client(bufnr)
   return vim.lsp.get_clients({
     bufnr = bufnr,
@@ -235,7 +300,11 @@ local function run(generator)
     -- Lombok, por exemplo, a acao de acessores vira "Generate Setters").
     local selected
     for _, action in ipairs(actions or {}) do
-      if action.kind == generator.kind then
+      local arguments = type(action.command) == "table" and action.command.arguments
+      local accessor_kind = arguments and type(arguments[1]) == "table" and arguments[1].kind
+      if action.kind == generator.kind
+        and (generator.accessor_kind == nil or accessor_kind == generator.accessor_kind)
+      then
         selected = action
         break
       end
@@ -271,6 +340,14 @@ function M.accessors()
   run(generators.accessors)
 end
 
+function M.getters()
+  run(generators.getters)
+end
+
+function M.setters()
+  run(generators.setters)
+end
+
 function M.equals_hashcode()
   run(generators.equals_hashcode)
 end
@@ -291,6 +368,8 @@ function M.generate_menu()
   local choices = {
     { label = "Construtor", run = M.constructor },
     { label = "Getters e setters", run = M.accessors },
+    { label = "Somente getters", run = M.getters },
+    { label = "Somente setters", run = M.setters },
     { label = "equals e hashCode", run = M.equals_hashcode },
     { label = "toString", run = M.to_string },
     { label = "Sobrescrever/implementar metodos", run = M.override_methods },
@@ -323,6 +402,12 @@ function M.setup()
   vim.api.nvim_create_user_command("JavaGenerateAccessors", M.accessors, {
     desc = "Gerar getters e setters",
   })
+  vim.api.nvim_create_user_command("JavaGenerateGetters", M.getters, {
+    desc = "Gerar somente getters",
+  })
+  vim.api.nvim_create_user_command("JavaGenerateSetters", M.setters, {
+    desc = "Gerar somente setters",
+  })
   vim.api.nvim_create_user_command("JavaGetSet", M.accessors, {
     desc = "Gerar getters e setters",
   })
@@ -341,6 +426,8 @@ function M.setup()
   vim.api.nvim_create_user_command("JavaGenerate", M.generate_menu, {
     desc = "Abrir menu de geracao de codigo Java",
   })
+
+  vim.lsp.commands["java.action.generateAccessorsPrompt"] = generate_accessors_prompt
 
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("JavaCodeGenerationKeymaps", { clear = true }),

@@ -55,7 +55,7 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+G` | Abrir o menu de geracao: construtor, getters/setters, `equals`/`hashCode`, `toString`, sobrescrever/implementar metodos ou metodos delegados |
+| `Ctrl+G` | Abrir o menu de geracao: construtor, getters e setters (ou so getters/setters), `equals`/`hashCode`, `toString`, sobrescrever/implementar metodos ou metodos delegados |
 | `Ctrl+L` | Abrir acoes de codigo do Java |
 | `Ctrl+Alt+L` | Organizar imports e formatar o arquivo |
 | `F2` | Renomear simbolo |
@@ -78,9 +78,9 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `Ctrl+Alt+D` | No `pom.xml`, abrir buscador de dependencias Maven |
 | `Ctrl+Alt+I` | Abrir o Spring Initializr |
 
-Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
+Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateGetters`, `:JavaGenerateSetters`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
 
-Construtor, `equals`/`hashCode`, `toString`, sobrescrever e delegar abrem um seletor para escolher os atributos (ou metodos) usados:
+Toda geracao abre um seletor para escolher os atributos (ou metodos) usados:
 
 | Tecla no seletor | Acao |
 |---|---|

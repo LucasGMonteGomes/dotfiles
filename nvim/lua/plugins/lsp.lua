@@ -200,6 +200,9 @@ return {
             local jdtls = require("jdtls")
             local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
             java_extended_capabilities.resolveAdditionalTextEditsSupport = true
+            -- Getters/setters com escolha de campos (java/resolveUnimplementedAccessors),
+            -- como no VS Code; o prompt e implementado em features/java/codegen.lua.
+            java_extended_capabilities.advancedGenerateAccessorsSupport = true
 
             -- Java (jdtls)
             local jdtls_config = {
