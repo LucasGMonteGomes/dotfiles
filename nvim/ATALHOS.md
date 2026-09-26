@@ -62,6 +62,8 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `grr` / `gri` / `grt` | Listar referencias / implementacoes / ir para o tipo |
 | `grn` / `gra` | Renomear (igual ao `F2`) / acoes de codigo (igual ao `Ctrl+L`) |
 | `gO` | Listar simbolos do arquivo |
+| `grx` | Executar a lente sob o cursor (ex.: `2 references` lista as referencias) |
+| `Espaco i h` | Mostrar/ocultar dicas inline (nomes de parametros) |
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |
 | `gl` | Mostrar diagnostico da linha |

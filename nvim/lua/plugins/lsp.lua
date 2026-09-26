@@ -171,6 +171,24 @@ return {
                         detached = config.detached,
                     })
                 end,
+                handlers = {
+                    -- Dicas e lentes pedidas antes do fim da importacao do projeto
+                    -- voltam vazias e nao sao refeitas. Quando o jdtls avisa que
+                    -- esta pronto, os buffers anexados pedem de novo.
+                    ["language/status"] = function(_, result, ctx)
+                        if not result or result.type ~= "ServiceReady" then
+                            return
+                        end
+                        for bufnr in pairs(vim.lsp.get_client_by_id(ctx.client_id).attached_buffers) do
+                            for _, feature in ipairs({ vim.lsp.inlay_hint, vim.lsp.codelens }) do
+                                if feature.is_enabled({ bufnr = bufnr }) then
+                                    feature.enable(false, { bufnr = bufnr })
+                                    feature.enable(true, { bufnr = bufnr })
+                                end
+                            end
+                        end
+                    end,
+                },
                 root_dir = function(bufnr, on_dir)
                     local name = vim.api.nvim_buf_get_name(bufnr)
                     if vim.startswith(name, "jdt://") then
@@ -187,16 +205,26 @@ return {
                 end,
             }
 
+            jdtls_config.settings = {
+                java = {
+                    configuration = {
+                        updateBuildConfiguration = "automatic",
+                    },
+                    -- Nomes de parametros so em argumentos literais, como no
+                    -- IntelliJ: `service.find(/* id: */ 42)`.
+                    inlayHints = {
+                        parameterNames = { enabled = "literals" },
+                    },
+                    -- Contagem de referencias/implementacoes acima de classes e
+                    -- metodos; `grx` executa a lente sob o cursor.
+                    referencesCodeLens = { enabled = true },
+                    implementationsCodeLens = { enabled = true },
+                },
+            }
+
             if java_home and java_home ~= "" then
                 jdtls_config.cmd_env = { JAVA_HOME = java_home }
-                jdtls_config.settings = {
-                    java = {
-                        configuration = {
-                            updateBuildConfiguration = "automatic",
-                            runtimes = java_runtimes(java_home),
-                        },
-                    },
-                }
+                jdtls_config.settings.java.configuration.runtimes = java_runtimes(java_home)
             else
                 vim.schedule(function()
                     vim.notify(
@@ -288,6 +316,13 @@ return {
             vim.lsp.enable("yamlls")
             vim.lsp.enable("docker_language_server")
             vim.lsp.enable("markdown_oxide")
+
+            -- Dicas inline e lentes ficam ativas em todo servidor que as suporte.
+            vim.lsp.inlay_hint.enable(true)
+            vim.lsp.codelens.enable(true)
+            vim.keymap.set("n", "<leader>ih", function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+            end, { desc = "LSP: mostrar/ocultar dicas inline" })
 
             vim.diagnostic.config({
                 virtual_text = false,
