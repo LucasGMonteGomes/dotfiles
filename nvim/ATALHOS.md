@@ -1,4 +1,4 @@
-# Atalhos do seu Neovim
+# Atalhos do Neovim
 
 Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
 
