@@ -86,6 +86,39 @@ return {
                 return runtimes
             end
 
+            local build_files = { "pom.xml", "build.gradle", "build.gradle.kts", "build.xml" }
+
+            local function has_build_file(directory)
+                for _, file in ipairs(build_files) do
+                    if (vim.uv or vim.loop).fs_stat(vim.fs.joinpath(directory, file)) then
+                        return true
+                    end
+                end
+                return false
+            end
+
+            -- Um projeto multi-modulo deve ter um unico servidor na raiz. O
+            -- wrapper/settings define essa raiz; sem eles, sobe enquanto os
+            -- diretorios pais tambem tiverem arquivo de build (pom pai).
+            local function java_root(path)
+                local root = vim.fs.root(path, { "mvnw", "gradlew", "settings.gradle", "settings.gradle.kts" })
+                if root then
+                    return root
+                end
+
+                root = vim.fs.root(path, build_files)
+                if root then
+                    local parent = vim.fs.dirname(root)
+                    while parent ~= root and has_build_file(parent) do
+                        root = parent
+                        parent = vim.fs.dirname(root)
+                    end
+                    return root
+                end
+
+                return vim.fs.root(path, ".git") or vim.fs.dirname(path)
+            end
+
             local jdtls = require("jdtls")
             local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
             java_extended_capabilities.resolveAdditionalTextEditsSupport = true
@@ -97,13 +130,19 @@ return {
                 init_options = {
                     extendedClientCapabilities = java_extended_capabilities,
                 },
-                root_markers = { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" },
                 root_dir = function(bufnr, on_dir)
-                    local root = vim.fs.root(bufnr,
-                            { "pom.xml", "build.gradle", "settings.gradle", ".git", "mvnw", "gradlew" })
-                        or vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
-                        or vim.fn.getcwd()
-                    on_dir(root)
+                    local name = vim.api.nvim_buf_get_name(bufnr)
+                    if vim.startswith(name, "jdt://") then
+                        -- Classes de bibliotecas abertas pelo `gd` sao anexadas pelo
+                        -- nvim-jdtls ao servidor ja existente; nao inicia outro.
+                        local client = vim.lsp.get_clients({ name = "jdtls", bufnr = vim.fn.bufnr("#") })[1]
+                            or vim.lsp.get_clients({ name = "jdtls" })[1]
+                        if client then
+                            on_dir(client.root_dir)
+                        end
+                        return
+                    end
+                    on_dir(name ~= "" and java_root(name) or vim.fn.getcwd())
                 end,
             }
 
