@@ -280,6 +280,13 @@ return {
                     -- metodos; `grx` executa a lente sob o cursor.
                     referencesCodeLens = { enabled = true },
                     implementationsCodeLens = { enabled = true },
+                    -- O perfil padrao do Eclipse indenta com TAB. Sem isto, o codigo
+                    -- gerado (construtores, toString, code actions) entra com TAB
+                    -- em arquivos indentados com 4 espacos (config/options.lua).
+                    format = {
+                        insertSpaces = true,
+                        tabSize = 4,
+                    },
                 },
             }
 
