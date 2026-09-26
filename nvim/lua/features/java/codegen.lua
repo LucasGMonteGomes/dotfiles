@@ -14,10 +14,89 @@ local generators = {
     kind = "source.generate.hashCodeEquals",
     label = "equals e hashCode",
   },
+  to_string = {
+    kind = "source.generate.toString",
+    label = "toString",
+  },
+  override_methods = {
+    kind = "source.overrideMethods",
+    label = "metodos sobrescritos",
+  },
+  delegate_methods = {
+    kind = "source.generate.delegateMethods",
+    label = "metodos delegados",
+  },
 }
 
 local function notify(message, level)
   vim.notify(message, level or vim.log.levels.INFO, { title = "Java" })
+end
+
+-- Prompts do nvim-jdtls que recebem o seletor numerico abaixo. Enter vazio
+-- aceita a sugestao do jdtls (itens com `*`, ex.: so os campos no toString,
+-- sem getClass/hashCode); sem sugestao, `all` decide entre todos os itens e
+-- cancelar (metodos a sobrescrever, onde "todos" raramente e o desejado).
+local field_prompts = {
+  { pattern = "field to initialize", title = "Campos do construtor", all = true },
+  { pattern = "equals/hashCode", title = "Campos de equals/hashCode", all = true },
+  { pattern = "toString", title = "Campos do toString", all = true },
+  { pattern = "delegate for method", title = "Metodos a delegar", all = true },
+  { pattern = "Method to override", title = "Metodos a sobrescrever/implementar", all = false },
+}
+
+-- Cancela a geracao em andamento. Devolver uma lista vazia nao basta: com
+-- ela o nvim-jdtls ainda gera codigo (o construtor, por exemplo, sai sem
+-- parametros). Os prompts rodam numa corrotina; sem retoma-la, a geracao e
+-- abandonada.
+local function cancel_generation()
+  if coroutine.running() then
+    coroutine.yield()
+  end
+  return {}
+end
+
+-- Listas que nao cabem na tela (ex.: os ~70 metodos de String para delegar)
+-- abririam o paginador `-- More --` do input(). Nesses casos a escolha e
+-- feita num picker do Snacks: Tab marca varios, Enter confirma (sem marcas,
+-- vale o item sob o cursor) e Esc cancela. Os prompts do nvim-jdtls rodam
+-- numa corrotina, que espera a escolha.
+local function pick_in_picker(items, labels, title)
+  local co = coroutine.running()
+  local done = false
+  local function finish(result)
+    if done then
+      return
+    end
+    done = true
+    vim.schedule(function()
+      coroutine.resume(co, result)
+    end)
+  end
+
+  local entries = {}
+  for index, label in ipairs(labels) do
+    entries[index] = { text = label, value = items[index] }
+  end
+
+  Snacks.picker({
+    title = title .. " (Tab marca, Enter confirma)",
+    items = entries,
+    format = "text",
+    layout = { preset = "select" },
+    confirm = function(picker)
+      local selected = vim.tbl_map(function(entry)
+        return entry.value
+      end, picker:selected({ fallback = true }))
+      -- Entrega antes de fechar: close() dispara on_close.
+      finish(selected)
+      picker:close()
+    end,
+    on_close = function()
+      -- Fechado sem confirmar (Esc): a corrotina nao e retomada.
+      done = true
+    end,
+  })
+  return coroutine.yield()
 end
 
 local function configure_field_picker()
@@ -28,10 +107,15 @@ local function configure_field_picker()
 
   local original_pick_many = ui.pick_many
   ui.pick_many = function(items, prompt, label_fn, opts)
-    local is_constructor_fields = prompt:find("field to initialize", 1, true) ~= nil
-    local is_equals_hashcode_fields = prompt:find("equals/hashCode", 1, true) ~= nil
+    local config
+    for _, candidate in ipairs(field_prompts) do
+      if prompt:find(candidate.pattern, 1, true) then
+        config = candidate
+        break
+      end
+    end
 
-    if not is_constructor_fields and not is_equals_hashcode_fields then
+    if not config then
       return original_pick_many(items, prompt, label_fn, opts)
     end
 
@@ -41,21 +125,54 @@ local function configure_field_picker()
 
     label_fn = label_fn or tostring
     local choices = {}
+    local labels = {}
+    local suggested = {}
     for index, item in ipairs(items) do
-      choices[index] = string.format("%d. %s", index, label_fn(item))
+      local preselected = type(item) == "table" and item.isSelected == true
+      if preselected then
+        table.insert(suggested, item)
+      end
+      labels[index] = label_fn(item) .. (preselected and " *" or "")
+      choices[index] = string.format("%d. %s", index, labels[index])
     end
 
-    local title = is_constructor_fields and "Campos do construtor" or "Campos de equals/hashCode"
+    if #items + 4 > vim.o.lines - 2 and coroutine.running() then
+      return pick_in_picker(items, labels, config.title)
+    end
+
+    local default_items, default_label
+    if #suggested > 0 then
+      default_items, default_label = suggested, "marcados com *"
+    elseif config.all then
+      default_items, default_label = items, "todos"
+    else
+      default_items, default_label = {}, "cancelar"
+    end
+
     local input_prompt = string.format(
-      "\n%s\n%s\nSelecione uma vez (ex.: 1, 1,3 ou 1-3; Enter vazio = todos): ",
-      title,
-      table.concat(choices, "\n")
+      "\n%s\n%s\nSelecione uma vez (ex.: 1, 1,3 ou 1-3; 0 = nenhum; Enter vazio = %s; Esc cancela): ",
+      config.title,
+      table.concat(choices, "\n"),
+      default_label
     )
 
     while true do
-      local answer = vim.trim(vim.fn.input(input_prompt) or "")
+      -- Esc devolve "" no input() comum, igual ao Enter, e geraria o codigo
+      -- com os itens padrao; cancelreturn distingue o cancelamento.
+      local answer = vim.fn.input({ prompt = input_prompt, cancelreturn = "\27" })
+      if answer == "\27" then
+        return cancel_generation()
+      end
+      answer = vim.trim(answer)
       if answer == "" then
-        return items
+        if #default_items == 0 then
+          return cancel_generation()
+        end
+        return default_items
+      end
+      -- Nenhum item: no construtor, gera o construtor sem parametros.
+      if answer == "0" then
+        return {}
       end
 
       local selected = {}
@@ -203,11 +320,26 @@ function M.equals_hashcode()
   run(generators.equals_hashcode)
 end
 
+function M.to_string()
+  run(generators.to_string)
+end
+
+function M.override_methods()
+  run(generators.override_methods)
+end
+
+function M.delegate_methods()
+  run(generators.delegate_methods)
+end
+
 function M.generate_menu()
   local choices = {
     { label = "Construtor", run = M.constructor },
     { label = "Getters e setters", run = M.accessors },
     { label = "equals e hashCode", run = M.equals_hashcode },
+    { label = "toString", run = M.to_string },
+    { label = "Sobrescrever/implementar metodos", run = M.override_methods },
+    { label = "Metodos delegados de um campo", run = M.delegate_methods },
   }
 
   vim.ui.select(choices, {
@@ -241,6 +373,15 @@ function M.setup()
   })
   vim.api.nvim_create_user_command("JavaGenerateEqualsHashCode", M.equals_hashcode, {
     desc = "Gerar equals e hashCode",
+  })
+  vim.api.nvim_create_user_command("JavaGenerateToString", M.to_string, {
+    desc = "Gerar toString",
+  })
+  vim.api.nvim_create_user_command("JavaOverrideMethods", M.override_methods, {
+    desc = "Sobrescrever ou implementar metodos da superclasse/interfaces",
+  })
+  vim.api.nvim_create_user_command("JavaGenerateDelegateMethods", M.delegate_methods, {
+    desc = "Gerar metodos que delegam para um campo",
   })
   vim.api.nvim_create_user_command("JavaGenerate", M.generate_menu, {
     desc = "Abrir menu de geracao de codigo Java",
