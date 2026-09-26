@@ -246,6 +246,39 @@ local function get_java_client(bufnr)
   })[1]
 end
 
+-- Erros de configuracao que impedem o jdtls de resolver os tipos do projeto.
+-- Sem os tipos resolvidos, ele deixa de oferecer as acoes que dependem deles
+-- (construtor, equals/hashCode), e o gerador so veria "nenhuma opcao".
+local build_problems = {
+  "is no longer supported",
+  "There are no JREs installed in the workspace",
+}
+
+local function find_build_problem(client)
+  local namespace = vim.lsp.diagnostic.get_namespace(client.id)
+  for _, diagnostic in ipairs(vim.diagnostic.get(nil, { namespace = namespace })) do
+    for _, pattern in ipairs(build_problems) do
+      if diagnostic.message:find(pattern, 1, true) then
+        return diagnostic.message
+      end
+    end
+  end
+end
+
+local function notify_missing_action(generator, client)
+  local problem = find_build_problem(client)
+  if problem then
+    notify(
+      "Nenhuma opcao para gerar " .. generator.label .. ": o projeto nao compila no JDTLS.\n"
+        .. problem .. "\n"
+        .. "Atualize a versao do Java no pom.xml/build.gradle (ex.: maven.compiler.release 21).",
+      vim.log.levels.WARN
+    )
+    return
+  end
+  notify("Nenhuma opcao para gerar " .. generator.label .. " neste ponto da classe", vim.log.levels.WARN)
+end
+
 local function apply_action(action, client, bufnr, params)
   if not action then
     notify("O JDTLS nao retornou uma acao valida", vim.log.levels.ERROR)
@@ -311,7 +344,7 @@ local function run(generator)
     end
 
     if not selected then
-      notify("Nenhuma opcao para gerar " .. generator.label .. " neste ponto da classe", vim.log.levels.WARN)
+      notify_missing_action(generator, client)
       return
     end
 
