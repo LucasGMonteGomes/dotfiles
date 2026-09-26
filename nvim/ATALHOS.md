@@ -55,7 +55,7 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+G` | Abrir o menu de geracao: construtor, getters/setters, `equals`/`hashCode`, `toString`, sobrescrever/implementar metodos ou metodos delegados |
+| `Ctrl+G` | Abrir o menu de geracao: construtor, getters e setters (ou so getters/setters), `equals`/`hashCode`, `toString`, sobrescrever/implementar metodos ou metodos delegados |
 | `Ctrl+L` | Abrir acoes de codigo do Java |
 | `Ctrl+Alt+L` | Organizar imports e formatar o arquivo |
 | `F2` | Renomear simbolo |
@@ -78,9 +78,20 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `Ctrl+Alt+D` | No `pom.xml`, abrir buscador de dependencias Maven |
 | `Ctrl+Alt+I` | Abrir o Spring Initializr |
 
-Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
+Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateGetters`, `:JavaGenerateSetters`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
 
-Ao escolher campos ou metodos, digite os numeros (`1`, `1,3` ou `1-3`). Enter vazio aceita a sugestao do Java (itens com `*`, como so os campos no `toString`) ou todos os itens quando nao ha sugestao; nos metodos a sobrescrever, Enter vazio cancela. `0` escolhe nenhum item (no construtor, gera o construtor sem parametros) e `Esc` cancela sem gerar nada. Listas maiores que a tela abrem num seletor: `Tab` marca varios itens, `Enter` confirma (sem marcas, vale o item sob o cursor) e `Esc` cancela.
+Toda geracao abre um seletor para escolher os atributos (ou metodos) usados:
+
+| Tecla no seletor | Acao |
+|---|---|
+| `Tab` | Marcar/desmarcar o item sob o cursor e ir ao proximo |
+| `Seta cima/baixo` | Mover entre os itens |
+| digitar | Filtrar a lista (ex.: `tele` mostra `telefone`) |
+| `Ctrl+A` | Marcar ou desmarcar todos |
+| `Enter` | Gerar com os itens marcados (`[x]`) |
+| `Esc` | Cancelar sem gerar nada |
+
+Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`hashCode`); desmarque o que nao quiser. Nos metodos a sobrescrever e a delegar, nada vem marcado. Enter sem nenhum item marcado gera o construtor sem parametros; nas demais opcoes, nada e gerado.
 
 ## Spring Boot
 
