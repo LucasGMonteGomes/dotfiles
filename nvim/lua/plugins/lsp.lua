@@ -119,6 +119,12 @@ return {
                 return vim.fs.root(path, ".git") or vim.fs.dirname(path)
             end
 
+            -- Argumentos extras da JVM do jdtls, como no lspconfig:
+            -- JDTLS_JVM_ARGS="-Xmx4g -Dfoo=bar".
+            local function jdtls_jvm_args()
+                return vim.split(vim.env.JDTLS_JVM_ARGS or "", "%s+", { trimempty = true })
+            end
+
             local jdtls = require("jdtls")
             local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
             java_extended_capabilities.resolveAdditionalTextEditsSupport = true
@@ -130,6 +136,29 @@ return {
                 init_options = {
                     extendedClientCapabilities = java_extended_capabilities,
                 },
+                cmd = function(dispatchers, config)
+                    -- O lspconfig nomeia o workspace so pelo nome da pasta; dois
+                    -- projetos `demo` dividiriam o mesmo indice. O hash do caminho
+                    -- completo separa os dois.
+                    local root = config.root_dir or vim.fn.getcwd()
+                    local data_dir = vim.fs.joinpath(
+                        vim.fn.stdpath("cache"),
+                        "jdtls",
+                        "workspace",
+                        vim.fs.basename(root) .. "-" .. vim.fn.sha256(root):sub(1, 8)
+                    )
+
+                    local command = { "jdtls", "-data", data_dir }
+                    for _, argument in ipairs(jdtls_jvm_args()) do
+                        table.insert(command, "--jvm-arg=" .. argument)
+                    end
+
+                    return vim.lsp.rpc.start(command, dispatchers, {
+                        cwd = config.cmd_cwd,
+                        env = config.cmd_env,
+                        detached = config.detached,
+                    })
+                end,
                 root_dir = function(bufnr, on_dir)
                     local name = vim.api.nvim_buf_get_name(bufnr)
                     if vim.startswith(name, "jdt://") then
