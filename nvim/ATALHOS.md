@@ -95,6 +95,17 @@ Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`
 
 Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
 
+### Refatoracao (Java)
+
+| Atalho | Acao |
+|---|---|
+| `Espaco r v` | Extrair a expressao sob o cursor (ou a selecao) para uma variavel |
+| `Espaco r V` | Extrair variavel substituindo todas as ocorrencias da expressao |
+| `Espaco r c` | Extrair constante (`private static final`) |
+| `Espaco r m` | Extrair metodo; no modo visual, das linhas selecionadas |
+
+Depois da extracao, o campo de renomear abre com o nome sugerido pelo jdtls: digite o nome ou pressione `Esc` para manter a sugestao.
+
 ## Spring Boot
 
 Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.
