@@ -79,12 +79,12 @@ local function register_preview(source, preview)
   -- palavras marcadas nem recebe o corretor ortografico.
   configure_preview_windows(preview)
 
-  vim.keymap.set("n", "<C-m>i", M.cycle_preview, {
+  vim.keymap.set("n", "<leader>mi", M.cycle_preview, {
     buffer = preview,
     silent = true,
     desc = "Markdown: alternar preview interno",
   })
-  vim.keymap.set("n", "<C-m>e", M.edit_only, {
+  vim.keymap.set("n", "<leader>me", M.edit_only, {
     buffer = preview,
     silent = true,
     desc = "Markdown: voltar para edicao",
@@ -233,22 +233,23 @@ local function configure_buffer(source)
 
   -- O preview HTML e o padrao: ele corresponde ao modelo de documento do
   -- VS Code. O terminal nao consegue representar tamanhos de fonte distintos.
-  vim.keymap.set("n", "<C-m>p", "<cmd>MarkdownPreviewToggle<cr>", {
+  -- Os atalhos usam <leader>m: Ctrl+M e o mesmo codigo que Enter no terminal.
+  vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", {
     buffer = source,
     silent = true,
     desc = "Markdown: alternar preview HTML",
   })
-  vim.keymap.set("n", "<C-m>i", M.cycle_preview, {
+  vim.keymap.set("n", "<leader>mi", M.cycle_preview, {
     buffer = source,
     silent = true,
     desc = "Markdown: alternar preview interno",
   })
-  vim.keymap.set("n", "<C-m>e", M.edit_only, {
+  vim.keymap.set("n", "<leader>me", M.edit_only, {
     buffer = source,
     silent = true,
     desc = "Markdown: voltar para edicao",
   })
-  vim.keymap.set("n", "<C-m>b", "<cmd>MarkdownPreview<cr>", {
+  vim.keymap.set("n", "<leader>mb", "<cmd>MarkdownPreview<cr>", {
     buffer = source,
     silent = true,
     desc = "Markdown: abrir preview HTML no navegador",

@@ -1,6 +1,6 @@
 # Atalhos do seu Neovim
 
-Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
+Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; `Espaco` e a tecla lider (`<leader>`); letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
 
 ## Modos e edicao
 
@@ -101,10 +101,10 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+M`, depois `e` | Voltar diretamente para o arquivo Markdown editavel |
-| `Ctrl+M`, depois `p` | Alternar preview HTML no navegador, com estilo de documento do VS Code |
-| `Ctrl+M`, depois `i` | Alternar preview interno rapido no painel do Nvim |
-| `Ctrl+M`, depois `b` | Abrir o preview HTML no navegador |
+| `Espaco m`, depois `e` | Voltar diretamente para o arquivo Markdown editavel |
+| `Espaco m`, depois `p` | Alternar preview HTML no navegador, com estilo de documento do VS Code |
+| `Espaco m`, depois `i` | Alternar preview interno rapido no painel do Nvim |
+| `Espaco m`, depois `b` | Abrir o preview HTML no navegador |
 | `]s` / `[s` | Ir para a proxima/anterior palavra marcada pelo corretor |
 | `z=` | Mostrar sugestoes para a palavra sob o cursor |
 | `zg` | Adicionar a palavra sob o cursor ao dicionario pessoal |
