@@ -77,6 +77,25 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors` e `:JavaGenerateEqualsHashCode`.
 
+## Depuracao (Java)
+
+As teclas seguem o IntelliJ. No GNOME Terminal, F10 abre o menu e F11 alterna a tela cheia, por isso o esquema do VS Code nao e usado.
+
+| Atalho | Acao |
+|---|---|
+| `F9` | Iniciar a depuracao (escolhe a classe `main`) ou continuar ate o proximo breakpoint |
+| `Ctrl+F8` | Marcar/desmarcar breakpoint na linha |
+| `Espaco d b` | Breakpoint condicional (ex.: `i == 2`) |
+| `F8` | Executar a linha (step over) |
+| `F7` | Entrar no metodo (step into) |
+| `Shift+F8` | Sair do metodo (step out) |
+| `Ctrl+F2` | Encerrar a sessao |
+| `Espaco d l` | Repetir a ultima sessao |
+| `Espaco d u` | Abrir/fechar o painel (variaveis, watches, breakpoints, threads, console) |
+| `Espaco d h` | Inspecionar o valor sob o cursor |
+
+O painel abre ao iniciar e fecha ao terminar. Nele, `S`/`W`/`B`/`T`/`E`/`R`/`C` trocam de aba e `g?` mostra a ajuda. Salvar um arquivo durante a depuracao aplica a alteracao na JVM em execucao (hot code replace).
+
 ## HTTP, Git e paineis
 
 | Atalho | Acao |

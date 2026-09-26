@@ -160,6 +160,28 @@ return {
                 return arguments
             end
 
+            -- Extensoes carregadas dentro do jdtls: java-debug (depurador) e
+            -- java-test (JUnit/TestNG), ambas instaladas pelo Mason acima.
+            local function java_bundles()
+                local packages = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "packages")
+                local bundles = vim.fn.glob(
+                    packages .. "/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
+                    true,
+                    true
+                )
+                -- O runner e o agente do JaCoCo rodam na JVM do teste, nao no jdtls.
+                local excluded = {
+                    ["com.microsoft.java.test.runner-jar-with-dependencies.jar"] = true,
+                    ["jacocoagent.jar"] = true,
+                }
+                for _, jar in ipairs(vim.fn.glob(packages .. "/java-test/extension/server/*.jar", true, true)) do
+                    if not excluded[vim.fs.basename(jar)] then
+                        table.insert(bundles, jar)
+                    end
+                end
+                return bundles
+            end
+
             local jdtls = require("jdtls")
             local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
             java_extended_capabilities.resolveAdditionalTextEditsSupport = true
@@ -170,6 +192,7 @@ return {
                 commands = jdtls.commands,
                 init_options = {
                     extendedClientCapabilities = java_extended_capabilities,
+                    bundles = java_bundles(),
                 },
                 cmd = function(dispatchers, config)
                     -- O lspconfig nomeia o workspace so pelo nome da pasta; dois
