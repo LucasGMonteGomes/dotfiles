@@ -1,6 +1,8 @@
 -- Integracao com Spring Initializr.
 local M = {}
 
+local project = require("features.java.project")
+
 local endpoint = "https://start.spring.io/starter.zip"
 
 local function notify(message, level)
@@ -185,28 +187,21 @@ end
 
 -- Execucao da aplicacao (spring-boot:run / bootRun) num terminal proprio por
 -- projeto, para que os logs continuem visiveis depois de esconde-lo.
-local build_files = { "pom.xml", "build.gradle", "build.gradle.kts" }
 local applications = {}
 
 -- Modulo do arquivo atual; fora de um arquivo (Explorer, terminal), usa a
 -- pasta de trabalho.
 local function project_root()
-  local path = vim.bo.buftype == "" and vim.api.nvim_buf_get_name(0) or ""
-  return vim.fs.root(path ~= "" and path or vim.fn.getcwd(), build_files)
+  return project.module_root(project.current_path())
 end
 
--- O wrapper (mvnw/gradlew) pode estar num diretorio pai, em projetos
--- multi-modulo; ele encontra a raiz do build sozinho.
 local function run_command(root)
-  local maven = vim.uv.fs_stat(vim.fs.joinpath(root, "pom.xml")) ~= nil
-  local wrapper = maven and "mvnw" or "gradlew"
-  local wrapper_dir = vim.fs.root(root, wrapper)
-  local executable = wrapper_dir and vim.fs.joinpath(wrapper_dir, wrapper) or (maven and "mvn" or "gradle")
-  if not wrapper_dir and vim.fn.executable(executable) == 0 then
-    return nil, executable .. " nao foi encontrado no PATH e o projeto nao tem " .. wrapper
+  local command, maven = project.build_tool(root)
+  if not command then
+    return nil, maven
   end
-  local task = maven and "spring-boot:run" or "bootRun"
-  return vim.fn.shellescape(executable) .. " " .. task
+  table.insert(command, maven and "spring-boot:run" or "bootRun")
+  return table.concat(vim.tbl_map(vim.fn.shellescape, command), " ")
 end
 
 function M.run()
