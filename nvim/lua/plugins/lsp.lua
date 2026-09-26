@@ -286,9 +286,16 @@ return {
                     -- O perfil padrao do Eclipse indenta com TAB. Sem isto, o codigo
                     -- gerado (construtores, toString, code actions) entra com TAB
                     -- em arquivos indentados com 4 espacos (config/options.lua).
+                    -- O perfil versionado ajusta o padrao do Eclipse ao estilo do
+                    -- IntelliJ: comentarios nao quebram em 80 colunas nem ganham
+                    -- linhas com espaco no fim, e quebras feitas a mao ficam.
                     format = {
                         insertSpaces = true,
                         tabSize = 4,
+                        settings = {
+                            url = vim.fs.joinpath(vim.fn.stdpath("config"), "formatter", "eclipse-java-style.xml"),
+                            profile = "dotfiles",
+                        },
                     },
                     -- equals/hashCode com Objects.equals/Objects.hash e instanceof
                     -- no lugar do estilo do Java 6 (`prime * result`), chaves em
