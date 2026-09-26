@@ -1,4 +1,6 @@
 {
+  "SchemaStore.nvim": { "branch": "main", "commit": "01fde7d0be29913dd57ad108139a28ec3efdcd0e" },
+  "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "gitsigns.nvim": { "branch": "main", "commit": "5be654f2232c10ddcad19c1607a67b6b4b78fc29" },
   "kulala.nvim": { "branch": "main", "commit": "dcad056448773ae5b54cadbfdbd188a599cfebd3" },

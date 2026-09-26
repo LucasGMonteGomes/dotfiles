@@ -21,6 +21,7 @@ return {
             "mason-org/mason-lspconfig.nvim",
             "mfussenegger/nvim-jdtls",
             "b0o/SchemaStore.nvim",
+            "saghen/blink.cmp",
         },
         config = function()
             local mason_lspconfig = require("mason-lspconfig")
@@ -37,7 +38,8 @@ return {
                 automatic_enable = false,
             })
 
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            -- O autocomplete e feito pelo blink.cmp (plugins/completion.lua).
+            local capabilities = require("blink.cmp").get_lsp_capabilities()
 
             local java_executable = vim.fn.exepath("java")
             local java_home = vim.env.JAVA_HOME
@@ -358,59 +360,11 @@ return {
                 vim.lsp.buf.format({ bufnr = bufnr, async = false })
             end
 
-            local function enable_java_completion_while_typing(client)
-                local completion = client.server_capabilities.completionProvider
-                if not completion then
-                    return
-                end
-
-                completion.triggerCharacters = completion.triggerCharacters or {}
-
-                local registered = {}
-                for _, character in ipairs(completion.triggerCharacters) do
-                    registered[character] = true
-                end
-
-                local identifier_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
-                for index = 1, #identifier_characters do
-                    local character = identifier_characters:sub(index, index)
-                    if not registered[character] then
-                        table.insert(completion.triggerCharacters, character)
-                        registered[character] = true
-                    end
-                end
-            end
-
             -- Atalhos de teclado quando qualquer LSP conectar ao buffer
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
                     local opts = { buffer = ev.buf, silent = true }
-                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
-
-                    if client and client:supports_method("textDocument/completion") then
-                        if client.name == "jdtls" then
-                            enable_java_completion_while_typing(client)
-                        end
-
-                        vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
-
-                        vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get, {
-                            buffer = ev.buf,
-                            silent = true,
-                            desc = "LSP: abrir autocomplete",
-                        })
-                        vim.keymap.set("i", "<CR>", function()
-                            if vim.fn.pumvisible() == 1 then
-                                return "<C-y>"
-                            end
-                            return _G.MiniPairs and MiniPairs.cr() or "<CR>"
-                        end, {
-                            buffer = ev.buf,
-                            expr = true,
-                            desc = "Aceitar autocomplete ou criar nova linha",
-                        })
-                    end
 
                     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
                     vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
