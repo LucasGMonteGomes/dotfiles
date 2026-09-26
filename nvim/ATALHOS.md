@@ -147,6 +147,20 @@ O build roda em segundo plano, na raiz do projeto (o pom pai em projetos multi-m
 | `Espaco b o` | Ver a saida completa do ultimo build |
 | `:JavaBuild clean verify` | Rodar o Maven/Gradle com os argumentos informados (sem argumentos, abre o menu) |
 
+## Cobertura de testes (JaCoCo)
+
+Roda os testes com o JaCoCo sem alterar o `pom.xml`/`build.gradle` e marca a margem: verde para linha coberta, amarelo para parcial (um `if` testado so para um dos lados, por exemplo) e vermelho para linha que nenhum teste executou. Enquanto a cobertura esta visivel, a margem ganha uma segunda coluna para os sinais do Git continuarem aparecendo.
+
+| Atalho | Acao |
+|---|---|
+| `Espaco c r` | Rodar os testes com cobertura e mostrar o resultado (testes que falham nao impedem o relatorio) |
+| `Espaco c l` | Carregar um relatorio ja gerado (por um `mvn verify` do projeto, por exemplo) |
+| `Espaco c t` | Mostrar/esconder a cobertura |
+| `Espaco c s` | Resumo por arquivo, com a porcentagem de cada um |
+| `]u` / `[u` | Proxima / anterior linha sem cobertura |
+
+Em projetos multi-modulo, a cobertura mostrada e a do modulo do arquivo atual.
+
 ## Spring Boot
 
 Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.

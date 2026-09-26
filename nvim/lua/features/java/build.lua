@@ -161,7 +161,8 @@ local function show_quickfix()
 end
 
 -- `args`: argumentos do Maven/Gradle; `label` aparece nas notificacoes.
-function M.run(args, label)
+-- `on_done(ok, root, maven)` e chamado ao terminar (cobertura, por exemplo).
+function M.run(args, label, on_done)
   local root = project.root(project.current_path())
   local has_build = project.module_root(root)
     or vim.uv.fs_stat(vim.fs.joinpath(root, "settings.gradle"))
@@ -185,7 +186,7 @@ function M.run(args, label)
   vim.list_extend(command, args)
 
   label = label or table.concat(args, " ")
-  last = { args = args, label = label }
+  last = { args = args, label = label, on_done = on_done }
   local title = vim.fs.basename(root) .. ": " .. label
   local id = "java-build-" .. root
   local started = vim.uv.hrtime()
@@ -220,6 +221,9 @@ function M.run(args, label)
       else
         local warnings = #items > 0 and (" com " .. #items .. " avisos na quickfix") or ""
         notify(title .. " concluido em " .. seconds .. warnings, vim.log.levels.INFO, { id = id })
+      end
+      if on_done then
+        on_done(not failed, root, maven)
       end
     end)
   end)
@@ -275,7 +279,7 @@ function M.rerun()
     notify("Nenhum build foi executado nesta sessao", vim.log.levels.WARN)
     return
   end
-  M.run(last.args, last.label)
+  M.run(last.args, last.label, last.on_done)
 end
 
 function M.show_output()
