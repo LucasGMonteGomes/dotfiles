@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Perfil do formatador Java usado pelo jdtls (plugins/lsp.lua). Parte do
+  padrao do Eclipse e muda so o que difere do IntelliJ; as opcoes omitidas
+  continuam com o valor padrao.
+-->
+<profiles version="23">
+    <profile kind="CodeFormatterProfile" name="dotfiles" version="23">
+        <!-- 4 espacos, como o resto da configuracao (config/options.lua). -->
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="4"/>
+        <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="4"/>
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="120"/>
+        <!-- Comentarios usam o mesmo limite do codigo; o padrao quebra em 80. -->
+        <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="120"/>
+        <setting id="org.eclipse.jdt.core.formatter.comment.count_line_length_from_starting_position" value="true"/>
+        <!-- Comentarios // ficam como foram escritos, como no IntelliJ. -->
+        <setting id="org.eclipse.jdt.core.formatter.comment.format_line_comments" value="false"/>
+        <!-- Nao insere a linha " * " (com espaco no fim) antes de @param/@return. -->
+        <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="do not insert"/>
+        <!-- Quebras de linha feitas a mao (cadeias de stream, builders) sao mantidas. -->
+        <setting id="org.eclipse.jdt.core.formatter.join_wrapped_lines" value="false"/>
+    </profile>
+</profiles>

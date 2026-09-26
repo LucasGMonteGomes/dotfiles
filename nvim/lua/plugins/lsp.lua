@@ -286,9 +286,48 @@ return {
                     -- O perfil padrao do Eclipse indenta com TAB. Sem isto, o codigo
                     -- gerado (construtores, toString, code actions) entra com TAB
                     -- em arquivos indentados com 4 espacos (config/options.lua).
+                    -- O perfil versionado ajusta o padrao do Eclipse ao estilo do
+                    -- IntelliJ: comentarios nao quebram em 80 colunas nem ganham
+                    -- linhas com espaco no fim, e quebras feitas a mao ficam.
                     format = {
                         insertSpaces = true,
                         tabSize = 4,
+                        settings = {
+                            url = vim.fs.joinpath(vim.fn.stdpath("config"), "formatter", "eclipse-java-style.xml"),
+                            profile = "dotfiles",
+                        },
+                    },
+                    -- equals/hashCode com Objects.equals/Objects.hash e instanceof
+                    -- no lugar do estilo do Java 6 (`prime * result`), chaves em
+                    -- todo if gerado e sem comentarios "TODO Auto-generated".
+                    codeGeneration = {
+                        hashCodeEquals = {
+                            useJava7Objects = true,
+                            useInstanceof = true,
+                        },
+                        useBlocks = true,
+                        generateComments = false,
+                    },
+                    -- Metodos estaticos sugeridos no autocomplete com o import
+                    -- estatico (`assertThat`, `when`, `get("/api")`). A lista
+                    -- substitui a padrao do jdtls, por isso repete a do JUnit.
+                    completion = {
+                        favoriteStaticMembers = {
+                            "org.junit.Assert.*",
+                            "org.junit.Assume.*",
+                            "org.junit.jupiter.api.Assertions.*",
+                            "org.junit.jupiter.api.Assumptions.*",
+                            "org.junit.jupiter.api.DynamicContainer.*",
+                            "org.junit.jupiter.api.DynamicTest.*",
+                            "org.mockito.Mockito.*",
+                            "org.mockito.ArgumentMatchers.*",
+                            "org.mockito.BDDMockito.*",
+                            "org.assertj.core.api.Assertions.*",
+                            "org.hamcrest.Matchers.*",
+                            "org.hamcrest.MatcherAssert.*",
+                            "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
+                            "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
+                        },
                     },
                 },
             }
