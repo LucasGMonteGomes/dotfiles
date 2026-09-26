@@ -308,6 +308,18 @@ function M.setup(capabilities)
           "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
           "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
         },
+        -- Tipos internos do JDK fora do autocomplete e da escolha de import
+        -- (`List` oferecia java.awt.List; `Logger`, com.sun.org.slf4j). E a
+        -- lista padrao da extensao Java do VS Code, que o jdtls nao aplica
+        -- sozinho.
+        filteredTypes = {
+          "java.awt.*",
+          "com.sun.*",
+          "sun.*",
+          "jdk.*",
+          "org.graalvm.*",
+          "io.micrometer.shaded.*",
+        },
       },
     },
   }
