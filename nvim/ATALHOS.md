@@ -97,6 +97,8 @@ Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`
 
 Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
 
+A statusline mostra o estado do jdtls no arquivo Java atual: o percentual da importacao do projeto enquanto ele inicia, tarefas que passam de 1 segundo (compilacao do projeto, por exemplo), `build com problemas` quando o `pom.xml`/`build.gradle` nao pode ser importado por completo e `erro` quando o servidor falha. Pronto e sem tarefas, fica so o icone do Java em verde.
+
 No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arquivo (dentro de `<dependency>`: `scope`, `optional`, `exclusions`...) e tags erradas ficam marcadas. `Ctrl+Alt+L` formata o XML mantendo a indentacao que o arquivo ja usa (TAB ou espacos).
 
 ### Refatoracao (Java)
@@ -109,6 +111,41 @@ No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arq
 | `Espaco r m` | Extrair metodo; no modo visual, das linhas selecionadas |
 
 Depois da extracao, o campo de renomear abre com o nome sugerido pelo jdtls: digite o nome ou pressione `Esc` para manter a sugestao.
+
+### Snippets (Java)
+
+Digite o prefixo e escolha o item no autocomplete; `Tab` avanca entre os campos. O jdtls ja oferece `sysout`, `foreach`, `fori`, `try_catch`, `ifnull`, `switch` e outros; estes cobrem testes, Spring e logging:
+
+| Prefixo | Gera |
+|---|---|
+| `test` | Metodo `@Test` com as secoes given/when/then |
+| `ptest` | `@ParameterizedTest` com `@CsvSource` |
+| `before` | `@BeforeEach void setUp()` |
+| `athrows` | `assertThrows` guardando a excecao numa variavel |
+| `mockito` | Classe de teste com `@ExtendWith(MockitoExtension.class)`, `@Mock` e `@InjectMocks` |
+| `mock` | Campo `@Mock` |
+| `springtest` / `webmvctest` | Classe `@SpringBootTest` / `@WebMvcTest` com `MockMvc` |
+| `mvcget` / `mvcpost` | Requisicao no `MockMvc` com a verificacao do status |
+| `getmap` / `postmap` / `putmap` / `deletemap` | Endpoint com `ResponseEntity`, `@PathVariable` e `@RequestBody @Valid` |
+| `valprop` | Campo com `@Value("${propriedade}")` |
+| `jpaid` | `@Id` com `@GeneratedValue(strategy = GenerationType.IDENTITY)` |
+| `logger` | `Logger` do SLF4J da classe atual |
+| `stream` | `lista.stream().filter(...).map(...).toList()` |
+
+Snippets nao adicionam imports: depois de usar um, `Ctrl+Alt+L` importa os tipos. Para `when`, `assertThat` e outros metodos estaticos, prefira o autocomplete normal, que ja adiciona o import estatico.
+
+## Build (Maven/Gradle)
+
+O build roda em segundo plano, na raiz do projeto (o pom pai em projetos multi-modulo), com o `mvnw`/`gradlew` do projeto quando existir. Ao falhar, os erros de compilacao e os testes que falharam vao para a quickfix, aberta no Trouble: `Enter` num item leva ao arquivo e a linha.
+
+| Atalho ou comando | Acao |
+|---|---|
+| `Espaco b c` | Compilar |
+| `Espaco b t` | Rodar todos os testes |
+| `Espaco b b` | Escolher a tarefa: compilar, testar, empacotar, `verify`, `install`, `clean install`, `clean` ou outro comando |
+| `Espaco b l` | Repetir o ultimo build |
+| `Espaco b o` | Ver a saida completa do ultimo build |
+| `:JavaBuild clean verify` | Rodar o Maven/Gradle com os argumentos informados (sem argumentos, abre o menu) |
 
 ## Spring Boot
 

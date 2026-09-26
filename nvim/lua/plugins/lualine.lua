@@ -61,7 +61,20 @@ return {
             path = 1, -- Caminho relativo do arquivo
           },
         },
-        lualine_x = { "diagnostics", "filetype" },
+        lualine_x = {
+          -- Importacao e tarefas longas do jdtls (features/java/status.lua).
+          {
+            function()
+              -- `%` e codigo da statusline: "27%" sem escape quebra o desenho.
+              return (require("features.java.status").text():gsub("%%", "%%%%"))
+            end,
+            color = function()
+              return require("features.java.status").color()
+            end,
+          },
+          "diagnostics",
+          "filetype",
+        },
         lualine_y = {},
         lualine_z = { "location" },
       },

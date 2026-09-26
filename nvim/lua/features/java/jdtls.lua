@@ -3,6 +3,8 @@
 -- testes e Spring Boot. Ativado em plugins/lsp.lua.
 local M = {}
 
+local project = require("features.java.project")
+
 -- Nome do ambiente de execucao (JavaSE-21, JavaSE-1.8...) lido do
 -- arquivo `release` do JDK; nil quando o diretorio nao e um JDK.
 local function java_runtime_name(home)
@@ -41,39 +43,6 @@ local function java_runtimes(default_home)
     end
   end
   return runtimes
-end
-
-local build_files = { "pom.xml", "build.gradle", "build.gradle.kts", "build.xml" }
-
-local function has_build_file(directory)
-  for _, file in ipairs(build_files) do
-    if (vim.uv or vim.loop).fs_stat(vim.fs.joinpath(directory, file)) then
-      return true
-    end
-  end
-  return false
-end
-
--- Um projeto multi-modulo deve ter um unico servidor na raiz. O
--- wrapper/settings define essa raiz; sem eles, sobe enquanto os
--- diretorios pais tambem tiverem arquivo de build (pom pai).
-local function java_root(path)
-  local root = vim.fs.root(path, { "mvnw", "gradlew", "settings.gradle", "settings.gradle.kts" })
-  if root then
-    return root
-  end
-
-  root = vim.fs.root(path, build_files)
-  if root then
-    local parent = vim.fs.dirname(root)
-    while parent ~= root and has_build_file(parent) do
-      root = parent
-      parent = vim.fs.dirname(root)
-    end
-    return root
-  end
-
-  return vim.fs.root(path, ".git") or vim.fs.dirname(path)
 end
 
 -- Indice do projeto (-data). O lspconfig nomeia o workspace so pelo
@@ -245,10 +214,12 @@ function M.setup(capabilities)
       })
     end,
     handlers = {
-      -- Dicas e lentes pedidas antes do fim da importacao do projeto
-      -- voltam vazias e nao sao refeitas. Quando o jdtls avisa que
-      -- esta pronto, os buffers anexados pedem de novo.
+      -- Andamento da importacao, mostrado na statusline. Dicas e lentes
+      -- pedidas antes do fim da importacao do projeto voltam vazias e nao
+      -- sao refeitas; quando o jdtls avisa que esta pronto, os buffers
+      -- anexados pedem de novo.
       ["language/status"] = function(_, result, ctx)
+        require("features.java.status").on_language_status(result, ctx.client_id)
         if not result or result.type ~= "ServiceReady" then
           return
         end
@@ -274,7 +245,7 @@ function M.setup(capabilities)
         end
         return
       end
-      on_dir(name ~= "" and java_root(name) or vim.fn.getcwd())
+      on_dir(name ~= "" and project.root(name) or vim.fn.getcwd())
     end,
   }
 
@@ -336,6 +307,18 @@ function M.setup(capabilities)
           "org.hamcrest.MatcherAssert.*",
           "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
           "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
+        },
+        -- Tipos internos do JDK fora do autocomplete e da escolha de import
+        -- (`List` oferecia java.awt.List; `Logger`, com.sun.org.slf4j). E a
+        -- lista padrao da extensao Java do VS Code, que o jdtls nao aplica
+        -- sozinho.
+        filteredTypes = {
+          "java.awt.*",
+          "com.sun.*",
+          "sun.*",
+          "jdk.*",
+          "org.graalvm.*",
+          "io.micrometer.shaded.*",
         },
       },
     },
