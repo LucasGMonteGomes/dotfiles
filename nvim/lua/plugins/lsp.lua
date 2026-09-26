@@ -46,6 +46,46 @@ return {
                 java_home = vim.fs.dirname(vim.fs.dirname(real_java))
             end
 
+            -- Nome do ambiente de execucao (JavaSE-21, JavaSE-1.8...) lido do
+            -- arquivo `release` do JDK; nil quando o diretorio nao e um JDK.
+            local function java_runtime_name(home)
+                local file = io.open(vim.fs.joinpath(home, "release"), "r")
+                if not file then
+                    return nil
+                end
+                local content = file:read("*a")
+                file:close()
+
+                local version = content:match('JAVA_VERSION="([^"]+)"')
+                if not version then
+                    return nil
+                end
+                local legacy = version:match("^1%.(%d+)")
+                return legacy and ("JavaSE-1." .. legacy) or ("JavaSE-" .. version:match("^%d+"))
+            end
+
+            -- Registra todos os JDKs instalados para que cada projeto compile
+            -- contra a versao declarada no pom.xml/build.gradle. O JDK de
+            -- JAVA_HOME (ou do `java` no PATH) e o padrao.
+            local function java_runtimes(default_home)
+                local runtimes = {}
+                local by_name = {}
+                local homes = { default_home }
+                for _, pattern in ipairs({ "/usr/lib/jvm/*", "~/.sdkman/candidates/java/*" }) do
+                    vim.list_extend(homes, vim.fn.glob(pattern, false, true))
+                end
+
+                for _, home in ipairs(homes) do
+                    local real = (vim.uv or vim.loop).fs_realpath(vim.fn.expand(home))
+                    local name = real and java_runtime_name(real)
+                    if name and not by_name[name] then
+                        by_name[name] = true
+                        table.insert(runtimes, { name = name, path = real, default = #runtimes == 0 })
+                    end
+                end
+                return runtimes
+            end
+
             local jdtls = require("jdtls")
             local java_extended_capabilities = vim.deepcopy(jdtls.extendedClientCapabilities)
             java_extended_capabilities.resolveAdditionalTextEditsSupport = true
@@ -73,13 +113,7 @@ return {
                     java = {
                         configuration = {
                             updateBuildConfiguration = "automatic",
-                            runtimes = {
-                                {
-                                    name = "JavaSE-21",
-                                    path = java_home,
-                                    default = true,
-                                },
-                            },
+                            runtimes = java_runtimes(java_home),
                         },
                     },
                 }
