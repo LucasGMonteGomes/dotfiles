@@ -214,10 +214,12 @@ function M.setup(capabilities)
       })
     end,
     handlers = {
-      -- Dicas e lentes pedidas antes do fim da importacao do projeto
-      -- voltam vazias e nao sao refeitas. Quando o jdtls avisa que
-      -- esta pronto, os buffers anexados pedem de novo.
+      -- Andamento da importacao, mostrado na statusline. Dicas e lentes
+      -- pedidas antes do fim da importacao do projeto voltam vazias e nao
+      -- sao refeitas; quando o jdtls avisa que esta pronto, os buffers
+      -- anexados pedem de novo.
       ["language/status"] = function(_, result, ctx)
+        require("features.java.status").on_language_status(result, ctx.client_id)
         if not result or result.type ~= "ServiceReady" then
           return
         end

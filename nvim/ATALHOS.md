@@ -97,6 +97,8 @@ Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`
 
 Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
 
+A statusline mostra o estado do jdtls no arquivo Java atual: o percentual da importacao do projeto enquanto ele inicia, tarefas que passam de 1 segundo (compilacao do projeto, por exemplo), `build com problemas` quando o `pom.xml`/`build.gradle` nao pode ser importado por completo e `erro` quando o servidor falha. Pronto e sem tarefas, fica so o icone do Java em verde.
+
 No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arquivo (dentro de `<dependency>`: `scope`, `optional`, `exclusions`...) e tags erradas ficam marcadas. `Ctrl+Alt+L` formata o XML mantendo a indentacao que o arquivo ja usa (TAB ou espacos).
 
 ### Refatoracao (Java)
