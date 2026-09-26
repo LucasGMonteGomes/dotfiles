@@ -290,6 +290,17 @@ return {
                         insertSpaces = true,
                         tabSize = 4,
                     },
+                    -- equals/hashCode com Objects.equals/Objects.hash e instanceof
+                    -- no lugar do estilo do Java 6 (`prime * result`), chaves em
+                    -- todo if gerado e sem comentarios "TODO Auto-generated".
+                    codeGeneration = {
+                        hashCodeEquals = {
+                            useJava7Objects = true,
+                            useInstanceof = true,
+                        },
+                        useBlocks = true,
+                        generateComments = false,
+                    },
                 },
             }
 
