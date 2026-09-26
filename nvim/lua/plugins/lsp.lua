@@ -366,11 +366,20 @@ return {
                 callback = function(ev)
                     local opts = { buffer = ev.buf, silent = true }
 
-                    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-                    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-                    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-                    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+                    -- K (hover), grr (referencias), gri (implementacao), grt (tipo),
+                    -- grn (rename), gra (acoes) e gO (simbolos) sao padroes do Neovim.
+                    -- Mapear `gr` ou `gi` aqui atrasaria esses atalhos e apagaria o
+                    -- `gi` nativo (voltar a inserir onde parou).
+                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
+                        buffer = ev.buf,
+                        silent = true,
+                        desc = "LSP: ir para definicao",
+                    })
+                    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, {
+                        buffer = ev.buf,
+                        silent = true,
+                        desc = "LSP: ir para declaracao",
+                    })
                     vim.keymap.set("n", "<C-l>", vim.lsp.buf.code_action, {
                         buffer = ev.buf,
                         silent = true,

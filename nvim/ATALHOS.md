@@ -58,7 +58,10 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `Ctrl+L` | Abrir acoes de codigo do Java |
 | `Ctrl+Alt+L` | Organizar imports e formatar o arquivo |
 | `F2` | Renomear simbolo |
-| `gd` / `gD` / `gi` / `gr` | Ir para definicao / declaracao / implementacao / referencias |
+| `gd` / `gD` | Ir para definicao / declaracao |
+| `grr` / `gri` / `grt` | Listar referencias / implementacoes / ir para o tipo |
+| `grn` / `gra` | Renomear (igual ao `F2`) / acoes de codigo (igual ao `Ctrl+L`) |
+| `gO` | Listar simbolos do arquivo |
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |
 | `gl` | Mostrar diagnostico da linha |
