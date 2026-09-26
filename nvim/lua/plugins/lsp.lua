@@ -13,13 +13,15 @@ return {
             require("mason").setup()
 
             -- Pacotes que o mason-lspconfig nao gerencia: depurador e testes
-            -- Java, SonarLint e Spring Boot Tools (iniciado pelo spring-boot.nvim).
+            -- Java, SonarLint, Spring Boot Tools (iniciado pelo spring-boot.nvim)
+            -- e o tree-sitter CLI, que compila os parsers do nvim-treesitter.
             -- Sao instalados em segundo plano na primeira vez.
             local tools = {
                 "java-debug-adapter",
                 "java-test",
                 "sonarlint-language-server",
                 "vscode-spring-boot-tools",
+                "tree-sitter-cli",
             }
             local registry = require("mason-registry")
             registry.refresh(function()

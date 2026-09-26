@@ -72,7 +72,9 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `Seta cima/baixo` ou `Ctrl+P`/`Ctrl+N` no autocomplete | Escolher sugestao |
 | `Enter` no autocomplete | Aceitar a sugestao escolhida; sem escolha, apenas quebra a linha |
 | `Tab` / `Shift+Tab` | Pular para o proximo/anterior campo de um snippet |
-| `Ctrl+Espaco` repetidamente | Expandir a selecao estrutural do codigo |
+| `Ctrl+Espaco` no NORMAL, depois repetidamente | Selecionar o trecho de codigo sob o cursor e expandir (ex.: `nome` > `this.nome = nome`) |
+| `Backspace` com selecao | Reduzir a selecao estrutural um nivel |
+| `an` / `in` no VISUAL | Expandir / reduzir a selecao (padrao do Neovim) |
 | `Ctrl+Alt+D` | No `pom.xml`, abrir buscador de dependencias Maven |
 | `Ctrl+Alt+I` | Abrir o Spring Initializr |
 
