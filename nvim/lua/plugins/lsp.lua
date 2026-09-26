@@ -301,6 +301,27 @@ return {
                         useBlocks = true,
                         generateComments = false,
                     },
+                    -- Metodos estaticos sugeridos no autocomplete com o import
+                    -- estatico (`assertThat`, `when`, `get("/api")`). A lista
+                    -- substitui a padrao do jdtls, por isso repete a do JUnit.
+                    completion = {
+                        favoriteStaticMembers = {
+                            "org.junit.Assert.*",
+                            "org.junit.Assume.*",
+                            "org.junit.jupiter.api.Assertions.*",
+                            "org.junit.jupiter.api.Assumptions.*",
+                            "org.junit.jupiter.api.DynamicContainer.*",
+                            "org.junit.jupiter.api.DynamicTest.*",
+                            "org.mockito.Mockito.*",
+                            "org.mockito.ArgumentMatchers.*",
+                            "org.mockito.BDDMockito.*",
+                            "org.assertj.core.api.Assertions.*",
+                            "org.hamcrest.Matchers.*",
+                            "org.hamcrest.MatcherAssert.*",
+                            "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
+                            "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
+                        },
+                    },
                 },
             }
 
