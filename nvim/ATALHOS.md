@@ -93,6 +93,8 @@ Toda geracao abre um seletor para escolher os atributos (ou metodos) usados:
 
 Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`hashCode`); desmarque o que nao quiser. Nos metodos a sobrescrever e a delegar, nada vem marcado. Enter sem nenhum item marcado gera o construtor sem parametros; nas demais opcoes, nada e gerado.
 
+Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
+
 ## Spring Boot
 
 Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.

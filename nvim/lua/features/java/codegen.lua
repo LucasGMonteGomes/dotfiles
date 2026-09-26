@@ -320,6 +320,16 @@ local function run(generator)
     triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked,
   }
 
+  -- Getters/setters vao direto ao prompt de campos. Pela code action, o jdtls
+  -- so devolve o comando do prompt quando falta acessor em mais de um campo;
+  -- com um unico campo ele devolve o edit pronto, sem o `kind` que diferencia
+  -- "ambos", "so getters" e "so setters".
+  if generator.accessor_kind ~= nil then
+    params.kind = generator.accessor_kind
+    generate_accessors_prompt({ arguments = { params } }, { client_id = client.id, bufnr = bufnr })
+    return
+  end
+
   -- O JDTLS responde a estas requisicoes, mas em algumas versoes nao anuncia
   -- codeActionProvider. Por isso fazemos a requisicao diretamente em vez de
   -- usar vim.lsp.buf.code_action(), que recusaria chamar o servidor.
@@ -329,15 +339,10 @@ local function run(generator)
       return
     end
 
-    -- Filtra so pelo kind: o titulo varia com a classe (com @Getter do
-    -- Lombok, por exemplo, a acao de acessores vira "Generate Setters").
+    -- Filtra so pelo kind: o titulo varia com o jdtls e com a classe.
     local selected
     for _, action in ipairs(actions or {}) do
-      local arguments = type(action.command) == "table" and action.command.arguments
-      local accessor_kind = arguments and type(arguments[1]) == "table" and arguments[1].kind
-      if action.kind == generator.kind
-        and (generator.accessor_kind == nil or accessor_kind == generator.accessor_kind)
-      then
+      if action.kind == generator.kind then
         selected = action
         break
       end
