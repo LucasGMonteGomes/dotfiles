@@ -120,9 +120,19 @@ return {
             end
 
             -- Argumentos extras da JVM do jdtls, como no lspconfig:
-            -- JDTLS_JVM_ARGS="-Xmx4g -Dfoo=bar".
+            -- JDTLS_JVM_ARGS="-Xmx4g -Dfoo=bar". O Lombok distribuido pelo
+            -- pacote jdtls do Mason e carregado como agente para que @Data,
+            -- @Getter, @Builder etc. sejam entendidos pelo servidor.
             local function jdtls_jvm_args()
-                return vim.split(vim.env.JDTLS_JVM_ARGS or "", "%s+", { trimempty = true })
+                local arguments = vim.split(vim.env.JDTLS_JVM_ARGS or "", "%s+", { trimempty = true })
+                local lombok = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "packages", "jdtls", "lombok.jar")
+                local has_agent = vim.iter(arguments):any(function(argument)
+                    return argument:find("lombok", 1, true) ~= nil
+                end)
+                if not has_agent and (vim.uv or vim.loop).fs_stat(lombok) then
+                    table.insert(arguments, "-javaagent:" .. lombok)
+                end
+                return arguments
             end
 
             local jdtls = require("jdtls")
