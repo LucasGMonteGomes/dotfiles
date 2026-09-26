@@ -57,7 +57,7 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `Ctrl+G` | Abrir o menu: construtor, getters/setters ou `equals`/`hashCode` |
 | `Ctrl+L` | Abrir acoes de codigo do Java |
 | `Ctrl+Alt+L` | Organizar imports e formatar o arquivo |
-| `Ctrl+Alt+R` | Renomear simbolo |
+| `F2` | Renomear simbolo |
 | `gd` / `gD` / `gi` / `gr` | Ir para definicao / declaracao / implementacao / referencias |
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |

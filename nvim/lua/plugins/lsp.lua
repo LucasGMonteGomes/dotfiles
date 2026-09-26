@@ -376,7 +376,8 @@ return {
                         silent = true,
                         desc = "LSP: acoes de codigo",
                     })
-                    vim.keymap.set("n", "<C-A-r>", vim.lsp.buf.rename, {
+                    -- F2 como no VS Code/IntelliJ; Ctrl+Alt+R fica com o kulala (.http).
+                    vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, {
                         buffer = ev.buf,
                         silent = true,
                         desc = "LSP: renomear simbolo",
