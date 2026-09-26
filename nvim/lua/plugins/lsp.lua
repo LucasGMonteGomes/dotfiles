@@ -134,6 +134,18 @@ return {
             -- A indentacao da formatacao vem do proprio arquivo (config/options.lua).
             vim.lsp.config("lemminx", {
                 capabilities = capabilities,
+                handlers = {
+                    -- O lemminx envia client/unregisterCapability sem a lista
+                    -- `unregisterations` ao abrir o arquivo, e o handler do
+                    -- Neovim falha com "bad argument #1 to 'ipairs'". Sem
+                    -- lista, nao ha o que desregistrar.
+                    ["client/unregisterCapability"] = function(err, params, ctx)
+                        if not params or not params.unregisterations then
+                            return vim.NIL
+                        end
+                        return vim.lsp.handlers["client/unregisterCapability"](err, params, ctx)
+                    end,
+                },
                 settings = {
                     redhat = {
                         telemetry = {

@@ -1,0 +1,17 @@
+// Aplica o JaCoCo a todo projeto Java sem alterar o build.gradle; usado pela
+// cobertura do Neovim (features/java/coverage.lua) com --init-script. Testes
+// que falham nao impedem o relatorio XML.
+allprojects {
+    plugins.withId('java') {
+        apply plugin: 'jacoco'
+        tasks.withType(Test).configureEach {
+            ignoreFailures = true
+            finalizedBy 'jacocoTestReport'
+        }
+        tasks.named('jacocoTestReport') {
+            reports {
+                xml.required = true
+            }
+        }
+    }
+}

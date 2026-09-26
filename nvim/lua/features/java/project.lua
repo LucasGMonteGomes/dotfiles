@@ -67,4 +67,33 @@ function M.build_tool(directory)
   return { executable }, maven
 end
 
+-- Conteudo do pom.xml/build.gradle do modulo do arquivo ("" fora de um
+-- projeto), para decidir o que o projeto usa (Spring, versao do JUnit).
+function M.build_file_content(path)
+  local root = M.module_root(path)
+  if not root then
+    return ""
+  end
+  for _, name in ipairs({ "pom.xml", "build.gradle", "build.gradle.kts" }) do
+    local file = io.open(vim.fs.joinpath(root, name), "r")
+    if file then
+      local content = file:read("*a")
+      file:close()
+      return content
+    end
+  end
+  return ""
+end
+
+-- O projeto declara o JUnit 4 (`junit:junit`) e nada do JUnit 5: nem o
+-- Jupiter, nem o starter de testes do Spring Boot, nem useJUnitPlatform.
+function M.junit4_only(build)
+  local junit4 = build:find("<artifactId>junit</artifactId>", 1, true) or build:find("junit:junit:", 1, true)
+  local junit5 = build:find("junit-jupiter", 1, true)
+    or build:find("junit-bom", 1, true)
+    or build:find("spring-boot-starter-test", 1, true)
+    or build:find("useJUnitPlatform", 1, true)
+  return junit4 ~= nil and not junit5
+end
+
 return M
