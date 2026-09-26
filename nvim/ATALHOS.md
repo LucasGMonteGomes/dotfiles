@@ -84,9 +84,10 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 | `Ctrl+Alt+P` em `.http` | Repetir a ultima requisicao |
 | `Ctrl+Alt+N` em `.http` | Abrir nova requisicao |
 | `Ctrl+T` | Abrir/fechar terminal no rodape |
-| `Esc` no terminal | Fechar o terminal |
-| `Ctrl+H` / `Ctrl+J` / `Ctrl+K` no terminal | Ir para janela a esquerda / abaixo / acima |
-| `Ctrl+W` no terminal | Iniciar comando de janela do Neovim |
+| `Ctrl+T` no terminal | Fechar o terminal |
+| `Ctrl+Tab` no terminal | Ir para a proxima janela |
+| `Ctrl+\`, depois `Ctrl+N` no terminal | Ir para o modo NORMAL (rolar, copiar texto) |
+| `Esc` / `Ctrl+W` / `Ctrl+K` / `Ctrl+H` no terminal | Enviados ao shell ou programa (apagar palavra, cortar linha...) |
 | `Ctrl+Alt+X` | Problemas de todo o projeto |
 | `Ctrl+Alt+T` | Problemas do arquivo atual |
 | `Ctrl+Alt+K` | Ativar/desativar modo foco |
