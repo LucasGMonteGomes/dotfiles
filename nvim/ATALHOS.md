@@ -51,6 +51,8 @@ Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as du
 
 Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo. A criacao ocorre dentro da pasta que esta selecionada.
 
+Ao abrir um arquivo `.java` novo ou vazio (criado pelo Explorer ou com `:e Nome.java`), um seletor oferece o esqueleto: classe, interface, record, enum, classe abstrata, excecao ou teste JUnit e, em projetos Spring, `@RestController`, `@Service`, `JpaRepository`, `@Configuration` e `@Component`. O `package` vem do caminho (`src/main/java/com/acme/Foo.java` gera `package com.acme;`). O modelo que combina com o nome aparece primeiro: `UserController` sugere o controller e `UserServiceTest` (ou qualquer arquivo em `src/test`) sugere o teste, com JUnit 5 ou 4 conforme o projeto. `Tab` avanca entre os campos do modelo; `Esc` no seletor deixa o arquivo vazio.
+
 ## Java, Spring e Maven
 
 | Atalho | Acao |
