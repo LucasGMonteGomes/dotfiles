@@ -19,12 +19,10 @@ return {
       return
     end
 
+    -- O Mason instala o pacote automaticamente (plugins/lsp.lua) e avisa
+    -- quando terminar. Ate la, o SonarLint fica desligado sem interromper a
+    -- abertura do arquivo com um aviso.
     if not (vim.uv or vim.loop).fs_stat(server_jar) then
-      vim.notify(
-        "SonarLint ainda não está instalado. Execute :MasonInstall sonarlint-language-server e reinicie o Neovim.",
-        vim.log.levels.WARN,
-        { title = "SonarQube" }
-      )
       return
     end
 

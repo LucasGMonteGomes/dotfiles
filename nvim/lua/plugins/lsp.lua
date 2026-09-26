@@ -11,6 +11,29 @@ return {
         },
         config = function()
             require("mason").setup()
+
+            -- Pacotes que nao sao servidores LSP e, por isso, ficam fora do
+            -- ensure_installed do mason-lspconfig: depurador e testes Java e o
+            -- SonarLint. Sao instalados em segundo plano na primeira vez.
+            local tools = { "java-debug-adapter", "java-test", "sonarlint-language-server" }
+            local registry = require("mason-registry")
+            registry.refresh(function()
+                for _, name in ipairs(tools) do
+                    local ok, package = pcall(registry.get_package, name)
+                    if ok and not package:is_installed() and not package:is_installing() then
+                        package:install({}, function(success)
+                            vim.schedule(function()
+                                vim.notify(
+                                    success and (name .. " instalado. Reinicie o Neovim para usa-lo.")
+                                        or ("Falha ao instalar " .. name .. ". Veja :MasonLog."),
+                                    success and vim.log.levels.INFO or vim.log.levels.ERROR,
+                                    { title = "Mason" }
+                                )
+                            end)
+                        end)
+                    end
+                end
+            end)
         end,
     },
     {
