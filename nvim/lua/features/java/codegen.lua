@@ -4,17 +4,14 @@ local M = {}
 local generators = {
   constructor = {
     kind = "source.generate.constructors",
-    title = "Generate Constructors",
     label = "construtor",
   },
   accessors = {
     kind = "source.generate.accessors",
-    title = "Generate Getters and Setters",
     label = "getters e setters",
   },
   equals_hashcode = {
     kind = "source.generate.hashCodeEquals",
-    title = "Generate hashCode() and equals()",
     label = "equals e hashCode",
   },
 }
@@ -162,9 +159,11 @@ local function run(generator)
       return
     end
 
+    -- Filtra so pelo kind: o titulo varia com a classe (com @Getter do
+    -- Lombok, por exemplo, a acao de acessores vira "Generate Setters").
     local selected
     for _, action in ipairs(actions or {}) do
-      if action.kind == generator.kind and action.title:find(generator.title, 1, true) == 1 then
+      if action.kind == generator.kind then
         selected = action
         break
       end
