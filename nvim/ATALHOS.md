@@ -112,6 +112,28 @@ No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arq
 
 Depois da extracao, o campo de renomear abre com o nome sugerido pelo jdtls: digite o nome ou pressione `Esc` para manter a sugestao.
 
+### Snippets (Java)
+
+Digite o prefixo e escolha o item no autocomplete; `Tab` avanca entre os campos. O jdtls ja oferece `sysout`, `foreach`, `fori`, `try_catch`, `ifnull`, `switch` e outros; estes cobrem testes, Spring e logging:
+
+| Prefixo | Gera |
+|---|---|
+| `test` | Metodo `@Test` com as secoes given/when/then |
+| `ptest` | `@ParameterizedTest` com `@CsvSource` |
+| `before` | `@BeforeEach void setUp()` |
+| `athrows` | `assertThrows` guardando a excecao numa variavel |
+| `mockito` | Classe de teste com `@ExtendWith(MockitoExtension.class)`, `@Mock` e `@InjectMocks` |
+| `mock` | Campo `@Mock` |
+| `springtest` / `webmvctest` | Classe `@SpringBootTest` / `@WebMvcTest` com `MockMvc` |
+| `mvcget` / `mvcpost` | Requisicao no `MockMvc` com a verificacao do status |
+| `getmap` / `postmap` / `putmap` / `deletemap` | Endpoint com `ResponseEntity`, `@PathVariable` e `@RequestBody @Valid` |
+| `valprop` | Campo com `@Value("${propriedade}")` |
+| `jpaid` | `@Id` com `@GeneratedValue(strategy = GenerationType.IDENTITY)` |
+| `logger` | `Logger` do SLF4J da classe atual |
+| `stream` | `lista.stream().filter(...).map(...).toList()` |
+
+Snippets nao adicionam imports: depois de usar um, `Ctrl+Alt+L` importa os tipos. Para `when`, `assertThat` e outros metodos estaticos, prefira o autocomplete normal, que ja adiciona o import estatico.
+
 ## Build (Maven/Gradle)
 
 O build roda em segundo plano, na raiz do projeto (o pom pai em projetos multi-modulo), com o `mvnw`/`gradlew` do projeto quando existir. Ao falhar, os erros de compilacao e os testes que falharam vao para a quickfix, aberta no Trouble: `Enter` num item leva ao arquivo e a linha.

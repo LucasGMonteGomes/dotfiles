@@ -1,0 +1,195 @@
+{
+  "Teste JUnit (given/when/then)": {
+    "prefix": "test",
+    "description": "Metodo @Test com as secoes given/when/then",
+    "body": [
+      "@Test",
+      "void ${1:deveFazerAlgo}() {",
+      "    // given",
+      "    $2",
+      "",
+      "    // when",
+      "    $3",
+      "",
+      "    // then",
+      "    $0",
+      "}"
+    ]
+  },
+  "Teste parametrizado": {
+    "prefix": "ptest",
+    "description": "@ParameterizedTest com @CsvSource",
+    "body": [
+      "@ParameterizedTest",
+      "@CsvSource({",
+      "    \"${2:1, 2}\",",
+      "})",
+      "void ${1:deveFazerAlgo}(${3:int entrada}, ${4:int esperado}) {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Preparacao antes de cada teste": {
+    "prefix": "before",
+    "description": "@BeforeEach void setUp()",
+    "body": [
+      "@BeforeEach",
+      "void setUp() {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Teste esperando excecao": {
+    "prefix": "athrows",
+    "description": "assertThrows com a chamada que deve falhar",
+    "body": [
+      "${1:IllegalArgumentException} exception = assertThrows(${1:IllegalArgumentException}.class, () -> ${2:servico.executar()});",
+      "$0"
+    ]
+  },
+  "Classe de teste com Mockito": {
+    "prefix": "mockito",
+    "description": "@ExtendWith(MockitoExtension.class) com @Mock e @InjectMocks",
+    "body": [
+      "@ExtendWith(MockitoExtension.class)",
+      "class ${TM_FILENAME_BASE} {",
+      "",
+      "    @Mock",
+      "    private ${1:Repositorio} ${2:repositorio};",
+      "",
+      "    @InjectMocks",
+      "    private ${3:Servico} ${4:servico};",
+      "",
+      "    $0",
+      "}"
+    ]
+  },
+  "Campo @Mock": {
+    "prefix": "mock",
+    "description": "@Mock private Tipo nome;",
+    "body": [
+      "@Mock",
+      "private ${1:Tipo} ${2:nome};$0"
+    ]
+  },
+  "Teste de integracao Spring Boot": {
+    "prefix": "springtest",
+    "description": "Classe @SpringBootTest",
+    "body": [
+      "@SpringBootTest",
+      "class ${TM_FILENAME_BASE} {",
+      "",
+      "    $0",
+      "}"
+    ]
+  },
+  "Teste de controller com MockMvc": {
+    "prefix": "webmvctest",
+    "description": "Classe @WebMvcTest com MockMvc injetado",
+    "body": [
+      "@WebMvcTest(${1:Controller}.class)",
+      "class ${TM_FILENAME_BASE} {",
+      "",
+      "    @Autowired",
+      "    private MockMvc mockMvc;",
+      "",
+      "    $0",
+      "}"
+    ]
+  },
+  "Requisicao GET no MockMvc": {
+    "prefix": "mvcget",
+    "description": "GET no MockMvc esperando status 200",
+    "body": [
+      "mockMvc.perform(MockMvcRequestBuilders.get(\"${1:/api}\"))",
+      "        .andExpect(MockMvcResultMatchers.status().${2:isOk}())$0;"
+    ]
+  },
+  "Requisicao POST no MockMvc": {
+    "prefix": "mvcpost",
+    "description": "POST no MockMvc com corpo JSON esperando status 201",
+    "body": [
+      "mockMvc.perform(MockMvcRequestBuilders.post(\"${1:/api}\")",
+      "                .contentType(MediaType.APPLICATION_JSON)",
+      "                .content(\"\"\"",
+      "                        ${2:{\\}}",
+      "                        \"\"\"))",
+      "        .andExpect(MockMvcResultMatchers.status().${3:isCreated}())$0;"
+    ]
+  },
+  "Endpoint GET": {
+    "prefix": "getmap",
+    "description": "@GetMapping com @PathVariable",
+    "body": [
+      "@GetMapping(\"/{${2:id}\\}\")",
+      "public ResponseEntity<${1:Tipo}> ${3:buscar}(@PathVariable ${4:Long} ${2:id}) {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Endpoint POST": {
+    "prefix": "postmap",
+    "description": "@PostMapping com @RequestBody validado",
+    "body": [
+      "@PostMapping",
+      "public ResponseEntity<${1:Tipo}> ${2:criar}(@RequestBody @Valid ${3:Request} request) {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Endpoint PUT": {
+    "prefix": "putmap",
+    "description": "@PutMapping com @PathVariable e @RequestBody",
+    "body": [
+      "@PutMapping(\"/{${2:id}\\}\")",
+      "public ResponseEntity<${1:Tipo}> ${3:atualizar}(@PathVariable ${4:Long} ${2:id}, @RequestBody @Valid ${5:Request} request) {",
+      "    $0",
+      "}"
+    ]
+  },
+  "Endpoint DELETE": {
+    "prefix": "deletemap",
+    "description": "@DeleteMapping que responde 204",
+    "body": [
+      "@DeleteMapping(\"/{${1:id}\\}\")",
+      "public ResponseEntity<Void> ${2:remover}(@PathVariable ${3:Long} ${1:id}) {",
+      "    $0",
+      "    return ResponseEntity.noContent().build();",
+      "}"
+    ]
+  },
+  "Propriedade com @Value": {
+    "prefix": "valprop",
+    "description": "@Value(\"${propriedade}\") em um campo",
+    "body": [
+      "@Value(\"\\${${1:app.propriedade}\\}\")",
+      "private ${2:String} ${3:propriedade};$0"
+    ]
+  },
+  "Id JPA": {
+    "prefix": "jpaid",
+    "description": "@Id com @GeneratedValue IDENTITY",
+    "body": [
+      "@Id",
+      "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+      "private ${1:Long} id;$0"
+    ]
+  },
+  "Logger SLF4J": {
+    "prefix": "logger",
+    "description": "private static final Logger log da classe atual",
+    "body": [
+      "private static final Logger log = LoggerFactory.getLogger(${TM_FILENAME_BASE}.class);$0"
+    ]
+  },
+  "Stream filter/map/toList": {
+    "prefix": "stream",
+    "description": "lista.stream().filter(...).map(...).toList()",
+    "body": [
+      "${1:lista}.stream()",
+      "        .filter(${2:item} -> ${3:true})",
+      "        .map(${4:item -> item})",
+      "        .toList()$0"
+    ]
+  }
+}
