@@ -51,6 +51,8 @@ Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as du
 
 Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo. A criacao ocorre dentro da pasta que esta selecionada.
 
+Ao abrir um arquivo `.java` novo ou vazio (criado pelo Explorer ou com `:e Nome.java`), um seletor oferece o esqueleto: classe, interface, record, enum, classe abstrata, excecao ou teste JUnit e, em projetos Spring, `@RestController`, `@Service`, `JpaRepository`, `@Configuration` e `@Component`. O `package` vem do caminho (`src/main/java/com/acme/Foo.java` gera `package com.acme;`). O modelo que combina com o nome aparece primeiro: `UserController` sugere o controller e `UserServiceTest` (ou qualquer arquivo em `src/test`) sugere o teste, com JUnit 5 ou 4 conforme o projeto. `Tab` avanca entre os campos do modelo; `Esc` no seletor deixa o arquivo vazio.
+
 ## Java, Spring e Maven
 
 | Atalho | Acao |
@@ -94,6 +96,19 @@ Toda geracao abre um seletor para escolher os atributos (ou metodos) usados:
 Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`hashCode`); desmarque o que nao quiser. Nos metodos a sobrescrever e a delegar, nada vem marcado. Enter sem nenhum item marcado gera o construtor sem parametros; nas demais opcoes, nada e gerado.
 
 Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
+
+No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arquivo (dentro de `<dependency>`: `scope`, `optional`, `exclusions`...) e tags erradas ficam marcadas. `Ctrl+Alt+L` formata o XML mantendo a indentacao que o arquivo ja usa (TAB ou espacos).
+
+### Refatoracao (Java)
+
+| Atalho | Acao |
+|---|---|
+| `Espaco r v` | Extrair a expressao sob o cursor (ou a selecao) para uma variavel |
+| `Espaco r V` | Extrair variavel substituindo todas as ocorrencias da expressao |
+| `Espaco r c` | Extrair constante (`private static final`) |
+| `Espaco r m` | Extrair metodo; no modo visual, das linhas selecionadas |
+
+Depois da extracao, o campo de renomear abre com o nome sugerido pelo jdtls: digite o nome ou pressione `Esc` para manter a sugestao.
 
 ## Spring Boot
 

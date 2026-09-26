@@ -81,3 +81,23 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.expandtab = true
   end,
 })
+
+-- XML (pom.xml) segue a indentacao que o arquivo ja usa: o archetype do
+-- Maven indenta com 2 espacos e o Spring Initializr com TAB. O lemminx formata
+-- com estes valores, entao o Ctrl+Alt+L nao reindenta o arquivo inteiro.
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("XmlIndent", { clear = true }),
+  pattern = "xml",
+  callback = function(event)
+    for _, line in ipairs(vim.api.nvim_buf_get_lines(event.buf, 0, 200, false)) do
+      local indent = line:match("^(%s+)<")
+      if indent then
+        local tabs = indent:find("\t", 1, true) ~= nil
+        vim.bo[event.buf].expandtab = not tabs
+        vim.bo[event.buf].shiftwidth = tabs and 0 or #indent
+        vim.bo[event.buf].softtabstop = tabs and 0 or #indent
+        return
+      end
+    end
+  end,
+})
