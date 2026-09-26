@@ -51,11 +51,9 @@ return {
         map("v", "<C-q>", function()
           confirm_reset({ vim.fn.line("."), vim.fn.line("v") })
         end, "Git: desfazer selecao")
-        -- Ctrl+G pertence ao menu de geracao nos arquivos Java. Fora deles,
-        -- continua sendo o atalho rapido para visualizar o bloco do Git.
-        if vim.bo[bufnr].filetype ~= "java" then
-          map("n", "<C-g>", gs.preview_hunk, "Git: visualizar bloco")
-        end
+        -- Mesma tecla em todos os arquivos; Ctrl+G fica com o menu de geracao
+        -- de codigo Java.
+        map("n", "<leader>gp", gs.preview_hunk, "Git: visualizar bloco")
         map("n", "<C-b>", function()
           gs.blame_line({ full = true })
         end, "Git: autoria da linha")

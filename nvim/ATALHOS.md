@@ -68,7 +68,7 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |
 | `gl` | Mostrar diagnostico da linha |
-| `Ctrl+Espaco` | Solicitar sugestoes de autocomplete |
+| `Ctrl+Espaco` no INSERT | Solicitar sugestoes de autocomplete |
 | `Seta cima/baixo` ou `Ctrl+P`/`Ctrl+N` no autocomplete | Escolher sugestao |
 | `Enter` no autocomplete | Aceitar a sugestao escolhida; sem escolha, apenas quebra a linha |
 | `Tab` / `Shift+Tab` | Pular para o proximo/anterior campo de um snippet |
@@ -147,7 +147,7 @@ Os testes rodam pelo depurador: breakpoints marcados com `Ctrl+F8` param a execu
 | `Ctrl+S` | Adicionar bloco alterado ao stage |
 | `Ctrl+Q` | Descartar bloco alterado (pede confirmacao; padrao e Nao) |
 | `Ctrl+B` | Mostrar autoria da linha |
-| `Ctrl+G` fora de Java | Visualizar o bloco alterado |
+| `Espaco g p` | Visualizar o bloco alterado |
 | `ih` em operador/visual | Selecionar um bloco alterado do Git |
 | `Ctrl+Alt+V` | Abrir/fechar Diffview |
 
