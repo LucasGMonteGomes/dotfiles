@@ -165,10 +165,12 @@ return {
                 )
             end
 
-            -- O :JdtWipeDataAndRestart do nvim-jdtls procura `-data` numa tabela
-            -- `cmd`; aqui o `cmd` e uma funcao e o comando original falha. Esta
-            -- versao recalcula a pasta pela raiz do cliente, apaga o indice
-            -- depois que o servidor encerra e sobe o jdtls de novo nos buffers.
+            -- :JdtWipeDataAndRestart e :JdtShowLogs do nvim-jdtls procuram `-data`
+            -- numa tabela `cmd`; aqui o `cmd` e uma funcao e os dois falham. As
+            -- versoes abaixo recalculam a pasta pela raiz do cliente.
+            --
+            -- Apaga o indice depois que o servidor encerra e sobe o jdtls de novo
+            -- nos buffers abertos.
             local function wipe_jdtls_data(client)
                 local data_dir = jdtls_data_dir(client.root_dir or vim.fn.getcwd())
                 local answer = vim.fn.confirm("Apagar o indice do jdtls e reiniciar?\n" .. data_dir, "&Sim\n&Nao", 2)
@@ -198,28 +200,47 @@ return {
                 wipe_when_stopped()
             end
 
-            vim.api.nvim_create_user_command("JdtWipeDataAndRestart", function()
-                local clients = vim.lsp.get_clients({ name = "jdtls", bufnr = 0 })
-                if #clients == 0 then
-                    clients = vim.lsp.get_clients({ name = "jdtls" })
+            -- Cliente do buffer atual; fora de um arquivo Java (quickfix, Explorer),
+            -- qualquer jdtls ativo, perguntando qual quando houver mais de um.
+            local function with_jdtls_client(action)
+                return function()
+                    local clients = vim.lsp.get_clients({ name = "jdtls", bufnr = 0 })
+                    if #clients == 0 then
+                        clients = vim.lsp.get_clients({ name = "jdtls" })
+                    end
+                    if #clients == 0 then
+                        vim.notify("Nenhum jdtls em execucao", vim.log.levels.WARN, { title = "JDTLS" })
+                    elseif #clients == 1 then
+                        action(clients[1])
+                    else
+                        vim.ui.select(clients, {
+                            prompt = "Qual projeto?",
+                            format_item = function(client)
+                                return client.root_dir
+                            end,
+                        }, function(client)
+                            if client then
+                                action(client)
+                            end
+                        end)
+                    end
                 end
-                if #clients == 0 then
-                    vim.notify("Nenhum jdtls em execucao", vim.log.levels.WARN, { title = "JDTLS" })
-                elseif #clients == 1 then
-                    wipe_jdtls_data(clients[1])
-                else
-                    vim.ui.select(clients, {
-                        prompt = "Qual projeto?",
-                        format_item = function(client)
-                            return client.root_dir
-                        end,
-                    }, function(client)
-                        if client then
-                            wipe_jdtls_data(client)
-                        end
-                    end)
-                end
-            end, { desc = "Apagar o indice do jdtls do projeto e reiniciar o servidor" })
+            end
+
+            -- Log do jdtls (erros de importacao do Maven/Gradle) ao lado do log
+            -- do cliente LSP do Neovim.
+            local function show_jdtls_logs(client)
+                local log = vim.fs.joinpath(jdtls_data_dir(client.root_dir or vim.fn.getcwd()), ".metadata", ".log")
+                vim.cmd("split " .. vim.fn.fnameescape(log) .. " | normal! G")
+                vim.cmd("vsplit " .. vim.fn.fnameescape(vim.lsp.log.get_filename()) .. " | normal! G")
+            end
+
+            vim.api.nvim_create_user_command("JdtWipeDataAndRestart", with_jdtls_client(wipe_jdtls_data), {
+                desc = "Apagar o indice do jdtls do projeto e reiniciar o servidor",
+            })
+            vim.api.nvim_create_user_command("JdtShowLogs", with_jdtls_client(show_jdtls_logs), {
+                desc = "Abrir o log do jdtls e o do cliente LSP",
+            })
 
             -- Argumentos extras da JVM do jdtls, como no lspconfig:
             -- JDTLS_JVM_ARGS="-Xmx4g -Dfoo=bar". O Lombok distribuido pelo
