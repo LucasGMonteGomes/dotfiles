@@ -228,7 +228,7 @@ function M.run()
     return
   end
 
-  application = require("toggleterm.terminal").Terminal:new({
+  local application = require("toggleterm.terminal").Terminal:new({
     cmd = command,
     dir = root,
     direction = "horizontal",
