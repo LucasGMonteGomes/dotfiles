@@ -97,6 +97,8 @@ Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`
 
 Se o jdtls ficar com erros que nao somem (classes "nao encontradas" que existem, imports quebrados depois de trocar de branch), `:JdtWipeDataAndRestart` apaga o indice do projeto e o importa de novo. `:JdtShowLogs` abre o log do servidor.
 
+No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arquivo (dentro de `<dependency>`: `scope`, `optional`, `exclusions`...) e tags erradas ficam marcadas. `Ctrl+Alt+L` formata o XML mantendo a indentacao que o arquivo ja usa (TAB ou espacos).
+
 ### Refatoracao (Java)
 
 | Atalho | Acao |

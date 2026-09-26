@@ -63,6 +63,7 @@ return {
                     "rust_analyzer",
                     "lua_ls",
                     "yamlls",
+                    "lemminx",
                     "docker_language_server",
                     "markdown_oxide",
                 },
@@ -128,6 +129,30 @@ return {
                 },
             })
 
+            -- XML: completa e valida o pom.xml pelo XSD do Maven declarado em
+            -- xsi:schemaLocation (baixado e guardado em cache na primeira vez).
+            -- A indentacao da formatacao vem do proprio arquivo (config/options.lua).
+            vim.lsp.config("lemminx", {
+                capabilities = capabilities,
+                settings = {
+                    redhat = {
+                        telemetry = {
+                            enabled = false,
+                        },
+                    },
+                    -- A formatacao so corrige o que esta fora do lugar: quebras
+                    -- entre atributos e linhas em branco entre blocos ficam como
+                    -- estao, e linhas longas nao sao quebradas.
+                    xml = {
+                        format = {
+                            maxLineWidth = 0,
+                            preserveAttributeLineBreaks = true,
+                            preservedNewlines = 1,
+                        },
+                    },
+                },
+            })
+
             -- Dockerfile e Docker Compose
             vim.lsp.config("docker_language_server", {
                 capabilities = capabilities,
@@ -152,6 +177,7 @@ return {
             vim.lsp.enable("rust_analyzer")
             vim.lsp.enable("lua_ls")
             vim.lsp.enable("yamlls")
+            vim.lsp.enable("lemminx")
             vim.lsp.enable("docker_language_server")
             vim.lsp.enable("markdown_oxide")
 
