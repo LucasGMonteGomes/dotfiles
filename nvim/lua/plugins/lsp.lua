@@ -326,7 +326,12 @@ return {
                     vim.keymap.set("n", "]d", function()
                         vim.diagnostic.jump({ count = 1, float = true })
                     end, opts)
-                    vim.keymap.set("n", "df", vim.diagnostic.open_float, opts)
+                    -- `df` colidia com `d` + `f{char}` (ex.: `df;`). `gl` nao tem uso nativo.
+                    vim.keymap.set("n", "gl", vim.diagnostic.open_float, {
+                        buffer = ev.buf,
+                        silent = true,
+                        desc = "LSP: mostrar diagnostico da linha",
+                    })
                 end,
             })
         end,

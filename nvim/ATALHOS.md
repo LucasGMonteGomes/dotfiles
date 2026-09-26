@@ -61,7 +61,7 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 | `gd` / `gD` / `gi` / `gr` | Ir para definicao / declaracao / implementacao / referencias |
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |
-| `df` | Mostrar diagnostico da linha |
+| `gl` | Mostrar diagnostico da linha |
 | `Ctrl+Espaco` | Solicitar sugestoes de autocomplete |
 | `Ctrl+Espaco` repetidamente | Expandir a selecao estrutural do codigo |
 | `Ctrl+Alt+D` | No `pom.xml`, abrir buscador de dependencias Maven |
