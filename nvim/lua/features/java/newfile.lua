@@ -4,6 +4,8 @@
 -- disco, por isso tambem vale para arquivos .java vazios abertos depois.
 local M = {}
 
+local project = require("features.java.project")
+
 -- Raizes de codigo; o que vem depois delas e o pacote. `src/` sozinho cobre
 -- projetos sem Maven/Gradle.
 local source_roots = {
@@ -22,24 +24,6 @@ local function package_name(path)
     end
   end
   return nil
-end
-
--- Conteudo do pom.xml/build.gradle, usado para decidir se os modelos do
--- Spring aparecem e qual versao do JUnit usar.
-local function build_file_content(path)
-  local root = vim.fs.root(path, { "pom.xml", "build.gradle", "build.gradle.kts" })
-  if not root then
-    return ""
-  end
-  for _, name in ipairs({ "pom.xml", "build.gradle", "build.gradle.kts" }) do
-    local file = io.open(vim.fs.joinpath(root, name), "r")
-    if file then
-      local content = file:read("*a")
-      file:close()
-      return content
-    end
-  end
-  return ""
 end
 
 -- "UserController" -> "users": ponto de partida para o @RequestMapping.
@@ -99,10 +83,7 @@ local templates = {
     test = true,
     body = function(name, build)
       local method = "    @Test\n    void ${1:deveFazerAlgo}() {\n        $0\n    }"
-      -- JUnit 4 so quando o projeto declara o `junit` antigo sem o Jupiter.
-      if build:find("<artifactId>junit</artifactId>", 1, true) and not build:find("junit-jupiter", 1, true)
-        and not build:find("spring-boot-starter-test", 1, true)
-      then
+      if project.junit4_only(build) then
         return { "org.junit.Test" }, "public class " .. name .. " {\n\n" .. method:gsub("    void", "    public void") .. "\n}"
       end
       return { "org.junit.jupiter.api.Test" }, "class " .. name .. " {\n\n" .. method .. "\n}"
@@ -191,7 +172,7 @@ local function fill(bufnr)
     return
   end
 
-  local build = build_file_content(path)
+  local build = project.build_file_content(path)
   vim.ui.select(available_templates(name, path, build), {
     prompt = "Novo arquivo Java (" .. name .. "):",
     format_item = function(template)
