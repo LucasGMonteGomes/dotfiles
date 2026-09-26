@@ -18,6 +18,7 @@ require("features.docker").setup()
 require("features.java.spring").setup()
 require("features.java.maven").setup()
 require("features.java.codegen").setup()
+require("features.java.tests").setup()
 require("features.markdown").setup()
 
 -- 1. Bootstrap do Lazy.nvim (Baixa o gerenciador de plugins)

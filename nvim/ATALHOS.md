@@ -96,6 +96,18 @@ As teclas seguem o IntelliJ. No GNOME Terminal, F10 abre o menu e F11 alterna a 
 
 O painel abre ao iniciar e fecha ao terminar. Nele, `S`/`W`/`B`/`T`/`E`/`R`/`C` trocam de aba e `g?` mostra a ajuda. Salvar um arquivo durante a depuracao aplica a alteracao na JVM em execucao (hot code replace).
 
+## Testes (Java)
+
+| Atalho | Acao |
+|---|---|
+| `Espaco t c` | Rodar todos os testes da classe |
+| `Espaco t m` | Rodar o teste sob o cursor |
+| `Espaco t p` | Escolher um teste da classe para rodar |
+| `Espaco t t` | Alternar entre a classe e o seu teste |
+| `Espaco t n` | Gerar uma classe de teste para a classe atual |
+
+Os testes rodam pelo depurador: breakpoints marcados com `Ctrl+F8` param a execucao. As falhas vao para a lista quickfix (`:copen`), com a linha e a mensagem da assercao.
+
 ## HTTP, Git e paineis
 
 | Atalho | Acao |
