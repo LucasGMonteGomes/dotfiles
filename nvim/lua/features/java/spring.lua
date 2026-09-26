@@ -183,11 +183,150 @@ function M.open()
   end)
 end
 
+-- Execucao da aplicacao (spring-boot:run / bootRun) num terminal proprio por
+-- projeto, para que os logs continuem visiveis depois de esconde-lo.
+local build_files = { "pom.xml", "build.gradle", "build.gradle.kts" }
+local applications = {}
+
+-- Modulo do arquivo atual; fora de um arquivo (Explorer, terminal), usa a
+-- pasta de trabalho.
+local function project_root()
+  local path = vim.bo.buftype == "" and vim.api.nvim_buf_get_name(0) or ""
+  return vim.fs.root(path ~= "" and path or vim.fn.getcwd(), build_files)
+end
+
+-- O wrapper (mvnw/gradlew) pode estar num diretorio pai, em projetos
+-- multi-modulo; ele encontra a raiz do build sozinho.
+local function run_command(root)
+  local maven = vim.uv.fs_stat(vim.fs.joinpath(root, "pom.xml")) ~= nil
+  local wrapper = maven and "mvnw" or "gradlew"
+  local wrapper_dir = vim.fs.root(root, wrapper)
+  local executable = wrapper_dir and vim.fs.joinpath(wrapper_dir, wrapper) or (maven and "mvn" or "gradle")
+  if not wrapper_dir and vim.fn.executable(executable) == 0 then
+    return nil, executable .. " nao foi encontrado no PATH e o projeto nao tem " .. wrapper
+  end
+  local task = maven and "spring-boot:run" or "bootRun"
+  return vim.fn.shellescape(executable) .. " " .. task
+end
+
+function M.run()
+  local root = project_root()
+  if not root then
+    notify("Nenhum pom.xml ou build.gradle encontrado a partir deste arquivo", vim.log.levels.WARN)
+    return
+  end
+
+  -- Ja esta rodando (on_exit remove da tabela): apenas mostra ou esconde os logs.
+  if applications[root] then
+    applications[root]:toggle()
+    return
+  end
+
+  local command, err = run_command(root)
+  if not command then
+    notify(err, vim.log.levels.ERROR)
+    return
+  end
+
+  application = require("toggleterm.terminal").Terminal:new({
+    cmd = command,
+    dir = root,
+    direction = "horizontal",
+    display_name = "Spring Boot: " .. vim.fs.basename(root),
+    hidden = true,
+    -- Mantem os logs na tela quando a aplicacao termina ou falha.
+    close_on_exit = false,
+    on_exit = function()
+      applications[root] = nil
+    end,
+  })
+  applications[root] = application
+  application:open()
+end
+
+function M.stop()
+  local root = project_root()
+  local application = root and applications[root]
+  if not application then
+    notify("Nenhuma aplicacao deste projeto esta rodando", vim.log.levels.WARN)
+    return
+  end
+  application:shutdown()
+  applications[root] = nil
+  notify("Aplicacao encerrada: " .. vim.fs.basename(root))
+end
+
+-- Busca de simbolos do Spring Boot Language Server (`@/` endpoints, `@+`
+-- beans). A consulta vai somente para ele: o jdtls tambem responderia com
+-- simbolos Java sem relacao.
+local function spring_symbols(query, title)
+  local client = vim.lsp.get_clients({ name = "spring-boot" })[1]
+  if not client then
+    notify("O Spring Boot Language Server nao esta ativo neste projeto", vim.log.levels.WARN)
+    return
+  end
+
+  client:request("workspace/symbol", { query = query }, function(err, result)
+    if err then
+      notify("Falha ao buscar " .. title:lower() .. ": " .. err.message, vim.log.levels.ERROR)
+      return
+    end
+
+    local items = {}
+    for _, symbol in ipairs(result or {}) do
+      local location = symbol.location
+      if location and location.range then
+        table.insert(items, {
+          text = symbol.name,
+          file = vim.uri_to_fname(location.uri),
+          pos = { location.range.start.line + 1, location.range.start.character },
+        })
+      end
+    end
+    if #items == 0 then
+      notify("Nenhum resultado em " .. title:lower(), vim.log.levels.WARN)
+      return
+    end
+
+    Snacks.picker({
+      title = title,
+      items = items,
+      format = function(item)
+        return {
+          { item.text },
+          { "  " },
+          { vim.fn.fnamemodify(item.file, ":t"), "Comment" },
+        }
+      end,
+    })
+  end)
+end
+
+function M.endpoints()
+  spring_symbols("@/", "Endpoints")
+end
+
+function M.beans()
+  spring_symbols("@+", "Beans")
+end
+
 function M.setup()
+  vim.keymap.set("n", "<leader>se", M.endpoints, { desc = "Spring: buscar endpoints" })
+  vim.keymap.set("n", "<leader>sb", M.beans, { desc = "Spring: buscar beans" })
+
   vim.api.nvim_create_user_command("SpringInitializr", M.open, {
     desc = "Criar um projeto pela API do Spring Initializr",
   })
   vim.keymap.set("n", "<C-A-i>", M.open, { desc = "Spring: criar projeto (Initializr)" })
+
+  vim.api.nvim_create_user_command("SpringBootRun", M.run, {
+    desc = "Rodar a aplicacao Spring Boot do projeto atual",
+  })
+  vim.api.nvim_create_user_command("SpringBootStop", M.stop, {
+    desc = "Encerrar a aplicacao Spring Boot do projeto atual",
+  })
+  vim.keymap.set("n", "<leader>sr", M.run, { desc = "Spring: rodar aplicacao / mostrar logs" })
+  vim.keymap.set("n", "<leader>ss", M.stop, { desc = "Spring: encerrar aplicacao" })
 end
 
 return M

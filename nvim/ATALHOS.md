@@ -1,6 +1,6 @@
 # Atalhos do Neovim
 
-Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
+Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; `Espaco` e a tecla lider (`<leader>`); letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
 
 ## Modos e edicao
 
@@ -13,6 +13,7 @@ Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as du
 | `Ctrl+Z` | Desfazer a ultima alteracao |
 | `Ctrl+Alt+Z` | Refazer alteracao |
 | `Ctrl+Backspace` | Apagar uma palavra inteira |
+| `Ctrl+Delete` | Apagar a proxima palavra |
 | `Ctrl+Seta esquerda/direita` | Ir ao inicio/fim do trecho, incluindo pontuacao como `;` |
 | `Ctrl+X` | Apagar sem copiar para a area de transferencia |
 | `Ctrl+D` / `Ctrl+U` | Rolar para baixo/cima mantendo o cursor centralizado |
@@ -54,20 +55,77 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+G` | Abrir o menu: construtor, getters/setters ou `equals`/`hashCode` |
+| `Ctrl+G` | Abrir o menu de geracao: construtor, getters/setters, `equals`/`hashCode`, `toString`, sobrescrever/implementar metodos ou metodos delegados |
 | `Ctrl+L` | Abrir acoes de codigo do Java |
 | `Ctrl+Alt+L` | Organizar imports e formatar o arquivo |
-| `Ctrl+Alt+R` | Renomear simbolo |
-| `gd` / `gD` / `gi` / `gr` | Ir para definicao / declaracao / implementacao / referencias |
+| `F2` | Renomear simbolo |
+| `gd` / `gD` | Ir para definicao / declaracao |
+| `grr` / `gri` / `grt` | Listar referencias / implementacoes / ir para o tipo |
+| `grn` / `gra` | Renomear (igual ao `F2`) / acoes de codigo (igual ao `Ctrl+L`) |
+| `gO` | Listar simbolos do arquivo |
+| `grx` | Executar a lente sob o cursor (ex.: `2 references` lista as referencias) |
+| `Espaco i h` | Mostrar/ocultar dicas inline (nomes de parametros) |
 | `K` | Mostrar documentacao do simbolo |
 | `[d` / `]d` | Diagnostico anterior / proximo |
-| `df` | Mostrar diagnostico da linha |
-| `Ctrl+Espaco` | Solicitar sugestoes de autocomplete |
-| `Ctrl+Espaco` repetidamente | Expandir a selecao estrutural do codigo |
+| `gl` | Mostrar diagnostico da linha |
+| `Ctrl+Espaco` no INSERT | Solicitar sugestoes de autocomplete |
+| `Seta cima/baixo` ou `Ctrl+P`/`Ctrl+N` no autocomplete | Escolher sugestao |
+| `Enter` no autocomplete | Aceitar a sugestao escolhida; sem escolha, apenas quebra a linha |
+| `Tab` / `Shift+Tab` | Pular para o proximo/anterior campo de um snippet |
+| `Ctrl+Espaco` no NORMAL, depois repetidamente | Selecionar o trecho de codigo sob o cursor e expandir (ex.: `nome` > `this.nome = nome`) |
+| `Backspace` com selecao | Reduzir a selecao estrutural um nivel |
+| `an` / `in` no VISUAL | Expandir / reduzir a selecao (padrao do Neovim) |
 | `Ctrl+Alt+D` | No `pom.xml`, abrir buscador de dependencias Maven |
 | `Ctrl+Alt+I` | Abrir o Spring Initializr |
 
-Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors` e `:JavaGenerateEqualsHashCode`.
+Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
+
+Ao escolher campos ou metodos, digite os numeros (`1`, `1,3` ou `1-3`). Enter vazio aceita a sugestao do Java (itens com `*`, como so os campos no `toString`) ou todos os itens quando nao ha sugestao; nos metodos a sobrescrever, Enter vazio cancela. `0` escolhe nenhum item (no construtor, gera o construtor sem parametros) e `Esc` cancela sem gerar nada. Listas maiores que a tela abrem num seletor: `Tab` marca varios itens, `Enter` confirma (sem marcas, vale o item sob o cursor) e `Esc` cancela.
+
+## Spring Boot
+
+Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.
+
+| Atalho ou comando | Acao |
+|---|---|
+| `Espaco s r` | Rodar a aplicacao (`spring-boot:run`/`bootRun`); se ja estiver rodando, mostrar/esconder os logs |
+| `Espaco s s` | Encerrar a aplicacao |
+| `Espaco s e` | Buscar endpoints (`@/users -- GET`) e ir ate o mapeamento |
+| `Espaco s b` | Buscar beans do projeto |
+| `:SpringBoot` | Buscar anotacoes, beans, endpoints ou prototypes (resultado na quickfix) |
+
+A aplicacao roda num terminal proprio, na pasta do modulo do arquivo atual, usando o `mvnw`/`gradlew` do projeto quando existir. Esconder o terminal nao encerra a aplicacao. Para depurar, use `F9` (ver Depuracao).
+
+## Depuracao (Java)
+
+As teclas seguem o IntelliJ. No GNOME Terminal, F10 abre o menu e F11 alterna a tela cheia, por isso o esquema do VS Code nao e usado.
+
+| Atalho | Acao |
+|---|---|
+| `F9` | Iniciar a depuracao (escolhe a classe `main`) ou continuar ate o proximo breakpoint |
+| `Ctrl+F8` | Marcar/desmarcar breakpoint na linha |
+| `Espaco d b` | Breakpoint condicional (ex.: `i == 2`) |
+| `F8` | Executar a linha (step over) |
+| `F7` | Entrar no metodo (step into) |
+| `Shift+F8` | Sair do metodo (step out) |
+| `Ctrl+F2` | Encerrar a sessao |
+| `Espaco d l` | Repetir a ultima sessao |
+| `Espaco d u` | Abrir/fechar o painel (variaveis, watches, breakpoints, threads, console) |
+| `Espaco d h` | Inspecionar o valor sob o cursor |
+
+O painel abre ao iniciar e fecha ao terminar. Nele, `S`/`W`/`B`/`T`/`E`/`R`/`C` trocam de aba e `g?` mostra a ajuda. Salvar um arquivo durante a depuracao aplica a alteracao na JVM em execucao (hot code replace).
+
+## Testes (Java)
+
+| Atalho | Acao |
+|---|---|
+| `Espaco t c` | Rodar todos os testes da classe |
+| `Espaco t m` | Rodar o teste sob o cursor |
+| `Espaco t p` | Escolher um teste da classe para rodar |
+| `Espaco t t` | Alternar entre a classe e o seu teste |
+| `Espaco t n` | Gerar uma classe de teste para a classe atual |
+
+Os testes rodam pelo depurador: breakpoints marcados com `Ctrl+F8` param a execucao. As falhas vao para a lista quickfix (`:copen`), com a linha e a mensagem da assercao.
 
 ## HTTP, Git e paineis
 
@@ -78,9 +136,10 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 | `Ctrl+Alt+P` em `.http` | Repetir a ultima requisicao |
 | `Ctrl+Alt+N` em `.http` | Abrir nova requisicao |
 | `Ctrl+T` | Abrir/fechar terminal no rodape |
-| `Esc` no terminal | Fechar o terminal |
-| `Ctrl+H` / `Ctrl+J` / `Ctrl+K` no terminal | Ir para janela a esquerda / abaixo / acima |
-| `Ctrl+W` no terminal | Iniciar comando de janela do Neovim |
+| `Ctrl+T` no terminal | Fechar o terminal |
+| `Ctrl+Tab` no terminal | Ir para a proxima janela |
+| `Ctrl+\`, depois `Ctrl+N` no terminal | Ir para o modo NORMAL (rolar, copiar texto) |
+| `Esc` / `Ctrl+W` / `Ctrl+K` / `Ctrl+H` no terminal | Enviados ao shell ou programa (apagar palavra, cortar linha...) |
 | `Ctrl+Alt+X` | Problemas de todo o projeto |
 | `Ctrl+Alt+T` | Problemas do arquivo atual |
 | `Ctrl+Alt+K` | Ativar/desativar modo foco |
@@ -88,9 +147,9 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 | `Ctrl+Alt+U` | Abrir historico de desfazer |
 | `]h` / `[h` | Proximo/anterior bloco alterado do Git |
 | `Ctrl+S` | Adicionar bloco alterado ao stage |
-| `Ctrl+Q` | Desfazer bloco alterado |
+| `Ctrl+Q` | Descartar bloco alterado (pede confirmacao; padrao e Nao) |
 | `Ctrl+B` | Mostrar autoria da linha |
-| `Ctrl+G` fora de Java | Visualizar o bloco alterado |
+| `Espaco g p` | Visualizar o bloco alterado |
 | `ih` em operador/visual | Selecionar um bloco alterado do Git |
 | `Ctrl+Alt+V` | Abrir/fechar Diffview |
 
@@ -98,10 +157,10 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+M`, depois `e` | Voltar diretamente para o arquivo Markdown editavel |
-| `Ctrl+M`, depois `p` | Alternar preview HTML no navegador, com estilo de documento do VS Code |
-| `Ctrl+M`, depois `i` | Alternar preview interno rapido no painel do Nvim |
-| `Ctrl+M`, depois `b` | Abrir o preview HTML no navegador |
+| `Espaco m`, depois `e` | Voltar diretamente para o arquivo Markdown editavel |
+| `Espaco m`, depois `p` | Alternar preview HTML no navegador, com estilo de documento do VS Code |
+| `Espaco m`, depois `i` | Alternar preview interno rapido no painel do Nvim |
+| `Espaco m`, depois `b` | Abrir o preview HTML no navegador |
 | `]s` / `[s` | Ir para a proxima/anterior palavra marcada pelo corretor |
 | `z=` | Mostrar sugestoes para a palavra sob o cursor |
 | `zg` | Adicionar a palavra sob o cursor ao dicionario pessoal |

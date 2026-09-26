@@ -54,36 +54,15 @@ return {
     },
     {
         "iamcco/markdown-preview.nvim",
-        {
-            "iamcco/markdown-preview.nvim",
-            ft = { "markdown" },
-            cmd = {
-                "MarkdownPreview",
-                "MarkdownPreviewStop",
-                "MarkdownPreviewToggle",
-            },
-            build = function()
-                vim.fn["mkdp#util#install"]()
-            end,
-            init = function()
-                vim.g.mkdp_filetypes = { "markdown" }
-                vim.g.mkdp_theme = "dark"
-                vim.g.mkdp_auto_close = 1
-                vim.g.mkdp_combine_preview = 0
-                vim.g.mkdp_preview_options = {
-                    disable_sync_scroll = 0,
-                    sync_scroll_type = "middle",
-                    hide_yaml_meta = 1,
-                    content_editable = false,
-                }
-                vim.g.mkdp_markdown_css =
-                    vim.fs.joinpath(
-                        vim.fn.stdpath("config"),
-                        "assets",
-                        "markdown-preview-vscode.css"
-                    )
-            end,
+        ft = { "markdown" },
+        cmd = {
+            "MarkdownPreview",
+            "MarkdownPreviewStop",
+            "MarkdownPreviewToggle",
         },
+        build = function()
+            vim.fn["mkdp#util#install"]()
+        end,
         init = function()
             vim.g.mkdp_filetypes = { "markdown" }
             vim.g.mkdp_theme = "dark"

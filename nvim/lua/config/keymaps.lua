@@ -67,12 +67,17 @@ local ctrl_backspace_inputs = {
   "<C-h>",
   "\27[127;5u",
   "\27[8;5u",
-  "\27[3;5~",
 }
 
 for _, key in ipairs(ctrl_backspace_inputs) do
   vim.keymap.set("n", key, "diw", { desc = "Apagar palavra inteira" })
   vim.keymap.set("i", key, "<C-w>", { desc = "Apagar palavra anterior" })
+end
+
+-- Ctrl+Delete (`Esc [ 3 ; 5 ~` em terminais xterm/VTE) apaga para frente.
+for _, key in ipairs({ "<C-Del>", "\27[3;5~" }) do
+  vim.keymap.set("n", key, "dw", { desc = "Apagar ate a proxima palavra" })
+  vim.keymap.set("i", key, "<C-o>dw", { desc = "Apagar a proxima palavra" })
 end
 
 -- Movimentos por WORD incluem pontuacao. Em `firstName;`, Ctrl+Right para no `;`.

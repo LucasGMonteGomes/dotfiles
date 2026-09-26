@@ -67,23 +67,22 @@ return {
       LazyDocker:toggle()
     end, { desc = "Abrir gerenciador visual do Docker" })
 
-    -- Atalhos de navegação dentro do modo Terminal (:terminal)
-    function _G.set_terminal_keymaps()
-      local opts = { buffer = 0, silent = true }
-      vim.keymap.set("t", "<Esc>", [[<C-\><C-n><Cmd>ToggleTerm<CR>]], opts)
+    -- Atalhos dentro do modo Terminal. Esc, Ctrl+W, Ctrl+K, Ctrl+H e Ctrl+J
+    -- ficam com o shell e com programas TUI (lazydocker, lazygit, less):
+    -- apagar palavra, cortar ate o fim da linha, backspace etc. Para ir ao
+    -- modo NORMAL do Neovim use o padrao Ctrl+\ Ctrl+N.
+    local function set_terminal_keymaps(bufnr)
+      local opts = { buffer = bufnr, silent = true }
       vim.keymap.set("t", "<C-t>", [[<C-\><C-n><Cmd>ToggleTerm<CR>]], opts)
-      vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
-      vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
-      vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
-      vim.keymap.set("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
       vim.keymap.set("t", "<C-Tab>", [[<C-\><C-n><C-w>w]], opts)
       vim.keymap.set("t", "\27[9;5u", [[<C-\><C-n><C-w>w]], opts)
     end
 
     vim.api.nvim_create_autocmd("TermOpen", {
+      group = vim.api.nvim_create_augroup("TerminalKeymaps", { clear = true }),
       pattern = "term://*",
-      callback = function()
-        set_terminal_keymaps()
+      callback = function(event)
+        set_terminal_keymaps(event.buf)
       end,
     })
   end,
