@@ -192,6 +192,23 @@ O painel abre ao iniciar e fecha ao terminar. Nele, `S`/`W`/`B`/`T`/`E`/`R`/`C` 
 
 Os testes rodam pelo depurador: breakpoints marcados com `Ctrl+F8` param a execucao. As falhas vao para a lista quickfix (`:copen`), com a linha e a mensagem da assercao.
 
+### Painel de testes (neotest, JUnit 5)
+
+O neotest marca cada teste com um icone de passou/falhou na margem, mostra a mensagem da falha na propria linha da assercao e abre as falhas no Trouble.
+
+| Atalho | Acao |
+|---|---|
+| `Espaco t s` | Abrir/fechar o painel com a arvore de testes do projeto (`r` roda o item, `o` mostra a saida) |
+| `Espaco t r` | Rodar o teste sob o cursor |
+| `Espaco t f` | Rodar os testes do arquivo |
+| `Espaco t a` | Rodar todos os testes do projeto |
+| `Espaco t l` | Repetir a ultima execucao |
+| `Espaco t d` | Depurar o teste sob o cursor (para nos breakpoints do `Ctrl+F8`) |
+| `Espaco t o` | Ver a saida completa do teste sob o cursor |
+| `Espaco t x` | Interromper a execucao |
+
+Na primeira vez, `:NeotestJava setup` baixa o JUnit Console Launcher que o neotest usa. Ele roda apenas JUnit 5; em projetos com JUnit 4, os atalhos acima avisam e os de cima (`Espaco t c`, `Espaco t m`...) continuam funcionando.
+
 ## HTTP, Git e paineis
 
 | Atalho | Acao |
