@@ -85,7 +85,9 @@ Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) 
 |---|---|
 | `Espaco s r` | Rodar a aplicacao (`spring-boot:run`/`bootRun`); se ja estiver rodando, mostrar/esconder os logs |
 | `Espaco s s` | Encerrar a aplicacao |
-| `:SpringBoot` | Buscar anotacoes, beans, endpoints ou prototypes do projeto |
+| `Espaco s e` | Buscar endpoints (`@/users -- GET`) e ir ate o mapeamento |
+| `Espaco s b` | Buscar beans do projeto |
+| `:SpringBoot` | Buscar anotacoes, beans, endpoints ou prototypes (resultado na quickfix) |
 
 A aplicacao roda num terminal proprio, na pasta do modulo do arquivo atual, usando o `mvnw`/`gradlew` do projeto quando existir. Esconder o terminal nao encerra a aplicacao. Para depurar, use `F9` (ver Depuracao).
 

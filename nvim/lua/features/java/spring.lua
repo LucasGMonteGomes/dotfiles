@@ -256,7 +256,64 @@ function M.stop()
   notify("Aplicacao encerrada: " .. vim.fs.basename(root))
 end
 
+-- Busca de simbolos do Spring Boot Language Server (`@/` endpoints, `@+`
+-- beans). A consulta vai somente para ele: o jdtls tambem responderia com
+-- simbolos Java sem relacao.
+local function spring_symbols(query, title)
+  local client = vim.lsp.get_clients({ name = "spring-boot" })[1]
+  if not client then
+    notify("O Spring Boot Language Server nao esta ativo neste projeto", vim.log.levels.WARN)
+    return
+  end
+
+  client:request("workspace/symbol", { query = query }, function(err, result)
+    if err then
+      notify("Falha ao buscar " .. title:lower() .. ": " .. err.message, vim.log.levels.ERROR)
+      return
+    end
+
+    local items = {}
+    for _, symbol in ipairs(result or {}) do
+      local location = symbol.location
+      if location and location.range then
+        table.insert(items, {
+          text = symbol.name,
+          file = vim.uri_to_fname(location.uri),
+          pos = { location.range.start.line + 1, location.range.start.character },
+        })
+      end
+    end
+    if #items == 0 then
+      notify("Nenhum resultado em " .. title:lower(), vim.log.levels.WARN)
+      return
+    end
+
+    Snacks.picker({
+      title = title,
+      items = items,
+      format = function(item)
+        return {
+          { item.text },
+          { "  " },
+          { vim.fn.fnamemodify(item.file, ":t"), "Comment" },
+        }
+      end,
+    })
+  end)
+end
+
+function M.endpoints()
+  spring_symbols("@/", "Endpoints")
+end
+
+function M.beans()
+  spring_symbols("@+", "Beans")
+end
+
 function M.setup()
+  vim.keymap.set("n", "<leader>se", M.endpoints, { desc = "Spring: buscar endpoints" })
+  vim.keymap.set("n", "<leader>sb", M.beans, { desc = "Spring: buscar beans" })
+
   vim.api.nvim_create_user_command("SpringInitializr", M.open, {
     desc = "Criar um projeto pela API do Spring Initializr",
   })
