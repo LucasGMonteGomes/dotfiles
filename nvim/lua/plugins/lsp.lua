@@ -12,10 +12,15 @@ return {
         config = function()
             require("mason").setup()
 
-            -- Pacotes que nao sao servidores LSP e, por isso, ficam fora do
-            -- ensure_installed do mason-lspconfig: depurador e testes Java e o
-            -- SonarLint. Sao instalados em segundo plano na primeira vez.
-            local tools = { "java-debug-adapter", "java-test", "sonarlint-language-server" }
+            -- Pacotes que o mason-lspconfig nao gerencia: depurador e testes
+            -- Java, SonarLint e Spring Boot Tools (iniciado pelo spring-boot.nvim).
+            -- Sao instalados em segundo plano na primeira vez.
+            local tools = {
+                "java-debug-adapter",
+                "java-test",
+                "sonarlint-language-server",
+                "vscode-spring-boot-tools",
+            }
             local registry = require("mason-registry")
             registry.refresh(function()
                 for _, name in ipairs(tools) do
@@ -45,6 +50,8 @@ return {
             "mfussenegger/nvim-jdtls",
             "b0o/SchemaStore.nvim",
             "saghen/blink.cmp",
+            -- Precisa ser configurado antes do jdtls (ver plugins/spring.lua).
+            "JavaHello/spring-boot.nvim",
         },
         config = function()
             local mason_lspconfig = require("mason-lspconfig")
@@ -178,6 +185,12 @@ return {
                     if not excluded[vim.fs.basename(jar)] then
                         table.insert(bundles, jar)
                     end
+                end
+                -- Extensoes do Spring Boot Tools: dao ao jdtls o classpath que o
+                -- servidor do Spring consulta.
+                local ok, spring_boot = pcall(require, "spring_boot")
+                if ok then
+                    vim.list_extend(bundles, spring_boot.java_extensions())
                 end
                 return bundles
             end

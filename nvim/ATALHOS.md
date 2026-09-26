@@ -77,6 +77,14 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors` e `:JavaGenerateEqualsHashCode`.
 
+## Spring Boot
+
+Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.
+
+| Atalho ou comando | Acao |
+|---|---|
+| `:SpringBoot` | Buscar anotacoes, beans, endpoints ou prototypes do projeto |
+
 ## Depuracao (Java)
 
 As teclas seguem o IntelliJ. No GNOME Terminal, F10 abre o menu e F11 alterna a tela cheia, por isso o esquema do VS Code nao e usado.
