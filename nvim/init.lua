@@ -21,6 +21,7 @@ require("features.java.codegen").setup()
 require("features.java.tests").setup()
 require("features.java.refactor").setup()
 require("features.java.newfile").setup()
+require("features.java.build").setup()
 require("features.markdown").setup()
 
 -- 1. Bootstrap do Lazy.nvim (Baixa o gerenciador de plugins)

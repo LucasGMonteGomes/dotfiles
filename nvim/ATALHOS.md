@@ -110,6 +110,19 @@ No `pom.xml`, o autocomplete sugere as tags validas do Maven para o ponto do arq
 
 Depois da extracao, o campo de renomear abre com o nome sugerido pelo jdtls: digite o nome ou pressione `Esc` para manter a sugestao.
 
+## Build (Maven/Gradle)
+
+O build roda em segundo plano, na raiz do projeto (o pom pai em projetos multi-modulo), com o `mvnw`/`gradlew` do projeto quando existir. Ao falhar, os erros de compilacao e os testes que falharam vao para a quickfix, aberta no Trouble: `Enter` num item leva ao arquivo e a linha.
+
+| Atalho ou comando | Acao |
+|---|---|
+| `Espaco b c` | Compilar |
+| `Espaco b t` | Rodar todos os testes |
+| `Espaco b b` | Escolher a tarefa: compilar, testar, empacotar, `verify`, `install`, `clean install`, `clean` ou outro comando |
+| `Espaco b l` | Repetir o ultimo build |
+| `Espaco b o` | Ver a saida completa do ultimo build |
+| `:JavaBuild clean verify` | Rodar o Maven/Gradle com os argumentos informados (sem argumentos, abre o menu) |
+
 ## Spring Boot
 
 Em projetos com Spring Boot, o Spring Boot Language Server (o mesmo do VS Code) completa e valida `application.yml`/`application.properties`: `server.po` sugere `server.port`, e propriedades inexistentes ficam marcadas. `gd` sobre uma propriedade leva a classe que a define.
