@@ -13,6 +13,7 @@ Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as du
 | `Ctrl+Z` | Desfazer a ultima alteracao |
 | `Ctrl+Alt+Z` | Refazer alteracao |
 | `Ctrl+Backspace` | Apagar uma palavra inteira |
+| `Ctrl+Delete` | Apagar a proxima palavra |
 | `Ctrl+Seta esquerda/direita` | Ir ao inicio/fim do trecho, incluindo pontuacao como `;` |
 | `Ctrl+X` | Apagar sem copiar para a area de transferencia |
 | `Ctrl+D` / `Ctrl+U` | Rolar para baixo/cima mantendo o cursor centralizado |
