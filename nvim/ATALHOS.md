@@ -94,7 +94,7 @@ Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAcce
 | `Ctrl+Alt+U` | Abrir historico de desfazer |
 | `]h` / `[h` | Proximo/anterior bloco alterado do Git |
 | `Ctrl+S` | Adicionar bloco alterado ao stage |
-| `Ctrl+Q` | Desfazer bloco alterado |
+| `Ctrl+Q` | Descartar bloco alterado (pede confirmacao; padrao e Nao) |
 | `Ctrl+B` | Mostrar autoria da linha |
 | `Ctrl+G` fora de Java | Visualizar o bloco alterado |
 | `ih` em operador/visual | Selecionar um bloco alterado do Git |
