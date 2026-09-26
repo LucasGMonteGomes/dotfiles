@@ -80,7 +80,18 @@ Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do paco
 
 Comandos equivalentes de geracao: `:JavaGenerateConstructor`, `:JavaGenerateAccessors`, `:JavaGenerateEqualsHashCode`, `:JavaGenerateToString`, `:JavaOverrideMethods` e `:JavaGenerateDelegateMethods`.
 
-Ao escolher campos ou metodos, digite os numeros (`1`, `1,3` ou `1-3`). Enter vazio aceita a sugestao do Java (itens com `*`, como so os campos no `toString`) ou todos os itens quando nao ha sugestao; nos metodos a sobrescrever, Enter vazio cancela. `0` escolhe nenhum item (no construtor, gera o construtor sem parametros) e `Esc` cancela sem gerar nada. Listas maiores que a tela abrem num seletor: `Tab` marca varios itens, `Enter` confirma (sem marcas, vale o item sob o cursor) e `Esc` cancela.
+Construtor, `equals`/`hashCode`, `toString`, sobrescrever e delegar abrem um seletor para escolher os atributos (ou metodos) usados:
+
+| Tecla no seletor | Acao |
+|---|---|
+| `Tab` | Marcar/desmarcar o item sob o cursor e ir ao proximo |
+| `Seta cima/baixo` | Mover entre os itens |
+| digitar | Filtrar a lista (ex.: `tele` mostra `telefone`) |
+| `Ctrl+A` | Marcar ou desmarcar todos |
+| `Enter` | Gerar com os itens marcados (`[x]`) |
+| `Esc` | Cancelar sem gerar nada |
+
+Nos campos, todos vem marcados (no `toString`, so os atributos, sem `getClass`/`hashCode`); desmarque o que nao quiser. Nos metodos a sobrescrever e a delegar, nada vem marcado. Enter sem nenhum item marcado gera o construtor sem parametros; nas demais opcoes, nada e gerado.
 
 ## Spring Boot
 
