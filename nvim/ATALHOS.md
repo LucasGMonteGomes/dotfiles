@@ -79,9 +79,10 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `h` | Explorer | Recolher a pasta atual |
 | `/` | Explorer | Filtrar a arvore pelo nome; `Esc` volta a arvore |
 | `a` ou `Ctrl+A` | Explorer | Criar arquivo ou pasta na pasta selecionada, com as pastas do caminho (`impl/ClienteServiceImpl.java`); o arquivo abre em seguida |
-| `r` | Explorer | Renomear arquivo ou pasta |
+| `r` | Explorer | Renomear arquivo ou pasta; editando o caminho, tambem move. Em Java, refatora (ver abaixo) |
 | `d` | Explorer | Excluir (usa a Lixeira quando disponivel) |
-| `c` / `m` / `p` | Explorer | Copiar / mover / colar |
+| `m` | Explorer | Mover para outra pasta (pergunta o destino); com itens marcados por `Tab`, move todos para a pasta selecionada |
+| `c` / `y` / `p` | Explorer | Copiar / marcar para copiar / colar |
 | `Ctrl+C` | Explorer | Sem acao; nao muda mais a pasta exibida |
 | `Ctrl+P` | Editor ou Explorer | Buscar arquivos e pastas do projeto; uma pasta abre no Explorer, ja expandida |
 | `Ctrl+F` | Editor ou Explorer | Buscar texto em todo o projeto |
@@ -92,6 +93,8 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `Ctrl+Alt+Y` | Editor | Buscar simbolo em todo o projeto |
 
 O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pastas expandem no lugar. Ele abre sozinho quando o Neovim e iniciado sem arquivo (`nvim`, `nvim .` ou `nvim pasta/`); com um arquivo (`nvim README.md`), o arquivo abre direto e `Ctrl+E` mostra a arvore com ele selecionado. A raiz e o repositorio Git do arquivo (ou a raiz do projeto Maven/Gradle).
+
+Renomear e mover em Java funcionam como no IntelliJ: renomear `Calc.java` para `Calculadora.java` muda a declaracao da classe, os construtores, as referencias e os imports em todo o projeto; mover um `.java` para outra pasta, ou renomear uma pasta de pacote, atualiza o `package` dos arquivos e os imports de quem os usa. Os arquivos alterados sao salvos, e os que estavam abertos continuam abertos no caminho novo. O refactor precisa do servidor Java pronto (icone do Java verde na statusline); sem ele, o Explorer pergunta se deve renomear so o arquivo. A pasta de testes nao acompanha: renomear o pacote `calc` em `src/main` nao renomeia `src/test/.../calc`.
 
 Marcadores no Explorer:
 

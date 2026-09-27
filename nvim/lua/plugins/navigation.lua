@@ -69,6 +69,98 @@ local function format_with_unsaved(item, picker)
   return ret
 end
 
+local function refresh_after_move(picker, from, to)
+  local Tree = require("snacks.explorer.tree")
+  Tree:refresh(vim.fs.dirname(from))
+  Tree:refresh(vim.fs.dirname(to))
+  require("snacks.explorer.actions").update(picker, { target = to })
+end
+
+-- Renomear (o caminho inteiro pode ser editado, o que tambem move). Arquivos
+-- .java e pastas de pacote passam pelo refactor do jdtls (features/rename.lua).
+local function rename_item(picker, item)
+  if not item then
+    return
+  end
+  local root = picker:cwd()
+  local current = vim.fs.relpath(root, item.file) or item.file
+  Snacks.input({
+    prompt = "Renomear (ou mover, editando o caminho)",
+    default = current,
+    completion = "file",
+  }, function(value)
+    value = value and vim.trim(value) or ""
+    if value == "" or value == current then
+      return
+    end
+    local to = value:sub(1, 1) == "/" and value or vim.fs.joinpath(root, value)
+    if vim.uv.fs_stat(to) then
+      vim.notify("Ja existe: " .. value, vim.log.levels.WARN, { title = "Explorador" })
+      return
+    end
+    Snacks.rename.rename_file({
+      from = item.file,
+      to = to,
+      on_rename = function(new, old, ok)
+        if ok then
+          refresh_after_move(picker, old, new)
+        end
+      end,
+    })
+  end)
+end
+
+-- Mover: os itens marcados com Tab vao para a pasta selecionada; sem itens
+-- marcados, pergunta a pasta de destino do item sob o cursor.
+local function move_items(picker, item)
+  local paths = vim.tbl_map(Snacks.picker.util.path, picker:selected())
+  local root = picker:cwd()
+  local function move(sources, target)
+    for _, from in ipairs(sources) do
+      local to = vim.fs.joinpath(target, vim.fs.basename(from))
+      if vim.uv.fs_stat(to) then
+        vim.notify("Ja existe: " .. (vim.fs.relpath(root, to) or to), vim.log.levels.WARN, { title = "Explorador" })
+      else
+        Snacks.rename.rename_file({ from = from, to = to })
+        refresh_after_move(picker, from, to)
+      end
+    end
+    picker.list:set_selected()
+  end
+
+  if #paths > 0 then
+    local target = picker:dir()
+    local what = #paths == 1 and vim.fs.basename(paths[1]) or (#paths .. " itens")
+    Snacks.picker.util.confirm(
+      "Mover " .. what .. " para " .. (vim.fs.relpath(root, target) or target) .. "/?",
+      function()
+        move(paths, target)
+      end
+    )
+    return
+  end
+  if not item then
+    return
+  end
+  local parent = vim.fs.dirname(item.file)
+  Snacks.input({
+    prompt = "Mover " .. vim.fs.basename(item.file) .. " para a pasta",
+    default = (vim.fs.relpath(root, parent) or parent) .. "/",
+    completion = "dir",
+  }, function(value)
+    value = value and vim.trim(value):gsub("/$", "") or ""
+    if value == "" then
+      return
+    end
+    local target = value:sub(1, 1) == "/" and value or vim.fs.joinpath(root, value)
+    if target == parent then
+      return
+    end
+    vim.fn.mkdir(target, "p")
+    move({ item.file }, target)
+  end)
+end
+
 -- Do explorador, a busca usa a mesma raiz exibida na arvore.
 local function open_file_search(picker)
   local cwd = picker:cwd()
@@ -169,6 +261,11 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    config = function(_, opts)
+      require("snacks").setup(opts)
+      -- Renomear/mover do explorador com o refactor do jdtls.
+      require("features.rename").setup()
+    end,
     ---@type snacks.Config
     opts = {
       explorer = {
@@ -192,6 +289,8 @@ return {
           open_or_expand_java_source = open_or_expand_java_source,
           open_file_search = open_file_search,
           add_and_open = add_and_open,
+          rename_item = rename_item,
+          move_items = move_items,
           open_project_search = open_project_search,
           toggle_terminal = toggle_terminal,
           open_in_right_split = open_in_right_split,
@@ -259,6 +358,8 @@ return {
                   -- No Explorer Ctrl+A cria, enquanto no editor continua
                   -- abrindo a busca de todos os arquivos.
                   ["a"] = "add_and_open",
+                  ["r"] = "rename_item",
+                  ["m"] = "move_items",
                   ["<C-a>"] = "add_and_open",
                   ["<C-e>"] = "close",
                   ["<C-p>"] = "open_file_search",

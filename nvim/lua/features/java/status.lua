@@ -100,6 +100,12 @@ local function current_status()
   return client and client_state(client.id)
 end
 
+-- O jdtls terminou de importar o projeto (usado pelo refactor ao renomear).
+function M.is_ready(client_id)
+  local status = clients[client_id]
+  return status ~= nil and status.state == "ready"
+end
+
 local function shorten(text, max)
   return #text > max and (text:sub(1, max - 1) .. "…") or text
 end
