@@ -20,3 +20,7 @@ vim.api.nvim_create_user_command("Atalhos", function()
   local guide = vim.fs.joinpath(vim.fn.stdpath("config"), "ATALHOS.md")
   vim.cmd.edit(vim.fn.fnameescape(guide))
 end, { desc = "Abrir guia dos atalhos configurados" })
+
+vim.api.nvim_create_user_command("ManualVim", function()
+  vim.ui.open(vim.fs.joinpath(vim.fn.stdpath("config"), "manual-vim.html"))
+end, { desc = "Abrir no navegador o manual dos modos e comandos do Vim" })

@@ -2,6 +2,8 @@
 
 Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; `Espaco` e a tecla lider (`<leader>`); letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
 
+Para aprender os modos e os comandos de edicao do Vim (`ciw`, `di(`, `V`, `Ctrl+V`, `:%s`...), `:ManualVim` abre no navegador o [manual com exemplos animados em Java](manual-vim.html).
+
 ## Sumario
 
 - [Modos e edicao](#modos-e-edicao)
@@ -348,5 +350,6 @@ digitou. O preview nao exibe sublinhados de ortografia.
 | `Ctrl+Alt+Q` | Reiniciar a configuracao do Neovim |
 | `Ctrl+Alt+C` | Tornar o arquivo atual executavel (`chmod +x`) |
 | `:Atalhos` | Abrir este guia |
+| `:ManualVim` | Abrir no navegador o manual dos modos e comandos do Vim, com exemplos em Java |
 | `:DockerLint` | Validar Dockerfile e Compose, quando os arquivos existirem |
 | `:PackAdd` / `:PackUpdate` / `:PackDel` | Adicionar / atualizar / remover plugins nativos (`vim.pack`) |
