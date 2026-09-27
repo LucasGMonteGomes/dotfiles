@@ -1,5 +1,42 @@
 local ignored_paths = require("features.files").ignored_paths
 
+-- Cria o arquivo ou a pasta a partir da pasta selecionada, com as pastas
+-- intermediarias (`service/impl/ClienteServiceImpl.java`). Um arquivo novo
+-- abre em seguida; em .java, o arquivo vazio dispara o seletor de esqueleto
+-- (features/java/newfile.lua). Uma pasta fica selecionada no explorador.
+local function add_and_open(picker)
+  local Tree = require("snacks.explorer.tree")
+  local Actions = require("snacks.explorer.actions")
+  local dir = picker:dir()
+  local where = vim.fs.relpath(picker:cwd(), dir) or dir
+  Snacks.input({
+    prompt = "Novo arquivo ou pasta em " .. (where == "." and "./" or where .. "/") .. " (pastas terminam com /)",
+  }, function(value)
+    if not value or vim.trim(value) == "" then
+      return
+    end
+    local path = vim.fs.normalize(dir .. "/" .. vim.trim(value))
+    local is_file = value:sub(-1) ~= "/"
+    local folder = is_file and vim.fs.dirname(path) or path
+    if vim.uv.fs_stat(path) then
+      vim.notify("Ja existe: " .. vim.fn.fnamemodify(path, ":~:."), vim.log.levels.WARN, { title = "Explorador" })
+      return
+    end
+    vim.fn.mkdir(folder, "p")
+    if is_file then
+      io.open(path, "w"):close()
+      picker:close()
+      vim.schedule(function()
+        vim.cmd.edit(vim.fn.fnameescape(path))
+      end)
+      return
+    end
+    Tree:refresh(dir)
+    Tree:open(folder)
+    Actions.update(picker, { target = folder, refresh = true })
+  end)
+end
+
 -- Do explorador, a busca usa a mesma raiz exibida na arvore.
 local function open_file_search(picker)
   local cwd = picker:cwd()
@@ -122,6 +159,7 @@ return {
         actions = {
           open_or_expand_java_source = open_or_expand_java_source,
           open_file_search = open_file_search,
+          add_and_open = add_and_open,
           open_project_search = open_project_search,
           toggle_terminal = toggle_terminal,
           open_in_right_split = open_in_right_split,
@@ -180,7 +218,8 @@ return {
                   ["<C-c>"] = "picker_noop",
                   -- No Explorer Ctrl+A cria, enquanto no editor continua
                   -- abrindo a busca de todos os arquivos.
-                  ["<C-a>"] = "explorer_add",
+                  ["a"] = "add_and_open",
+                  ["<C-a>"] = "add_and_open",
                   ["<C-e>"] = "close",
                   ["<C-p>"] = "open_file_search",
                   ["<C-f>"] = "open_project_search",

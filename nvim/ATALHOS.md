@@ -78,7 +78,7 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `Ctrl+L` | Explorer, sobre um arquivo | Abrir o arquivo em uma divisao vertical a direita |
 | `h` | Explorer | Recolher a pasta atual |
 | `/` | Explorer | Filtrar a arvore pelo nome; `Esc` volta a arvore |
-| `a` ou `Ctrl+A` | Explorer | Criar arquivo/pasta dentro da pasta selecionada |
+| `a` ou `Ctrl+A` | Explorer | Criar arquivo ou pasta na pasta selecionada, com as pastas do caminho (`impl/ClienteServiceImpl.java`); o arquivo abre em seguida |
 | `r` | Explorer | Renomear arquivo ou pasta |
 | `d` | Explorer | Excluir (usa a Lixeira quando disponivel) |
 | `c` / `m` / `p` | Explorer | Copiar / mover / colar |
@@ -97,7 +97,7 @@ O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pa
 
 A busca abre num retangulo no alto da tela. Cada resultado mostra o nome em destaque e a pasta ao lado; a busca tambem considera o caminho (`serv impl` encontra os arquivos de `service/impl`), e arquivos usados ha pouco aparecem primeiro. `Enter` abre o arquivo; numa pasta, abre o Explorer com ela selecionada e expandida. `Ctrl+V` abre o arquivo numa divisao vertical e `Esc` fecha a busca.
 
-Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo. A criacao ocorre dentro da pasta que esta selecionada.
+Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo, e as pastas que faltarem no caminho sao criadas junto. A criacao ocorre dentro da pasta que esta selecionada (o campo mostra qual). Um arquivo novo abre na hora; se for `.java`, o seletor de esqueleto aparece em seguida.
 
 ### Arquivo Java novo
 
