@@ -84,7 +84,7 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `d` | Explorer | Excluir (usa a Lixeira quando disponivel) |
 | `c` / `m` / `p` | Explorer | Copiar / mover / colar |
 | `Ctrl+C` | Explorer | Sem acao; nao muda mais a pasta exibida |
-| `Ctrl+P` | Editor ou Explorer | Busca inteligente: buffers, recentes e arquivos |
+| `Ctrl+P` | Editor ou Explorer | Buscar arquivos e pastas do projeto; uma pasta abre no Explorer, ja expandida |
 | `Ctrl+F` | Editor ou Explorer | Buscar texto em todo o projeto |
 | `Ctrl+A` | Editor | Buscar todos os arquivos, inclusive os ignorados |
 | `Ctrl+Alt+W` | Editor | Buscar a palavra (ou selecao) no projeto |
@@ -93,6 +93,10 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `Ctrl+Alt+Y` | Editor | Buscar simbolo em todo o projeto |
 | `-` | Editor | Abrir a pasta atual no Oil |
 | `q` ou `Esc` | Oil | Fechar o Oil |
+
+### Busca de arquivos e pastas (`Ctrl+P`)
+
+A busca abre num retangulo no alto da tela. Cada resultado mostra o nome em destaque e a pasta ao lado; a busca tambem considera o caminho (`serv impl` encontra os arquivos de `service/impl`), e arquivos usados ha pouco aparecem primeiro. `Enter` abre o arquivo; numa pasta, abre o Explorer com ela selecionada e expandida. `Ctrl+V` abre o arquivo numa divisao vertical e `Esc` fecha a busca.
 
 Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo. A criacao ocorre dentro da pasta que esta selecionada.
 

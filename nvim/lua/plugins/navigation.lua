@@ -1,13 +1,4 @@
-local ignored_paths = {
-  ".git",
-  ".gradle",
-  ".idea",
-  ".vscode",
-  "build",
-  "dist",
-  "node_modules",
-  "target",
-}
+local ignored_paths = require("features.files").ignored_paths
 
 local function get_explorer()
   return Snacks.picker.get({ source = "explorer" })[1]
@@ -37,8 +28,11 @@ local function focus_editor(picker)
   end
 end
 
-local function open_smart_picker()
-  Snacks.picker.smart()
+-- Do explorador, a busca usa a mesma raiz exibida na arvore.
+local function open_file_search(picker)
+  local cwd = picker:cwd()
+  picker:close()
+  require("features.files").find({ cwd = cwd })
 end
 
 local function open_project_search()
@@ -157,7 +151,7 @@ return {
         actions = {
           open_or_expand_java_source = open_or_expand_java_source,
           focus_editor = focus_editor,
-          open_smart_picker = open_smart_picker,
+          open_file_search = open_file_search,
           open_project_search = open_project_search,
           toggle_terminal = toggle_terminal,
           open_in_right_split = open_in_right_split,
@@ -208,7 +202,7 @@ return {
                   -- abrindo a busca de todos os arquivos.
                   ["<C-a>"] = "explorer_add",
                   ["<C-n>"] = "close",
-                  ["<C-p>"] = "open_smart_picker",
+                  ["<C-p>"] = "open_file_search",
                   ["<C-f>"] = "open_project_search",
                   ["<C-t>"] = "toggle_terminal",
                   ["<C-l>"] = "open_in_right_split",
@@ -275,9 +269,9 @@ return {
       {
         "<C-p>",
         function()
-          Snacks.picker.smart()
+          require("features.files").find()
         end,
-        desc = "Buscar buffers, recentes e arquivos do projeto",
+        desc = "Buscar arquivos e pastas do projeto",
       },
       {
         "<C-f>",
