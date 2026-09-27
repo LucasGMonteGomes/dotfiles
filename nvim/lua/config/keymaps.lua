@@ -4,8 +4,13 @@ vim.keymap.set("x", "p", [["_dP]], { desc = "Paste over selection without losing
 
 vim.keymap.set({ "n", "v" }, "<C-x>", [["_d]], { desc = "Apagar sem copiar" })
 
-vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Voltar para o modo NORMAL" })
-vim.keymap.set("n", "<C-c>", "i", { desc = "Entrar no modo INSERT" })
+-- Copiar e colar com a area de transferencia do sistema (clipboard
+-- unnamedplus em config/options.lua: `y` e `p` ja usam a mesma). No NORMAL,
+-- Ctrl+V continua sendo a selecao em bloco do Vim.
+vim.keymap.set("x", "<C-c>", '"+y', { desc = "Copiar a selecao" })
+-- <C-r><C-o> cola o texto como esta, sem reindentar nem disparar o
+-- autocomplete; o cursor fica no fim do texto colado.
+vim.keymap.set("i", "<C-v>", "<C-r><C-o>+", { desc = "Colar" })
 
 -- Alterna somente entre janelas de arquivos. Explorer, terminal e janelas
 -- flutuantes nao entram no ciclo, portanto dois arquivos em split alternam
@@ -43,19 +48,8 @@ vim.keymap.set({ "n", "i" }, "\27[9;5u", next_file_window, {
   desc = "Alternar entre arquivos divididos",
 })
 
--- Esc pode fechar o menu de autocomplete, mas nao troca INSERT por NORMAL.
--- A troca entre os dois modos fica exclusivamente no Ctrl+C.
-vim.keymap.set("i", "<Esc>", function()
-  if vim.fn.pumvisible() == 1 then
-    return "<C-e>"
-  end
-  return ""
-end, {
-  expr = true,
-  replace_keycodes = true,
-  desc = "Fechar autocomplete sem sair do modo INSERT",
-})
-
+-- `u` e Ctrl+R (padrao do Vim) desfazem e refazem; Ctrl+Z e Ctrl+Alt+Z sao
+-- alternativas. O Ctrl+Z padrao suspenderia o Neovim.
 vim.keymap.set("n", "<C-z>", "u", { desc = "Desfazer ultima alteracao" })
 vim.keymap.set("i", "<C-z>", "<C-o>u", { desc = "Desfazer ultima alteracao" })
 vim.keymap.set("n", "<C-A-z>", "<C-r>", { desc = "Refazer ultima alteracao" })
@@ -100,7 +94,10 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "move up in buffer with cursor 
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result cursor centered" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result cursor centered" })
 
-vim.keymap.set("n", "<C-r>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Substituir palavra no arquivo" })
+-- Em <leader>r, ao lado das refatoracoes do Java; Ctrl+R volta a ser refazer.
+vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], {
+  desc = "Substituir a palavra sob o cursor no arquivo",
+})
 
 if vim.fn.has("win32") == 0 then
   vim.keymap.set("n", "<C-A-c>", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Tornar arquivo executavel" })
