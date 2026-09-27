@@ -39,6 +39,8 @@ return {
         LineNr = { fg = "$grey" },
         CursorLineNr = { fg = "$light_grey", bg = "$bg_d", fmt = "bold" },
         MiniIndentscopeSymbol = { fg = "$bg3" },
+        -- Arquivo com alteracoes nao salvas no explorador (plugins/navigation.lua).
+        ExplorerUnsaved = { fg = "$orange", fmt = "bold" },
         WinSeparator = { fg = "$bg1" },
         RenderMarkdownH1 = { fg = "$fg", fmt = "bold" },
         RenderMarkdownH2 = { fg = "$blue", fmt = "bold" },

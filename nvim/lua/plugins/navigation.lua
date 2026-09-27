@@ -37,6 +37,38 @@ local function add_and_open(picker)
   end)
 end
 
+-- Linha do explorador: o formato de arquivo do Snacks (icone, nome e a
+-- letra do Git a direita) com um ● depois do nome quando ha alteracoes nao
+-- salvas no arquivo, ou em algum arquivo de uma pasta recolhida.
+local function unsaved_paths()
+  local paths = {}
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].modified and vim.bo[buf].buftype == "" then
+      local name = vim.api.nvim_buf_get_name(buf)
+      if name ~= "" then
+        paths[#paths + 1] = vim.fs.normalize(name)
+      end
+    end
+  end
+  return paths
+end
+
+local function format_with_unsaved(item, picker)
+  local ret = require("snacks.picker.format").file(item, picker)
+  local path = item.file and vim.fs.normalize(item.file)
+  if not path then
+    return ret
+  end
+  for _, unsaved in ipairs(unsaved_paths()) do
+    if unsaved == path or (item.dir and not item.open and vim.startswith(unsaved, path .. "/")) then
+      ret[#ret + 1] = { "●", "ExplorerUnsaved" }
+      ret[#ret + 1] = { " " }
+      break
+    end
+  end
+  return ret
+end
+
 -- Do explorador, a busca usa a mesma raiz exibida na arvore.
 local function open_file_search(picker)
   local cwd = picker:cwd()
@@ -195,9 +227,17 @@ return {
           explorer = {
             title = "Explorador",
             hidden = true,
-            ignored = false,
+            -- Arquivos do .gitignore aparecem apagados (`I` esconde); a pasta
+            -- .git nunca aparece.
+            ignored = true,
+            exclude = { ".git" },
             diagnostics = false,
             git_status = true,
+            format = format_with_unsaved,
+            -- Estado do Git em letras a direita: M modificado, A adicionado,
+            -- D removido, R renomeado, ? nao rastreado, ! ignorado; o que
+            -- esta no stage tem cor propria.
+            icons = { git = { enabled = false } },
             -- Janela flutuante: fecha ao abrir um arquivo e ao clicar fora.
             jump = { close = true },
             auto_close = true,

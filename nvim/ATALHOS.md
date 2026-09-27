@@ -93,6 +93,20 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 
 O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pastas expandem no lugar. Ele abre sozinho quando o Neovim e iniciado sem arquivo (`nvim`, `nvim .` ou `nvim pasta/`); com um arquivo (`nvim README.md`), o arquivo abre direto e `Ctrl+E` mostra a arvore com ele selecionado. A raiz e o repositorio Git do arquivo (ou a raiz do projeto Maven/Gradle).
 
+Marcadores no Explorer:
+
+| Marcador | Significado |
+|---|---|
+| `●` laranja depois do nome | Alteracoes nao salvas (numa pasta recolhida: algum arquivo dentro dela) |
+| `M` a direita | Modificado em relacao ao ultimo commit |
+| `A` a direita | Arquivo novo adicionado ao stage (`git add`) |
+| `?` a direita | Nao rastreado pelo Git |
+| `!` a direita e nome apagado | Ignorado pelo `.gitignore` (`target/`, `build/`...); `I` esconde/mostra |
+| `D` / `R` a direita | Removido / renomeado |
+| sem marcador | Salvo e sem mudancas em relacao ao Git |
+
+Alteracoes que ja estao no stage aparecem com a letra numa cor propria. `]g` / `[g` pulam para o proximo/anterior arquivo com mudanca no Git.
+
 ### Busca de arquivos e pastas (`Ctrl+P`)
 
 A busca abre num retangulo no alto da tela. Cada resultado mostra o nome em destaque e a pasta ao lado; a busca tambem considera o caminho (`serv impl` encontra os arquivos de `service/impl`), e arquivos usados ha pouco aparecem primeiro. `Enter` abre o arquivo; numa pasta, abre o Explorer com ela selecionada e expandida. `Ctrl+V` abre o arquivo numa divisao vertical e `Esc` fecha a busca.
