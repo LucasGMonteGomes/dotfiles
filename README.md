@@ -3,6 +3,11 @@
 Este pacote adapta as configurações enviadas do Windows para o Debian. Ele não
 contém tokens, chaves SSH ou senhas.
 
+O destaque é o Neovim, configurado como IDE para Java e Spring Boot: jdtls,
+geração e refatoração de código, build Maven/Gradle, testes, cobertura com
+JaCoCo, depuração e Spring Boot Language Server. Veja o
+[README do Neovim](nvim/README.md) e o [guia de atalhos](nvim/ATALHOS.md).
+
 ## O que foi adaptado
 
 | Origem | Implementação no Debian |
@@ -11,7 +16,7 @@ contém tokens, chaves SSH ou senhas.
 | Funções e aliases do PowerShell | Versão equivalente para o Bash, que é o shell padrão do Debian |
 | Tema do Oh My Posh | O mesmo `lucas.omp.json`, compartilhado por Bash e PowerShell |
 | Windows Terminal | Script que cria um perfil novo no GNOME Terminal com a fonte e a paleta One Dark |
-| Neovim | Caminhos do Java descobertos automaticamente pelo `PATH`/`JAVA_HOME` e terminal integrado usando o shell do Linux |
+| Neovim | IDE Java/Spring Boot com caminhos do Java descobertos pelo `PATH`/`JAVA_HOME`, todos os JDKs instalados registrados e terminal integrado usando o shell do Linux |
 
 O instalador cria links simbólicos de `~/.config` para este repositório, então
 qualquer alteração (inclusive o `lazy-lock.json` atualizado pelo `:Lazy sync`)
@@ -114,15 +119,21 @@ Abra o editor com acesso à internet:
 nvim
 ```
 
-O `lazy.nvim` será baixado e instalará os plugins definidos no arquivo de
-trava. Em seguida, dentro do Neovim, execute:
+O `lazy.nvim` será baixado e instalará os plugins nas versões do
+`lazy-lock.json`. Ao mesmo tempo, o Mason instala em segundo plano os
+servidores de linguagem e as ferramentas (jdtls, depurador e testes Java,
+Spring Boot Tools, SonarLint, lemminx e outros), avisando quando cada um
+termina. Depois que os avisos pararem, reinicie o Neovim (`Ctrl+Alt+Q`) e
+execute:
 
 ```vim
-:Lazy sync
-:Mason
-:MasonInstall sonarlint-language-server
+:NeotestJava setup
 :checkhealth
 ```
+
+O `:NeotestJava setup` baixa o JUnit Console Launcher usado pelo painel de
+testes (neotest); ele pede confirmação antes de baixar. O `:Mason` mostra o
+andamento das instalações e permite reinstalar um pacote que tenha falhado.
 
 O Java é localizado nesta ordem:
 
