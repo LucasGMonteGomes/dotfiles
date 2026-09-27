@@ -311,27 +311,4 @@ return {
       },
     },
   },
-  {
-    "stevearc/oil.nvim",
-    lazy = false,
-    dependencies = { "nvim-mini/mini.nvim" },
-    keys = {
-      { "-", "<cmd>Oil<cr>", desc = "Editar pasta atual com Oil" },
-    },
-    opts = {
-      default_file_explorer = false,
-      columns = { "icon" },
-      delete_to_trash = true,
-      skip_confirm_for_simple_edits = false,
-      view_options = {
-        show_hidden = true,
-      },
-      keymaps = {
-        ["<C-l>"] = false,
-        ["<C-j>"] = false,
-        ["q"] = "actions.close",
-        ["<Esc>"] = "actions.close",
-      },
-    },
-  },
 }

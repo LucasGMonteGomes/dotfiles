@@ -90,8 +90,6 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `Ctrl+Alt+B` | Editor | Listar buffers abertos |
 | `Ctrl+Alt+S` | Editor | Buscar classe, metodo ou simbolo do arquivo |
 | `Ctrl+Alt+Y` | Editor | Buscar simbolo em todo o projeto |
-| `-` | Editor | Abrir a pasta atual no Oil |
-| `q` ou `Esc` | Oil | Fechar o Oil |
 
 O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pastas expandem no lugar. Ele abre sozinho quando o Neovim e iniciado sem arquivo (`nvim`, `nvim .` ou `nvim pasta/`); com um arquivo (`nvim README.md`), o arquivo abre direto e `Ctrl+E` mostra a arvore com ele selecionado. A raiz e o repositorio Git do arquivo (ou a raiz do projeto Maven/Gradle).
 
