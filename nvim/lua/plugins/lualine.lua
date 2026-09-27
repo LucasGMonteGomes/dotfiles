@@ -43,7 +43,6 @@ return {
             "snacks_layout_box",
             "snacks_picker_input",
             "snacks_picker_list",
-            "oil",
             "trouble",
             "lazy",
           },

@@ -72,29 +72,49 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 
 | Atalho | Onde | Acao |
 |---|---|---|
-| `Ctrl+N` | Editor | Abrir/fechar o Explorer |
-| `Ctrl+N` | Explorer | Fechar o Explorer |
-| `Ctrl+E` | Editor | Levar o cursor ao Explorer sem fecha-lo |
-| `Esc` | Explorer | Voltar ao editor |
-| `Enter` ou `l` | Explorer | Abrir arquivo ou expandir pasta (`src` expande sua estrutura Java) |
+| `Ctrl+E` | Editor | Abrir o Explorer na raiz do projeto, com o arquivo atual selecionado |
+| `Ctrl+E` ou `Esc` | Explorer | Fechar o Explorer e voltar ao arquivo |
+| `Enter` ou `l` | Explorer | Abrir o arquivo (o Explorer fecha) ou expandir/recolher a pasta (`src` expande sua estrutura Java) |
 | `Ctrl+L` | Explorer, sobre um arquivo | Abrir o arquivo em uma divisao vertical a direita |
 | `h` | Explorer | Recolher a pasta atual |
-| `a` ou `Ctrl+A` | Explorer | Criar arquivo/pasta dentro da pasta selecionada |
-| `r` | Explorer | Renomear arquivo ou pasta |
+| `/` | Explorer | Filtrar a arvore pelo nome; `Esc` volta a arvore |
+| `a` ou `Ctrl+A` | Explorer | Criar arquivo ou pasta na pasta selecionada, com as pastas do caminho (`impl/ClienteServiceImpl.java`); o arquivo abre em seguida |
+| `r` | Explorer | Renomear arquivo ou pasta; editando o caminho, tambem move. Em Java, refatora (ver abaixo) |
 | `d` | Explorer | Excluir (usa a Lixeira quando disponivel) |
-| `c` / `m` / `p` | Explorer | Copiar / mover / colar |
+| `m` | Explorer | Mover para outra pasta (pergunta o destino); com itens marcados por `Tab`, move todos para a pasta selecionada |
+| `c` / `y` / `p` | Explorer | Copiar / marcar para copiar / colar |
 | `Ctrl+C` | Explorer | Sem acao; nao muda mais a pasta exibida |
-| `Ctrl+P` | Editor ou Explorer | Busca inteligente: buffers, recentes e arquivos |
+| `Ctrl+P` | Editor ou Explorer | Buscar arquivos e pastas do projeto; uma pasta abre no Explorer, ja expandida |
 | `Ctrl+F` | Editor ou Explorer | Buscar texto em todo o projeto |
 | `Ctrl+A` | Editor | Buscar todos os arquivos, inclusive os ignorados |
 | `Ctrl+Alt+W` | Editor | Buscar a palavra (ou selecao) no projeto |
 | `Ctrl+Alt+B` | Editor | Listar buffers abertos |
 | `Ctrl+Alt+S` | Editor | Buscar classe, metodo ou simbolo do arquivo |
 | `Ctrl+Alt+Y` | Editor | Buscar simbolo em todo o projeto |
-| `-` | Editor | Abrir a pasta atual no Oil |
-| `q` ou `Esc` | Oil | Fechar o Oil |
 
-Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo. A criacao ocorre dentro da pasta que esta selecionada.
+O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pastas expandem no lugar. Ele abre sozinho quando o Neovim e iniciado sem arquivo (`nvim`, `nvim .` ou `nvim pasta/`); com um arquivo (`nvim README.md`), o arquivo abre direto e `Ctrl+E` mostra a arvore com ele selecionado. A raiz e o repositorio Git do arquivo (ou a raiz do projeto Maven/Gradle).
+
+Renomear e mover em Java funcionam como no IntelliJ: renomear `Calc.java` para `Calculadora.java` muda a declaracao da classe, os construtores, as referencias e os imports em todo o projeto; mover um `.java` para outra pasta, ou renomear uma pasta de pacote, atualiza o `package` dos arquivos e os imports de quem os usa. Os arquivos alterados sao salvos, e os que estavam abertos continuam abertos no caminho novo. O refactor precisa do servidor Java pronto (icone do Java verde na statusline); sem ele, o Explorer pergunta se deve renomear so o arquivo. A pasta de testes nao acompanha: renomear o pacote `calc` em `src/main` nao renomeia `src/test/.../calc`.
+
+Marcadores no Explorer:
+
+| Marcador | Significado |
+|---|---|
+| `●` laranja depois do nome | Alteracoes nao salvas (numa pasta recolhida: algum arquivo dentro dela) |
+| `M` a direita | Modificado em relacao ao ultimo commit |
+| `A` a direita | Arquivo novo adicionado ao stage (`git add`) |
+| `?` a direita | Nao rastreado pelo Git |
+| `!` a direita e nome apagado | Ignorado pelo `.gitignore` (`target/`, `build/`...); `I` esconde/mostra |
+| `D` / `R` a direita | Removido / renomeado |
+| sem marcador | Salvo e sem mudancas em relacao ao Git |
+
+Alteracoes que ja estao no stage aparecem com a letra numa cor propria. `]g` / `[g` pulam para o proximo/anterior arquivo com mudanca no Git.
+
+### Busca de arquivos e pastas (`Ctrl+P`)
+
+A busca abre num retangulo no alto da tela. Cada resultado mostra o nome em destaque e a pasta ao lado; a busca tambem considera o caminho (`serv impl` encontra os arquivos de `service/impl`), e arquivos usados ha pouco aparecem primeiro. `Enter` abre o arquivo; numa pasta, abre o Explorer com ela selecionada e expandida. `Ctrl+V` abre o arquivo numa divisao vertical e `Esc` fecha a busca.
+
+Ao abrir `src`, o Explorer abre somente `main/java` e a cadeia principal do pacote (`com/example/...`); ele para nas pastas estruturais como `controller`, `service` e `model`. Para criar uma pasta, informe um nome terminado em `/`, por exemplo `controller/`. Sem a barra final, o Explorer cria um arquivo, e as pastas que faltarem no caminho sao criadas junto. A criacao ocorre dentro da pasta que esta selecionada (o campo mostra qual). Um arquivo novo abre na hora; se for `.java`, o seletor de esqueleto aparece em seguida.
 
 ### Arquivo Java novo
 

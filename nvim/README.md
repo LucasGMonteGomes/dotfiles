@@ -11,6 +11,19 @@ editor com `:Atalhos`. Para aprender os modos e os comandos de edição do Vim,
 o [manual com exemplos animados em Java](manual-vim.html) abre no navegador
 com `:ManualVim` (ou direto pelo arquivo).
 
+## Arquivos do projeto
+
+- **Explorador (`Ctrl+E`)**: uma janela no centro da tela com a árvore do
+  projeto inteiro, em que as pastas expandem no lugar. Abre sozinho quando o
+  Neovim é iniciado sem arquivo (`nvim`, `nvim .`) e fecha ao abrir um arquivo.
+  Cria arquivos e pastas (inclusive o caminho inteiro de uma vez), renomeia e
+  move; em Java, renomear ou mover refatora a classe, o `package` e os imports
+  do projeto, como no IntelliJ. Cada arquivo mostra se está não salvo (`●`),
+  modificado (`M`), no stage (`A`), fora do Git (`?`) ou no `.gitignore` (`!`).
+- **Busca (`Ctrl+P`)**: um retângulo no alto da tela, como o "Go to File" do
+  VS Code, que encontra arquivos e pastas pelo nome ou pelo caminho, com a
+  pasta de cada resultado ao lado. Escolher uma pasta a abre no explorador.
+
 ## Java e Spring Boot
 
 | Área | O que a configuração oferece |
@@ -74,6 +87,8 @@ nvim/
 ├── lua/features/         recursos próprios escritos para esta configuração
 │   ├── java/             jdtls, geração, refatoração, build, testes,
 │   │                     cobertura, Spring, Maven e statusline
+│   ├── files.lua         explorador (Ctrl+E) e busca de arquivos (Ctrl+P)
+│   ├── rename.lua        renomear/mover com o refactor do LSP (jdtls)
 │   ├── docker.lua        :DockerLint
 │   └── markdown.lua      preview e corretor ortográfico
 ├── snippets/java.json    snippets Java carregados pelo blink.cmp
