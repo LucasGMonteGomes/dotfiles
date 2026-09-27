@@ -168,7 +168,7 @@ return {
           input = {
             keys = {
               -- Em interfaces temporarias, Esc fecha a interface em qualquer
-              -- modo. Nos arquivos, Esc continua sem trocar INSERT/NORMAL.
+              -- modo; Ctrl+C alterna entre o campo de busca e a lista.
               ["<Esc>"] = { "close", mode = { "n", "i" } },
               ["<C-c>"] = { "picker_stop_insert", mode = "i" },
               ["<C-e>"] = "picker_noop",
@@ -201,8 +201,8 @@ return {
                   ["<CR>"] = "open_or_expand_java_source",
                   ["l"] = "open_or_expand_java_source",
                   -- O Snacks usa Ctrl+C para `tcd` por padrao: isto troca o
-                  -- diretorio do Explorer pela pasta selecionada. Para este
-                  -- fluxo, Ctrl+C e exclusivamente o seletor INSERT/NORMAL.
+                  -- diretorio do Explorer pela pasta selecionada, facil de
+                  -- disparar sem querer.
                   ["<C-c>"] = "picker_noop",
                   -- No Explorer Ctrl+A cria, enquanto no editor continua
                   -- abrindo a busca de todos os arquivos.

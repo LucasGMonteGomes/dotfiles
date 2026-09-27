@@ -7,7 +7,9 @@ edição do Vim. Também atende Rust, Lua, YAML, Docker e Markdown.
 <img width="1338" height="677" alt="Neovim com um projeto Java aberto" src="https://github.com/user-attachments/assets/3d205699-583f-48af-814c-d02c54e97b7c" />
 
 Todos os atalhos estão em [ATALHOS.md](ATALHOS.md), que também abre dentro do
-editor com `:Atalhos`.
+editor com `:Atalhos`. Para aprender os modos e os comandos de edição do Vim,
+o [manual com exemplos animados em Java](manual-vim.html) abre no navegador
+com `:ManualVim` (ou direto pelo arquivo).
 
 ## Java e Spring Boot
 
@@ -78,7 +80,8 @@ nvim/
 ├── formatter/            perfil de formatação Java do jdtls
 ├── gradle/               init script do JaCoCo para projetos Gradle
 ├── after/queries/        ajustes de destaque de sintaxe do Java
-└── ATALHOS.md            guia de atalhos (:Atalhos)
+├── ATALHOS.md            guia de atalhos (:Atalhos)
+└── manual-vim.html       manual dos modos do Vim com exemplos (:ManualVim)
 ```
 
 ## Personalização

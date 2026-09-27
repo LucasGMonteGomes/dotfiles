@@ -2,6 +2,8 @@
 
 Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as duas teclas; `Espaco` e a tecla lider (`<leader>`); letras sozinhas sao usadas no modo **NORMAL**, salvo quando indicado.
 
+Para aprender os modos e os comandos de edicao do Vim (`ciw`, `di(`, `V`, `Ctrl+V`, `:%s`...), `:ManualVim` abre no navegador o [manual com exemplos animados em Java](manual-vim.html).
+
 ## Sumario
 
 - [Modos e edicao](#modos-e-edicao)
@@ -25,18 +27,24 @@ Abra este guia a qualquer momento com `:Atalhos`. A notacao `Ctrl+Alt` usa as du
 
 | Atalho | Acao |
 |---|---|
-| `Ctrl+C` no NORMAL | Entrar em INSERT |
-| `Ctrl+C` no INSERT | Voltar ao NORMAL |
+| `i` / `a` | Entrar em INSERT antes / depois do cursor |
+| `I` / `A` | Entrar em INSERT no inicio / fim da linha |
+| `o` / `O` | Abrir uma linha nova abaixo / acima e entrar em INSERT |
+| `Esc` | Voltar ao NORMAL (de INSERT, VISUAL ou REPLACE) |
+| `v` / `V` / `Ctrl+V` | Entrar em VISUAL por caracteres / linhas / bloco (coluna) |
+| `R` | Entrar em REPLACE (digitar por cima do texto) |
+| `u` ou `Ctrl+Z` | Desfazer a ultima alteracao |
+| `Ctrl+R` ou `Ctrl+Alt+Z` | Refazer alteracao |
+| `y` / `p` | Copiar / colar; usam a area de transferencia do sistema |
+| `Ctrl+C` no VISUAL | Copiar a selecao |
+| `Ctrl+V` no INSERT | Colar sem reindentar |
 | `Ctrl+Tab` | Alternar entre arquivos abertos em divisao, ignorando Explorer e terminal |
-| `Esc` no INSERT | Fecha apenas o menu de autocomplete; permanece em INSERT |
-| `Ctrl+Z` | Desfazer a ultima alteracao |
-| `Ctrl+Alt+Z` | Refazer alteracao |
 | `Ctrl+Backspace` | Apagar uma palavra inteira |
 | `Ctrl+Delete` | Apagar a proxima palavra |
 | `Ctrl+Seta esquerda/direita` | Ir ao inicio/fim do trecho, incluindo pontuacao como `;` |
 | `Ctrl+X` | Apagar sem copiar para a area de transferencia |
 | `Ctrl+D` / `Ctrl+U` | Rolar para baixo/cima mantendo o cursor centralizado |
-| `Ctrl+R` | Preparar substituicao da palavra sob o cursor no arquivo |
+| `Espaco r w` | Preparar substituicao da palavra sob o cursor no arquivo |
 | `p` sobre uma selecao | Colar sem perder o texto que ja estava copiado |
 | `J` / `K` com linhas selecionadas | Mover a selecao para baixo / cima |
 | `<` / `>` com linhas selecionadas | Desindentar / indentar sem perder a selecao |
@@ -111,6 +119,7 @@ Ao abrir um arquivo `.java` novo ou vazio (criado pelo Explorer ou com `:e Nome.
 | `Ctrl+Espaco` no INSERT | Solicitar sugestoes de autocomplete |
 | `Seta cima/baixo` ou `Ctrl+P`/`Ctrl+N` no autocomplete | Escolher sugestao |
 | `Enter` no autocomplete | Aceitar a sugestao escolhida; sem escolha, apenas quebra a linha |
+| `Ctrl+E` no autocomplete | Fechar o menu e continuar digitando (`Esc` fecha o menu e volta ao NORMAL) |
 | `Tab` / `Shift+Tab` | Pular para o proximo/anterior campo de um snippet |
 
 A statusline mostra o estado do jdtls no arquivo Java atual: o percentual da importacao do projeto enquanto ele inicia, tarefas que passam de 1 segundo (compilacao do projeto, por exemplo), `build com problemas` quando o `pom.xml`/`build.gradle` nao pode ser importado por completo e `erro` quando o servidor falha. Pronto e sem tarefas, fica so o icone do Java em verde.
@@ -341,5 +350,6 @@ digitou. O preview nao exibe sublinhados de ortografia.
 | `Ctrl+Alt+Q` | Reiniciar a configuracao do Neovim |
 | `Ctrl+Alt+C` | Tornar o arquivo atual executavel (`chmod +x`) |
 | `:Atalhos` | Abrir este guia |
+| `:ManualVim` | Abrir no navegador o manual dos modos e comandos do Vim, com exemplos em Java |
 | `:DockerLint` | Validar Dockerfile e Compose, quando os arquivos existirem |
 | `:PackAdd` / `:PackUpdate` / `:PackDel` | Adicionar / atualizar / remover plugins nativos (`vim.pack`) |

@@ -12,8 +12,9 @@ return {
       preset = "none",
       ["<C-Space>"] = { "show", "show_documentation", "hide_documentation" },
       ["<CR>"] = { "accept", "fallback" },
-      -- Fecha o menu; sem menu, cai no <Esc> global, que nao sai do INSERT.
-      ["<Esc>"] = { "hide", "fallback" },
+      -- Esc sai do INSERT como no Vim (o menu fecha junto); Ctrl+E fecha
+      -- so o menu e continua digitando.
+      ["<C-e>"] = { "hide", "fallback" },
       ["<Up>"] = { "select_prev", "fallback" },
       ["<Down>"] = { "select_next", "fallback" },
       ["<C-p>"] = { "select_prev", "fallback" },

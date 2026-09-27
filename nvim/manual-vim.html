@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual do Vim</title>
+<meta name="description" content="Manual dos modos e comandos do Vim/Neovim com exemplos animados em Java.">
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --surface-2: #f0f0ec;
+    --text: #1f2328;
+    --muted: #5d636b;
+    --border: #d9dad6;
+    --accent: #2f6fdb;
+    --code-bg: #1e2127;
+    --code-text: #d7dae0;
+    --code-muted: #6b717d;
+    --code-line: #262a31;
+    --mode-normal: #73bd7a;
+    --mode-insert: #56a8f5;
+    --mode-visual: #c77dbb;
+    --mode-replace: #f27481;
+    --mode-command: #d5b778;
+    --syn-kw: #c678dd;
+    --syn-str: #98c379;
+    --syn-ann: #e5c07b;
+    --syn-type: #61afef;
+    --syn-num: #d19a66;
+    --syn-com: #7f848e;
+    --sel: rgba(199, 125, 187, 0.35);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16181c;
+      --surface: #1d2025;
+      --surface-2: #252930;
+      --text: #e3e5e8;
+      --muted: #9aa1ab;
+      --border: #333841;
+      --accent: #6ea8ff;
+      --code-bg: #121417;
+      --code-line: #1b1e23;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16181c;
+    --surface: #1d2025;
+    --surface-2: #252930;
+    --text: #e3e5e8;
+    --muted: #9aa1ab;
+    --border: #333841;
+    --accent: #6ea8ff;
+    --code-bg: #121417;
+    --code-line: #1b1e23;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  }
+  code, kbd, .code, .keys {
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, "Cascadia Code", "Fira Code", monospace;
+  }
+  a { color: var(--accent); }
+
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner {
+    max-width: 1080px; margin: 0 auto; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .top-inner strong { font-size: 15px; }
+  .top-inner nav { display: flex; gap: 14px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+  .top-inner nav a { color: var(--muted); text-decoration: none; font-size: 14px; white-space: nowrap; }
+  .top-inner nav a:hover { color: var(--text); }
+  .theme-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 13px;
+  }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 34px; line-height: 1.2; margin: 24px 0 8px; }
+  h2 { font-size: 26px; margin: 56px 0 8px; padding-top: 8px; }
+  h3 { font-size: 19px; margin: 28px 0 6px; }
+  p.lead { font-size: 18px; color: var(--muted); max-width: 760px; }
+  p, li { max-width: 780px; }
+  .muted { color: var(--muted); }
+
+  kbd {
+    display: inline-block; min-width: 1.6em; padding: 1px 6px; text-align: center;
+    border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px;
+    background: var(--surface); font-size: 0.86em; line-height: 1.5;
+  }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+
+  .callout {
+    border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    background: var(--surface); border-radius: 8px; padding: 12px 16px; margin: 16px 0;
+    max-width: 820px;
+  }
+
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 15px; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .table-wrap table { margin: 0; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  th { background: var(--surface-2); font-weight: 600; font-size: 14px; }
+
+  .pill {
+    display: inline-block; font-weight: 700; font-size: 12px; letter-spacing: 0.04em;
+    padding: 1px 8px; border-radius: 999px; color: #16181c;
+  }
+  .pill.NORMAL { background: var(--mode-normal); }
+  .pill.INSERT { background: var(--mode-insert); }
+  .pill.VISUAL, .pill.VLINE, .pill.VBLOCK { background: var(--mode-visual); }
+  .pill.REPLACE { background: var(--mode-replace); }
+  .pill.COMMAND { background: var(--mode-command); }
+  .pill.TERMINAL { background: #a0a7b4; }
+
+  /* mapa dos modos */
+  .mode-map { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: var(--shadow); }
+  .mode-map svg { width: 100%; height: auto; display: block; }
+  .mode-map text { font-family: system-ui, sans-serif; fill: var(--text); }
+  .mode-map .edge { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .mode-map .edge-label { fill: var(--muted); font-size: 13px; }
+  .mode-map .edge-label tspan.k { font-family: ui-monospace, monospace; font-weight: 700; fill: var(--text); }
+
+  /* exemplos animados */
+  .example {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    margin: 18px 0 28px; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .ex-head { padding: 14px 16px 6px; }
+  .ex-head h4 { margin: 0; font-size: 17px; }
+  .ex-head p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+  .keys { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; align-items: center; }
+  .keys .label { font-family: system-ui, sans-serif; color: var(--muted); font-size: 13px; margin-right: 4px; }
+  .key {
+    border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px;
+    padding: 1px 8px; font-size: 14px; background: var(--surface-2); color: var(--muted);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .key.text { font-style: italic; }
+  .key.done { color: var(--text); background: var(--surface); }
+  .key.now { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .screen { background: var(--code-bg); color: var(--code-text); }
+  .code { font-size: 14.5px; line-height: 1.65; padding: 12px 0; overflow-x: auto; }
+  .line { display: flex; white-space: pre; min-height: 1.65em; }
+  .line .no { width: 3.2em; flex: none; text-align: right; padding-right: 1em; color: var(--code-muted); user-select: none; }
+  .line.current { background: var(--code-line); }
+  .line.current .no { color: var(--code-text); }
+  .line .src { padding-right: 16px; }
+  .kw { color: var(--syn-kw); }
+  .str { color: var(--syn-str); }
+  .ann { color: var(--syn-ann); }
+  .type { color: var(--syn-type); }
+  .num { color: var(--syn-num); }
+  .com { color: var(--syn-com); font-style: italic; }
+  .sel { background: var(--sel); }
+  .cur-block { background: var(--code-text); color: var(--code-bg) !important; border-radius: 2px; }
+  .cur-bar { box-shadow: inset 2px 0 0 var(--mode-insert); }
+  .cur-under { box-shadow: inset 0 -3px 0 var(--mode-replace); }
+
+  .statusbar {
+    display: flex; align-items: center; gap: 10px; padding: 6px 12px;
+    border-top: 1px solid #2c3038; font-size: 13.5px; min-height: 34px;
+  }
+  .statusbar .cmd { font-family: ui-monospace, monospace; color: var(--code-text); flex: 1; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+  .statusbar .pos { color: var(--code-muted); font-family: ui-monospace, monospace; }
+
+  .note { padding: 12px 16px; border-top: 1px solid var(--border); min-height: 3.2em; font-size: 15px; }
+  .note b { color: var(--accent); }
+  .controls { display: flex; gap: 8px; padding: 10px 16px 14px; flex-wrap: wrap; align-items: center; }
+  .controls button {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    border-radius: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer;
+  }
+  .controls button:hover { border-color: var(--accent); }
+  .controls button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .controls .step { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 14px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+  .card h4 { margin: 0 0 6px; }
+  .card p { margin: 4px 0; font-size: 15px; }
+
+  ol.plan li { margin: 6px 0; }
+  footer { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 27px; }
+    h2 { font-size: 22px; }
+    .code { font-size: 12.5px; }
+    .line .no { width: 2.4em; padding-right: 0.6em; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <strong>Manual do Vim</strong>
+    <nav aria-label="Seções">
+      <a href="#modos">Modos</a>
+      <a href="#normal">NORMAL</a>
+      <a href="#insert">INSERT</a>
+      <a href="#gramatica">Verbo + objeto</a>
+      <a href="#visual">VISUAL</a>
+      <a href="#replace">REPLACE</a>
+      <a href="#comando">Comandos</a>
+      <a href="#clipboard">Copiar e colar</a>
+      <a href="#resumo">Resumo</a>
+      <a href="#treino">Treino</a>
+    </nav>
+    <button class="theme-btn" id="theme-btn" type="button">Tema</button>
+  </div>
+</header>
+
+<main>
+  <h1>Manual do Vim com exemplos em Java</h1>
+  <p class="lead">No Vim você passa a maior parte do tempo <em>navegando e editando</em> código que já existe, e não digitando código novo. Os modos existem para que cada tecla faça algo útil nessas duas tarefas. Cada exemplo abaixo mostra, passo a passo, as teclas, o cursor e o modo, exatamente como no seu Neovim.</p>
+
+  <div class="callout">
+    <b>Como usar os exemplos:</b> <b>▶ Reproduzir</b> executa as teclas uma a uma; <b>◀</b> e <b>▶</b> avançam e voltam um passo. <b>Copiar o código</b> copia o estado inicial para você repetir no Neovim. Leia a nota embaixo de cada passo: ela explica o que a tecla fez.
+  </div>
+
+  <h2 id="modos">Os modos</h2>
+  <p>Um modo é o "estado" do teclado. A mesma tecla faz coisas diferentes em cada um: no NORMAL, <kbd>w</kbd> pula para a próxima palavra; no INSERT, digita a letra w. A barra de status do seu Neovim (canto inferior esquerdo) sempre mostra o modo atual, com estas cores:</p>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Modo</th><th>Para que serve</th><th>Como entrar</th><th>Como sair</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill NORMAL">NORMAL</span></td><td>Navegar e dar comandos. É o modo "base": você volta para ele o tempo todo.</td><td><kbd>Esc</kbd> de qualquer modo</td><td>—</td></tr>
+      <tr><td><span class="pill INSERT">INSERT</span></td><td>Digitar texto, como num editor comum.</td><td><kbd>i</kbd> <kbd>a</kbd> <kbd>I</kbd> <kbd>A</kbd> <kbd>o</kbd> <kbd>O</kbd> ou verbos como <kbd>c</kbd></td><td><kbd>Esc</kbd></td></tr>
+      <tr><td><span class="pill VISUAL">VISUAL</span></td><td>Selecionar texto e aplicar uma ação na seleção.</td><td><kbd>v</kbd> caracteres, <kbd>V</kbd> linhas, <kbd>Ctrl</kbd>+<kbd>V</kbd> bloco (coluna)</td><td><kbd>Esc</kbd> ou executar uma ação</td></tr>
+      <tr><td><span class="pill COMMAND">COMMAND</span></td><td>Comandos como <code>:w</code> (salvar), substituir (<code>:%s</code>) e buscar (<code>/</code>).</td><td><kbd>:</kbd> <kbd>/</kbd> <kbd>?</kbd></td><td><kbd>Enter</kbd> executa, <kbd>Esc</kbd> cancela</td></tr>
+      <tr><td><span class="pill REPLACE">REPLACE</span></td><td>Digitar <em>por cima</em> do texto existente.</td><td><kbd>R</kbd> (ou <kbd>r</kbd> para um só caractere)</td><td><kbd>Esc</kbd></td></tr>
+      <tr><td><span class="pill TERMINAL">TERMINAL</span></td><td>O terminal integrado (<kbd>Ctrl</kbd>+<kbd>T</kbd>): as teclas vão para o shell.</td><td>Abrir o terminal</td><td><kbd>Ctrl</kbd>+<kbd>\</kbd> e depois <kbd>Ctrl</kbd>+<kbd>N</kbd></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="mode-map" role="img" aria-label="Mapa dos modos: NORMAL no centro; i, a, o levam ao INSERT; v, V e Ctrl+V ao VISUAL; : e / ao COMMAND; R ao REPLACE; Esc volta de todos para o NORMAL.">
+    <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color: var(--muted)"/>
+        </marker>
+      </defs>
+      <!-- NORMAL -->
+      <rect x="370" y="150" width="160" height="70" rx="14" fill="var(--mode-normal)"/>
+      <text x="450" y="192" text-anchor="middle" font-weight="700" font-size="20" style="fill:#16181c">NORMAL</text>
+      <!-- INSERT -->
+      <rect x="40" y="150" width="160" height="70" rx="14" fill="var(--mode-insert)"/>
+      <text x="120" y="192" text-anchor="middle" font-weight="700" font-size="20" style="fill:#16181c">INSERT</text>
+      <!-- VISUAL -->
+      <rect x="700" y="150" width="160" height="70" rx="14" fill="var(--mode-visual)"/>
+      <text x="780" y="192" text-anchor="middle" font-weight="700" font-size="20" style="fill:#16181c">VISUAL</text>
+      <!-- COMMAND -->
+      <rect x="370" y="14" width="160" height="60" rx="14" fill="var(--mode-command)"/>
+      <text x="450" y="50" text-anchor="middle" font-weight="700" font-size="18" style="fill:#16181c">COMMAND</text>
+      <!-- REPLACE -->
+      <rect x="370" y="300" width="160" height="60" rx="14" fill="var(--mode-replace)"/>
+      <text x="450" y="336" text-anchor="middle" font-weight="700" font-size="18" style="fill:#16181c">REPLACE</text>
+
+      <!-- NORMAL -> INSERT / volta -->
+      <path class="edge" d="M368,172 L204,172" marker-end="url(#arrow)"/>
+      <path class="edge" d="M204,200 L368,200" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="286" y="162" text-anchor="middle"><tspan class="k">i a I A o O</tspan></text>
+      <text class="edge-label" x="286" y="222" text-anchor="middle"><tspan class="k">Esc</tspan></text>
+      <!-- NORMAL -> VISUAL / volta -->
+      <path class="edge" d="M532,172 L696,172" marker-end="url(#arrow)"/>
+      <path class="edge" d="M696,200 L532,200" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="614" y="162" text-anchor="middle"><tspan class="k">v  V  Ctrl+V</tspan></text>
+      <text class="edge-label" x="614" y="222" text-anchor="middle"><tspan class="k">Esc</tspan> ou uma ação</text>
+      <!-- NORMAL -> COMMAND -->
+      <path class="edge" d="M430,148 L430,78" marker-end="url(#arrow)"/>
+      <path class="edge" d="M470,78 L470,148" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="420" y="118" text-anchor="end"><tspan class="k">:  /  ?</tspan></text>
+      <text class="edge-label" x="480" y="118"><tspan class="k">Enter</tspan> / <tspan class="k">Esc</tspan></text>
+      <!-- NORMAL -> REPLACE -->
+      <path class="edge" d="M430,222 L430,296" marker-end="url(#arrow)"/>
+      <path class="edge" d="M470,296 L470,222" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="420" y="264" text-anchor="end"><tspan class="k">R</tspan></text>
+      <text class="edge-label" x="480" y="264"><tspan class="k">Esc</tspan></text>
+      <!-- VISUAL -> INSERT (c) -->
+      <path class="edge" d="M780,222 C780,450 120,450 120,222" marker-end="url(#arrow)" stroke-dasharray="5 5"/>
+      <text class="edge-label" x="450" y="428" text-anchor="middle"><tspan class="k">c</tspan> no VISUAL troca a seleção e vai direto ao INSERT</text>
+    </svg>
+  </div>
+  <p class="muted">Regra de ouro: <b>terminou de digitar, aperte <kbd>Esc</kbd></b>. Ficar no NORMAL é o normal (daí o nome); você entra no INSERT só para digitar e sai logo em seguida.</p>
+
+  <!-- NORMAL -->
+  <h2 id="normal">Modo NORMAL: navegar</h2>
+  <p>No NORMAL, as letras são movimentos. Aprenda estes primeiro:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tecla</th><th>Movimento</th><th>Tecla</th><th>Movimento</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd></td><td>esquerda, baixo, cima, direita (as setas também funcionam)</td><td><kbd>gg</kbd> / <kbd>G</kbd></td><td>início / fim do arquivo</td></tr>
+      <tr><td><kbd>w</kbd> / <kbd>b</kbd></td><td>próxima / anterior palavra</td><td><kbd>42G</kbd> ou <code>:42</code></td><td>linha 42</td></tr>
+      <tr><td><kbd>e</kbd></td><td>fim da palavra</td><td><kbd>{</kbd> / <kbd>}</kbd></td><td>bloco anterior / próximo (pula até a linha vazia)</td></tr>
+      <tr><td><kbd>0</kbd> / <kbd>^</kbd> / <kbd>$</kbd></td><td>coluna 0 / primeiro caractere / fim da linha</td><td><kbd>%</kbd></td><td>parêntese, colchete ou chave correspondente</td></tr>
+      <tr><td><kbd>f</kbd><kbd>x</kbd> / <kbd>t</kbd><kbd>x</kbd></td><td>até o caractere x / até antes dele (na linha)</td><td><kbd>/</kbd>texto <kbd>Enter</kbd></td><td>buscar; <kbd>n</kbd> / <kbd>N</kbd> próxima / anterior</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd> / <kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>meia tela para baixo / cima</td><td><kbd>*</kbd></td><td>buscar a palavra sob o cursor</td></tr>
+    </tbody>
+  </table></div>
+  <p>Um <b>número antes</b> repete o movimento: <kbd>5j</kbd> desce 5 linhas, <kbd>3w</kbd> pula 3 palavras.</p>
+
+  <div class="example" data-example="moves"></div>
+  <div class="example" data-example="busca"></div>
+
+  <!-- INSERT -->
+  <h2 id="insert">Modo INSERT: os jeitos de entrar</h2>
+  <p>Todos entram no INSERT, mas cada um posiciona o cursor num lugar diferente. Escolher o certo evita andar com as setas:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tecla</th><th>Onde começa a digitar</th><th>Uso típico em Java</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>i</kbd></td><td>antes do cursor</td><td>inserir no meio de um nome</td></tr>
+      <tr><td><kbd>a</kbd></td><td>depois do cursor</td><td>completar uma palavra</td></tr>
+      <tr><td><kbd>I</kbd></td><td>no início da linha (primeiro caractere)</td><td>acrescentar <code>final</code> ou <code>return</code></td></tr>
+      <tr><td><kbd>A</kbd></td><td>no fim da linha</td><td>faltou o <code>;</code> ou um comentário</td></tr>
+      <tr><td><kbd>o</kbd></td><td>numa linha nova abaixo</td><td>escrever a próxima instrução</td></tr>
+      <tr><td><kbd>O</kbd></td><td>numa linha nova acima</td><td>acrescentar uma anotação, como <code>@Override</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="example" data-example="insert"></div>
+
+  <!-- GRAMATICA -->
+  <h2 id="gramatica">A gramática: verbo + objeto</h2>
+  <p>É isto que torna o Vim rápido. Um comando de edição é um <b>verbo</b> seguido de um <b>movimento</b> ou <b>objeto</b>. Aprendendo poucos de cada, você combina centenas de comandos sem decorar nenhum.</p>
+  <div class="grid2">
+    <div class="card">
+      <h4>Verbos</h4>
+      <p><kbd>d</kbd> apagar (recorta)</p>
+      <p><kbd>c</kbd> trocar: apaga e entra no INSERT</p>
+      <p><kbd>y</kbd> copiar (<em>yank</em>)</p>
+      <p><kbd>&gt;</kbd> / <kbd>&lt;</kbd> indentar / desindentar</p>
+      <p><kbd>gc</kbd> comentar</p>
+    </div>
+    <div class="card">
+      <h4>Objetos (i = dentro, a = incluindo a borda)</h4>
+      <p><kbd>iw</kbd> palavra &nbsp; <kbd>i"</kbd> dentro de aspas</p>
+      <p><kbd>i(</kbd> dentro de parênteses &nbsp; <kbd>i{</kbd> dentro de chaves</p>
+      <p><kbd>it</kbd> dentro de uma tag XML (<code>pom.xml</code>)</p>
+      <p><kbd>ap</kbd> parágrafo (bloco até a linha vazia)</p>
+    </div>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Comando</th><th>Leia como</th><th>Em Java</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>ciw</kbd></td><td>change inner word</td><td>renomear a variável sob o cursor</td></tr>
+      <tr><td><kbd>ci"</kbd></td><td>change inside quotes</td><td>reescrever a mensagem de uma exceção</td></tr>
+      <tr><td><kbd>di(</kbd></td><td>delete inside parentheses</td><td>limpar os argumentos de uma chamada</td></tr>
+      <tr><td><kbd>di{</kbd></td><td>delete inside braces</td><td>esvaziar o corpo de um método</td></tr>
+      <tr><td><kbd>dt;</kbd></td><td>delete till <code>;</code></td><td>apagar do cursor até o fim da instrução</td></tr>
+      <tr><td><kbd>yy</kbd> / <kbd>dd</kbd></td><td>verbo repetido = a linha inteira</td><td>copiar / recortar a linha</td></tr>
+      <tr><td><kbd>D</kbd> / <kbd>C</kbd></td><td>apagar / trocar até o fim da linha</td><td>refazer o fim de uma instrução</td></tr>
+      <tr><td><kbd>.</kbd></td><td>repetir a última edição</td><td>aplicar a mesma troca em vários lugares</td></tr>
+      <tr><td><kbd>u</kbd> / <kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>desfazer / refazer</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="example" data-example="ciw"></div>
+  <div class="example" data-example="cistr"></div>
+  <div class="example" data-example="dipar"></div>
+  <div class="example" data-example="dichave"></div>
+  <div class="example" data-example="linhas"></div>
+  <div class="example" data-example="ponto"></div>
+  <div class="example" data-example="tag"></div>
+
+  <!-- VISUAL -->
+  <h2 id="visual">Modo VISUAL: selecionar e agir</h2>
+  <p>Use quando quiser <em>ver</em> o trecho antes de agir, ou quando não houver um objeto pronto. Com a seleção feita, qualquer verbo age sobre ela: <kbd>d</kbd>, <kbd>c</kbd>, <kbd>y</kbd>, <kbd>&gt;</kbd>, <kbd>gc</kbd>...</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tecla</th><th>Seleciona</th><th>Bom para</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>v</kbd></td><td>caracteres</td><td>parte de uma linha (<kbd>viw</kbd> seleciona a palavra)</td></tr>
+      <tr><td><kbd>V</kbd></td><td>linhas inteiras</td><td>mover, indentar ou comentar linhas</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>um bloco (retângulo)</td><td>editar a mesma coluna em várias linhas</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="example" data-example="visual"></div>
+  <div class="example" data-example="bloco"></div>
+
+  <!-- REPLACE -->
+  <h2 id="replace">Modo REPLACE: digitar por cima</h2>
+  <p><kbd>R</kbd> sobrescreve caractere por caractere até o <kbd>Esc</kbd>. Para trocar um único caractere sem sair do NORMAL, use <kbd>r</kbd> seguido do novo caractere.</p>
+  <div class="example" data-example="replace"></div>
+
+  <!-- COMANDOS -->
+  <h2 id="comando">Modo COMMAND: salvar, substituir, ir para a linha</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Comando</th><th>Faz</th></tr></thead>
+    <tbody>
+      <tr><td><code>:w</code> / <code>:q</code> / <code>:wq</code></td><td>salvar / fechar / salvar e fechar</td></tr>
+      <tr><td><code>:q!</code></td><td>fechar descartando as alterações</td></tr>
+      <tr><td><code>:42</code></td><td>ir para a linha 42</td></tr>
+      <tr><td><code>:%s/antigo/novo/gI</code></td><td>substituir em todo o arquivo (<code>%</code>), todas as ocorrências da linha (<code>g</code>), diferenciando maiúsculas (<code>I</code>)</td></tr>
+      <tr><td><code>:s/antigo/novo/g</code></td><td>substituir só na linha atual (ou na seleção, se vier do VISUAL)</td></tr>
+      <tr><td><code>/texto</code> e <code>?texto</code></td><td>buscar para frente / para trás</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout">Sua configuração ignora maiúsculas nas buscas quando o texto está todo em minúsculas (<code>ignorecase</code> + <code>smartcase</code>). É ótimo para buscar, mas numa substituição <code>cliente</code> também pegaria <code>Cliente</code>. Por isso use o <code>I</code> no fim: <code>:%s/cliente/usuario/gI</code>. O atalho <kbd>Espaço</kbd> <kbd>r</kbd> <kbd>w</kbd> já monta esse comando com a palavra sob o cursor.</div>
+  <div class="example" data-example="comando"></div>
+
+  <!-- CLIPBOARD -->
+  <h2 id="clipboard">Copiar, colar e desfazer</h2>
+  <p>Na sua configuração, <kbd>y</kbd> e <kbd>p</kbd> usam a <b>área de transferência do sistema</b>: o que você copia no Neovim cola no navegador, e vice-versa. Além disso:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tecla</th><th>Modo</th><th>Faz</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>y</kbd> + objeto, <kbd>yy</kbd></td><td>NORMAL</td><td>copiar (ex.: <kbd>yiw</kbd> a palavra, <kbd>yy</kbd> a linha)</td></tr>
+      <tr><td><kbd>p</kbd> / <kbd>P</kbd></td><td>NORMAL</td><td>colar depois / antes do cursor (linhas: abaixo / acima)</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>VISUAL</td><td>copiar a seleção</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>INSERT</td><td>colar enquanto digita</td></tr>
+      <tr><td><kbd>p</kbd></td><td>VISUAL</td><td>trocar a seleção pelo que foi copiado (sem perder o que estava copiado)</td></tr>
+      <tr><td><kbd>u</kbd> / <kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>NORMAL</td><td>desfazer / refazer (<kbd>Ctrl</kbd>+<kbd>Z</kbd> e <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Z</kbd> também funcionam)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">No NORMAL, <kbd>Ctrl</kbd>+<kbd>V</kbd> continua sendo a seleção em bloco. Lembre também que <kbd>d</kbd> e <kbd>c</kbd> <em>recortam</em>: o texto apagado vai para a área de transferência (use <kbd>Ctrl</kbd>+<kbd>X</kbd> para apagar sem copiar).</p>
+  <div class="example" data-example="copiar"></div>
+  <div class="example" data-example="desfazer"></div>
+
+  <!-- RESUMO -->
+  <h2 id="resumo">Resumo para consulta</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="pill INSERT">INSERT</span> entrar e sair</h4>
+      <p><kbd>i</kbd> <kbd>a</kbd> antes / depois do cursor</p>
+      <p><kbd>I</kbd> <kbd>A</kbd> início / fim da linha</p>
+      <p><kbd>o</kbd> <kbd>O</kbd> linha nova abaixo / acima</p>
+      <p><kbd>Esc</kbd> volta ao NORMAL</p>
+    </div>
+    <div class="card">
+      <h4><span class="pill NORMAL">NORMAL</span> mover</h4>
+      <p><kbd>w</kbd> <kbd>b</kbd> <kbd>e</kbd> palavras &nbsp; <kbd>0</kbd> <kbd>^</kbd> <kbd>$</kbd> linha</p>
+      <p><kbd>gg</kbd> <kbd>G</kbd> arquivo &nbsp; <kbd>{</kbd> <kbd>}</kbd> blocos &nbsp; <kbd>%</kbd> par</p>
+      <p><kbd>f</kbd> <kbd>t</kbd> até um caractere &nbsp; <kbd>/</kbd> <kbd>n</kbd> <kbd>N</kbd> <kbd>*</kbd> busca</p>
+    </div>
+    <div class="card">
+      <h4><span class="pill NORMAL">NORMAL</span> editar</h4>
+      <p><kbd>d</kbd> <kbd>c</kbd> <kbd>y</kbd> + <kbd>w</kbd> <kbd>iw</kbd> <kbd>i"</kbd> <kbd>i(</kbd> <kbd>i{</kbd> <kbd>it</kbd> <kbd>t;</kbd></p>
+      <p><kbd>dd</kbd> <kbd>yy</kbd> <kbd>p</kbd> linhas &nbsp; <kbd>x</kbd> apaga um caractere</p>
+      <p><kbd>.</kbd> repete &nbsp; <kbd>u</kbd> desfaz &nbsp; <kbd>Ctrl</kbd>+<kbd>R</kbd> refaz</p>
+    </div>
+    <div class="card">
+      <h4><span class="pill VISUAL">VISUAL</span> <span class="pill REPLACE">REPLACE</span> <span class="pill COMMAND">COMMAND</span></h4>
+      <p><kbd>v</kbd> <kbd>V</kbd> <kbd>Ctrl</kbd>+<kbd>V</kbd> + verbo (<kbd>d</kbd> <kbd>y</kbd> <kbd>c</kbd> <kbd>&gt;</kbd> <kbd>gc</kbd>)</p>
+      <p><kbd>R</kbd> sobrescrever &nbsp; <kbd>r</kbd> trocar um caractere</p>
+      <p><code>:w</code> <code>:q</code> <code>:42</code> <code>:%s/a/b/gI</code></p>
+    </div>
+  </div>
+  <p>Os atalhos de IDE da sua configuração (gerar código, build, testes, depuração) estão no <a href="ATALHOS.md">ATALHOS.md</a>, também aberto dentro do Neovim com <code>:Atalhos</code>.</p>
+
+  <!-- TREINO -->
+  <h2 id="treino">Plano de treino</h2>
+  <p>Aprender tudo de uma vez não funciona; incorporar um hábito por dia funciona. Use no trabalho real, mesmo que no começo fique mais lento.</p>
+  <ol class="plan">
+    <li><b>Dia 1:</b> rode o tutorial embutido com <code>:Tutor</code> (uns 30 minutos). Pratique <kbd>Esc</kbd> sempre que terminar de digitar.</li>
+    <li><b>Dia 2:</b> entre no INSERT pelo lugar certo: <kbd>A</kbd> para o fim da linha, <kbd>o</kbd> para a próxima instrução. Evite as setas no INSERT.</li>
+    <li><b>Dia 3:</b> mova-se por palavras e caracteres: <kbd>w</kbd> <kbd>b</kbd> <kbd>f</kbd> <kbd>t</kbd> <kbd>$</kbd> <kbd>^</kbd>, e por busca: <kbd>/</kbd> <kbd>n</kbd> <kbd>*</kbd>.</li>
+    <li><b>Dia 4:</b> <kbd>ciw</kbd> e <kbd>ci"</kbd> sempre que for trocar uma palavra ou uma string.</li>
+    <li><b>Dia 5:</b> <kbd>di(</kbd>, <kbd>ci(</kbd>, <kbd>di{</kbd>, <kbd>dt;</kbd>; e <kbd>.</kbd> para repetir.</li>
+    <li><b>Dia 6:</b> <kbd>V</kbd> + <kbd>j</kbd>/<kbd>k</kbd> + <kbd>&gt;</kbd>, <kbd>d</kbd> ou <kbd>gc</kbd>; <kbd>Ctrl</kbd>+<kbd>V</kbd> + <kbd>I</kbd> para editar colunas.</li>
+    <li><b>Dia 7:</b> <code>:%s/.../.../gI</code> e <kbd>Espaço</kbd> <kbd>r</kbd> <kbd>w</kbd> para substituições no arquivo.</li>
+  </ol>
+  <div class="callout"><b>Dica de ergonomia:</b> o <kbd>Esc</kbd> fica longe. Muita gente transforma o <kbd>Caps Lock</kbd> em <kbd>Esc</kbd> no sistema (no GNOME: Ajustes → Teclado → Opções adicionais de disposição → Comportamento do Caps Lock). Vale em todos os programas, e o Neovim continua no padrão.</div>
+</main>
+
+<footer>
+  Manual da configuração do Neovim deste repositório. Abra com <code>:ManualVim</code> dentro do Neovim ou direto no navegador.
+</footer>
+
+<script>
+// ---------------------------------------------------------------------------
+// Exemplos. Cada quadro tem o texto com marcadores:
+//   ¦  cursor (fica sobre o caractere seguinte; no INSERT, e uma barra antes dele)
+//   «» selecao do modo VISUAL
+// k: tecla(s) do passo; m: modo; n: explicacao; cmd: linha de comando/mensagem.
+// ---------------------------------------------------------------------------
+const EXAMPLES = {
+  moves: {
+    title: "Movimentos na linha: w, f, %, $, 0, ^, t",
+    desc: "Andar por uma instrução sem setas.",
+    frames: [
+      { m: "NORMAL", n: "O cursor está no início de <code>return</code>.", t:
+`    public Cliente buscar(Long id) {
+        ¦return repositorio.findById(id).orElseThrow();
+    }` },
+      { k: "w", m: "NORMAL", n: "<b>w</b> pula para o início da próxima palavra.", t:
+`    public Cliente buscar(Long id) {
+        return ¦repositorio.findById(id).orElseThrow();
+    }` },
+      { k: "w", m: "NORMAL", n: "Pontuação conta como palavra: <b>w</b> para no <code>.</code>.", t:
+`    public Cliente buscar(Long id) {
+        return repositorio¦.findById(id).orElseThrow();
+    }` },
+      { k: "f(", m: "NORMAL", n: "<b>f(</b> vai até o próximo <code>(</code> da linha. Funciona com qualquer caractere: <code>f;</code>, <code>f.</code>...", t:
+`    public Cliente buscar(Long id) {
+        return repositorio.findById¦(id).orElseThrow();
+    }` },
+      { k: "%", m: "NORMAL", n: "<b>%</b> pula para o parêntese (ou chave) correspondente.", t:
+`    public Cliente buscar(Long id) {
+        return repositorio.findById(id¦).orElseThrow();
+    }` },
+      { k: "$", m: "NORMAL", n: "<b>$</b> vai ao último caractere da linha.", t:
+`    public Cliente buscar(Long id) {
+        return repositorio.findById(id).orElseThrow()¦;
+    }` },
+      { k: "0", m: "NORMAL", n: "<b>0</b> vai à coluna zero, antes da indentação.", t:
+`    public Cliente buscar(Long id) {
+¦        return repositorio.findById(id).orElseThrow();
+    }` },
+      { k: "^", m: "NORMAL", n: "<b>^</b> vai ao primeiro caractere que não é espaço. É o que você costuma querer.", t:
+`    public Cliente buscar(Long id) {
+        ¦return repositorio.findById(id).orElseThrow();
+    }` },
+      { k: "t.", m: "NORMAL", n: "<b>t.</b> para <em>antes</em> do próximo ponto. Com um verbo fica poderoso: <code>dt.</code> apagaria <code>return repositorio</code>.", t:
+`    public Cliente buscar(Long id) {
+        return repositori¦o.findById(id).orElseThrow();
+    }` },
+    ],
+  },
+
+  busca: {
+    title: "Pelo arquivo: G, gg, número + G, } e busca com / e n",
+    desc: "Ir direto ao ponto, sem rolar a tela.",
+    frames: [
+      { m: "NORMAL", n: "Cursor na primeira linha.", t:
+`¦@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "G", m: "NORMAL", n: "<b>G</b> vai à última linha do arquivo.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+¦}` },
+      { k: "gg", m: "NORMAL", n: "<b>gg</b> volta à primeira linha.", t:
+`¦@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "6G", m: "NORMAL", n: "<b>6G</b> vai à linha 6 (o mesmo que <code>:6</code>). Útil quando um erro aponta a linha. A coluna é mantida; <b>^</b> levaria ao <code>public</code>.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+¦    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "}", m: "NORMAL", n: "<b>}</b> pula para a próxima linha vazia, ou seja, para o fim do método. <b>{</b> volta.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+¦
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "/repositorio", m: "COMMAND", cmd: "/repositorio", n: "<b>/</b> abre a busca embaixo; digite o texto.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+¦
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "Enter", m: "NORMAL", cmd: "/repositorio", n: "<b>Enter</b> leva à próxima ocorrência depois do cursor.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        ¦repositorio.deleteById(id);
+    }
+}` },
+      { k: "n", m: "NORMAL", cmd: "search hit BOTTOM, continuing at TOP", n: "<b>n</b> vai à próxima. Ao chegar no fim, a busca continua do topo.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository ¦repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "n", m: "NORMAL", cmd: "/repositorio", n: "<b>n</b> de novo.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return ¦repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+      { k: "N", m: "NORMAL", cmd: "?repositorio", n: "<b>N</b> volta para a ocorrência anterior.", t:
+`@Service
+public class ClienteService {
+
+    private final ClienteRepository ¦repositorio;
+
+    public Cliente salvar(Cliente cliente) {
+        return repositorio.save(cliente);
+    }
+
+    public void remover(Long id) {
+        repositorio.deleteById(id);
+    }
+}` },
+    ],
+  },
+
+  insert: {
+    title: "A, Esc, o e O: completar uma linha e escrever as próximas",
+    desc: "Entrar no INSERT já no lugar certo.",
+    frames: [
+      { m: "NORMAL", n: "Faltou o <code>;</code> no fim do campo. Cursor no começo da linha, no NORMAL.", t:
+`public class Cliente {
+    ¦private String nome
+}` },
+      { k: "A", m: "INSERT", n: "<b>A</b> vai ao fim da linha e entra no INSERT. Não importa onde o cursor estava.", t:
+`public class Cliente {
+    private String nome¦
+}` },
+      { k: ";", text: true, m: "INSERT", n: "Digita o que faltava.", t:
+`public class Cliente {
+    private String nome;¦
+}` },
+      { k: "Esc", m: "NORMAL", n: "<b>Esc</b> volta ao NORMAL. O cursor recua um caractere: no NORMAL ele fica <em>sobre</em> um caractere.", t:
+`public class Cliente {
+    private String nome¦;
+}` },
+      { k: "o", m: "INSERT", n: "<b>o</b> abre uma linha abaixo, já indentada, e entra no INSERT. (Se a linha de cima terminar num comentário <code>//</code>, o Neovim já continua o comentário.)", t:
+`public class Cliente {
+    private String nome;
+    ¦
+}` },
+      { k: "private int idade;", text: true, m: "INSERT", n: "Digita a nova linha.", t:
+`public class Cliente {
+    private String nome;
+    private int idade;¦
+}` },
+      { k: "Esc", m: "NORMAL", n: "<b>Esc</b> de novo. Terminou de digitar, volte ao NORMAL.", t:
+`public class Cliente {
+    private String nome;
+    private int idade¦;
+}` },
+      { k: "O", m: "INSERT", n: "<b>O</b> (maiúsculo) abre a linha <em>acima</em>.", t:
+`public class Cliente {
+    private String nome;
+    ¦
+    private int idade;
+}` },
+      { k: "@Positive", text: true, m: "INSERT", n: "Uma anotação para o campo de baixo.", t:
+`public class Cliente {
+    private String nome;
+    @Positive¦
+    private int idade;
+}` },
+      { k: "Esc", m: "NORMAL", n: "Pronto: três edições sem tocar no mouse nem nas setas.", t:
+`public class Cliente {
+    private String nome;
+    @Positiv¦e
+    private int idade;
+}` },
+    ],
+  },
+
+  ciw: {
+    title: "ciw: trocar uma palavra",
+    desc: "change inner word. O cursor pode estar em qualquer letra da palavra.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no meio de <code>nome</code>.", t:
+`        String no¦me = cliente.getNome();
+        System.out.println(nome);` },
+      { k: "ciw", m: "INSERT", n: "<b>ciw</b> apaga a palavra inteira e entra no INSERT no lugar dela.", t:
+`        String ¦ = cliente.getNome();
+        System.out.println(nome);` },
+      { k: "nomeCompleto", text: true, m: "INSERT", n: "Digita o novo nome.", t:
+`        String nomeCompleto¦ = cliente.getNome();
+        System.out.println(nome);` },
+      { k: "Esc", m: "NORMAL", n: "<b>Esc</b> termina. Para renomear o símbolo em <em>todos</em> os arquivos, use o <kbd>F2</kbd> (LSP); o <b>ciw</b> é para editar texto.", t:
+`        String nomeComplet¦o = cliente.getNome();
+        System.out.println(nome);` },
+    ],
+  },
+
+  cistr: {
+    title: 'ci": trocar o texto entre aspas',
+    desc: "Mesmo com o cursor longe, o Vim acha as próximas aspas da linha.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no <code>throw</code>, longe da string.", t:
+`        if (cliente.nome() == null) {
+            ¦throw new IllegalArgumentException("Cliente inválido");
+        }` },
+      { k: 'ci"', m: "INSERT", n: '<b>ci"</b> apaga o conteúdo das aspas e entra no INSERT entre elas.', t:
+`        if (cliente.nome() == null) {
+            throw new IllegalArgumentException("¦");
+        }` },
+      { k: "Nome é obrigatório", text: true, m: "INSERT", n: "Digita a nova mensagem.", t:
+`        if (cliente.nome() == null) {
+            throw new IllegalArgumentException("Nome é obrigatório¦");
+        }` },
+      { k: "Esc", m: "NORMAL", n: 'Pronto. <b>di"</b> só apagaria; <b>da"</b> apagaria com as aspas.', t:
+`        if (cliente.nome() == null) {
+            throw new IllegalArgumentException("Nome é obrigatóri¦o");
+        }` },
+    ],
+  },
+
+  dipar: {
+    title: "di( e ci(: argumentos de uma chamada",
+    desc: "O Vim escolhe os parênteses que envolvem o cursor.",
+    frames: [
+      { m: "NORMAL", n: "Cursor em <code>usuario</code>, dentro de <code>salvar(...)</code>.", t:
+`        servico.salvar(cliente, ¦usuario, LocalDate.now());` },
+      { k: "di(", m: "NORMAL", n: "<b>di(</b> apaga tudo dentro dos parênteses e continua no NORMAL.", t:
+`        servico.salvar(¦);` },
+      { k: "u", m: "NORMAL", n: "<b>u</b> desfaz.", t:
+`        servico.salvar(¦cliente, usuario, LocalDate.now());` },
+      { k: "ci(", m: "INSERT", n: "<b>ci(</b> faz o mesmo, mas entra no INSERT para você digitar os novos argumentos.", t:
+`        servico.salvar(¦);` },
+      { k: "pedido", text: true, m: "INSERT", n: "Digita.", t:
+`        servico.salvar(pedido¦);` },
+      { k: "Esc", m: "NORMAL", n: "Também valem <b>ci[</b>, <b>ci&lt;</b> (genéricos) e <b>ci{</b>.", t:
+`        servico.salvar(pedid¦o);` },
+    ],
+  },
+
+  dichave: {
+    title: "di{: esvaziar um bloco",
+    desc: "Apaga o corpo inteiro de um método ou de um if, mantendo as chaves.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no <code>if</code>, dentro do método.", t:
+`    public void validar(Cliente cliente) {
+        ¦if (cliente.nome() == null) {
+            throw new IllegalArgumentException("nome");
+        }
+    }` },
+      { k: "di{", m: "NORMAL", n: "<b>di{</b> apaga o conteúdo das chaves que envolvem o cursor: o corpo do método.", t:
+`    public void validar(Cliente cliente) {
+    ¦}` },
+      { k: "O", m: "INSERT", n: "<b>O</b> abre uma linha acima, indentada.", t:
+`    public void validar(Cliente cliente) {
+        ¦
+    }` },
+      { k: "Objects.requireNonNull(cliente.nome());", text: true, m: "INSERT", n: "Escreve o novo corpo.", t:
+`    public void validar(Cliente cliente) {
+        Objects.requireNonNull(cliente.nome());¦
+    }` },
+      { k: "Esc", m: "NORMAL", n: "Com o cursor dentro do <code>if</code>, o mesmo <b>di{</b> esvaziaria só o <code>if</code>.", t:
+`    public void validar(Cliente cliente) {
+        Objects.requireNonNull(cliente.nome())¦;
+    }` },
+    ],
+  },
+
+  linhas: {
+    title: "dd, p, yy: mover e duplicar linhas",
+    desc: "O salvar está antes do validar. Vamos corrigir a ordem.",
+    frames: [
+      { m: "NORMAL", n: "Cursor na linha que está no lugar errado.", t:
+`        ¦salvar(pedido);
+        validar(pedido);
+        notificar(pedido);` },
+      { k: "dd", m: "NORMAL", n: "<b>dd</b> recorta a linha inteira.", t:
+`        ¦validar(pedido);
+        notificar(pedido);` },
+      { k: "p", m: "NORMAL", n: "<b>p</b> cola abaixo da linha atual. Ordem corrigida (<b>ddp</b> troca duas linhas).", t:
+`        validar(pedido);
+        ¦salvar(pedido);
+        notificar(pedido);` },
+      { k: "yy", m: "NORMAL", n: "<b>yy</b> copia a linha. Nada muda na tela.", t:
+`        validar(pedido);
+        ¦salvar(pedido);
+        notificar(pedido);` },
+      { k: "p", m: "NORMAL", n: "<b>p</b> cola a cópia abaixo: a linha foi duplicada.", t:
+`        validar(pedido);
+        salvar(pedido);
+        ¦salvar(pedido);
+        notificar(pedido);` },
+      { k: "dd", m: "NORMAL", n: "<b>dd</b> remove a duplicata. Com número, <b>3dd</b> recortaria 3 linhas.", t:
+`        validar(pedido);
+        salvar(pedido);
+        ¦notificar(pedido);` },
+    ],
+  },
+
+  ponto: {
+    title: "* , ciw, n e . : a mesma troca em vários lugares",
+    desc: "Trocar a variável ativo por habilitado, escolhendo onde.",
+    frames: [
+      { m: "NORMAL", n: "Cursor na variável <code>ativo</code>.", t:
+`    if (¦ativo) {
+        cliente.setAtivo(ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "*", m: "NORMAL", cmd: "/\\<ativo\\>", n: "<b>*</b> busca a palavra sob o cursor (palavra inteira: <code>setAtivo</code> não conta) e pula para a próxima.", t:
+`    if (ativo) {
+        cliente.setAtivo(¦ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "N", m: "NORMAL", cmd: "?\\<ativo\\>", n: "<b>N</b> volta para a primeira.", t:
+`    if (¦ativo) {
+        cliente.setAtivo(ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "ciw", m: "INSERT", n: "<b>ciw</b> troca a palavra...", t:
+`    if (¦) {
+        cliente.setAtivo(ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "habilitado", text: true, m: "INSERT", n: "...pelo novo nome.", t:
+`    if (habilitado¦) {
+        cliente.setAtivo(ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "Esc", m: "NORMAL", n: "Essa edição inteira (<code>ciw</code> + texto) agora pode ser repetida com <b>.</b>", t:
+`    if (habilitad¦o) {
+        cliente.setAtivo(ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "n", m: "NORMAL", cmd: "/\\<ativo\\>", n: "<b>n</b> vai à próxima ocorrência.", t:
+`    if (habilitado) {
+        cliente.setAtivo(¦ativo);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: ".", m: "NORMAL", n: "<b>.</b> repete a troca. Uma tecla.", t:
+`    if (habilitado) {
+        cliente.setAtivo(habilitad¦o);
+        log.info("ativo: {}", ativo);
+    }` },
+      { k: "n", m: "NORMAL", cmd: "/\\<ativo\\>", n: "<b>n</b> para no texto do log. Esse não é para trocar...", t:
+`    if (habilitado) {
+        cliente.setAtivo(habilitado);
+        log.info("¦ativo: {}", ativo);
+    }` },
+      { k: "n", m: "NORMAL", cmd: "/\\<ativo\\>", n: "...então <b>n</b> de novo, pulando sem trocar.", t:
+`    if (habilitado) {
+        cliente.setAtivo(habilitado);
+        log.info("ativo: {}", ¦ativo);
+    }` },
+      { k: ".", m: "NORMAL", n: "<b>.</b> troca esta. Você decide caso a caso, diferente de substituir tudo.", t:
+`    if (habilitado) {
+        cliente.setAtivo(habilitado);
+        log.info("ativo: {}", habilitad¦o);
+    }` },
+    ],
+  },
+
+  tag: {
+    lang: "xml",
+    title: "cit: trocar o conteúdo de uma tag no pom.xml",
+    desc: "change inner tag. Serve para qualquer XML ou HTML.",
+    frames: [
+      { m: "NORMAL", n: "Cursor na tag <code>&lt;version&gt;</code>.", t:
+`    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        ¦<version>3.2.0</version>
+    </dependency>` },
+      { k: "cit", m: "INSERT", n: "<b>cit</b> apaga o conteúdo entre as tags e entra no INSERT.", t:
+`    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>¦</version>
+    </dependency>` },
+      { k: "3.4.1", text: true, m: "INSERT", n: "Digita a nova versão.", t:
+`    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>3.4.1¦</version>
+    </dependency>` },
+      { k: "Esc", m: "NORMAL", n: "<b>dat</b> apagaria a tag inteira; <b>dit</b> só o conteúdo.", t:
+`    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>3.4.¦1</version>
+    </dependency>` },
+    ],
+  },
+
+  visual: {
+    title: "V + j + gc: comentar linhas",
+    desc: "Seleção por linhas e um verbo aplicado a ela.",
+    frames: [
+      { m: "NORMAL", n: "Cursor em <code>validar</code>.", t:
+`    public void processar(Pedido pedido) {
+        ¦validar(pedido);
+        salvar(pedido);
+        notificar(pedido);
+    }` },
+      { k: "V", m: "VLINE", n: "<b>V</b> seleciona a linha inteira.", t:
+`    public void processar(Pedido pedido) {
+«        ¦validar(pedido);»
+        salvar(pedido);
+        notificar(pedido);
+    }` },
+      { k: "j", m: "VLINE", n: "<b>j</b> estende a seleção para baixo (qualquer movimento serve: <code>}</code>, <code>5j</code>, <code>G</code>...).", t:
+`    public void processar(Pedido pedido) {
+«        validar(pedido);
+        ¦salvar(pedido);»
+        notificar(pedido);
+    }` },
+      { k: "gc", m: "NORMAL", n: "<b>gc</b> comenta as linhas selecionadas e volta ao NORMAL. Com <b>&gt;</b> indentaria, com <b>d</b> recortaria. <b>gcc</b> comenta só a linha atual, sem VISUAL.", t:
+`    public void processar(Pedido pedido) {
+¦        // validar(pedido);
+        // salvar(pedido);
+        notificar(pedido);
+    }` },
+    ],
+  },
+
+  bloco: {
+    title: "Ctrl+V + I: editar uma coluna inteira",
+    desc: "Acrescentar private na frente de vários campos de uma vez.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no <code>S</code> do primeiro campo.", t:
+`public class Endereco {
+    ¦String rua;
+    String cidade;
+    String cep;
+}` },
+      { k: "Ctrl+V", m: "VBLOCK", n: "<b>Ctrl+V</b> começa uma seleção em bloco (retângulo).", t:
+`public class Endereco {
+    «¦S»tring rua;
+    String cidade;
+    String cep;
+}` },
+      { k: "jj", m: "VBLOCK", n: "<b>jj</b> estende o bloco para baixo: a mesma coluna nas três linhas.", t:
+`public class Endereco {
+    «S»tring rua;
+    «S»tring cidade;
+    «¦S»tring cep;
+}` },
+      { k: "I", m: "INSERT", n: "<b>I</b> insere antes do bloco.", t:
+`public class Endereco {
+    ¦String rua;
+    String cidade;
+    String cep;
+}` },
+      { k: "private ", text: true, m: "INSERT", n: "Enquanto você digita, só a primeira linha muda...", t:
+`public class Endereco {
+    private ¦String rua;
+    String cidade;
+    String cep;
+}` },
+      { k: "Esc", m: "NORMAL", n: "...e no <b>Esc</b> o texto é aplicado em todas. Com <b>A</b> no lugar do <b>I</b>, o texto vai depois do bloco.", t:
+`public class Endereco {
+    ¦private String rua;
+    private String cidade;
+    private String cep;
+}` },
+    ],
+  },
+
+  replace: {
+    title: "R e r: sobrescrever",
+    desc: "Trocar um valor sem apagar antes.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no <code>1</code> de <code>100</code>.", t:
+`    private static final int LIMITE = ¦100;` },
+      { k: "R", m: "REPLACE", n: "<b>R</b> entra no REPLACE: o que você digitar substitui o que está embaixo.", t:
+`    private static final int LIMITE = ¦100;` },
+      { k: "250", text: true, m: "REPLACE", n: "Os três dígitos foram sobrescritos.", t:
+`    private static final int LIMITE = 250¦;` },
+      { k: "Esc", m: "NORMAL", n: "<b>Esc</b> volta ao NORMAL.", t:
+`    private static final int LIMITE = 25¦0;` },
+      { k: "r7", m: "NORMAL", n: "<b>r7</b> troca só o caractere sob o cursor e continua no NORMAL.", t:
+`    private static final int LIMITE = 25¦7;` },
+    ],
+  },
+
+  comando: {
+    title: ":%s/cliente/usuario/gI e :w",
+    desc: "Substituir em todo o arquivo, diferenciando maiúsculas.",
+    frames: [
+      { m: "NORMAL", n: "Queremos trocar a variável <code>cliente</code>, mas não a classe <code>Cliente</code>.", t:
+`¦public class ClienteService {
+    private final ClienteRepository clienteRepository;
+
+    public void salvar(Cliente cliente) {
+        clienteRepository.save(cliente);
+    }
+}` },
+      { k: ":", m: "COMMAND", cmd: ":", n: "<b>:</b> abre a linha de comando embaixo.", t:
+`¦public class ClienteService {
+    private final ClienteRepository clienteRepository;
+
+    public void salvar(Cliente cliente) {
+        clienteRepository.save(cliente);
+    }
+}` },
+      { k: "%s/cliente/usuario/gI", text: true, m: "COMMAND", cmd: ":%s/cliente/usuario/gI", n: "<code>%</code> = arquivo todo; <code>s/antigo/novo/</code> = substituir; <code>g</code> = todas da linha; <code>I</code> = diferenciar maiúsculas.", t:
+`¦public class ClienteService {
+    private final ClienteRepository clienteRepository;
+
+    public void salvar(Cliente cliente) {
+        clienteRepository.save(cliente);
+    }
+}` },
+      { k: "Enter", m: "NORMAL", cmd: "4 substitutions on 3 lines", n: "<b>Enter</b> executa. As classes <code>Cliente…</code> ficaram intactas.", t:
+`public class ClienteService {
+    private final ClienteRepository usuarioRepository;
+
+    public void salvar(Cliente usuario) {
+        ¦usuarioRepository.save(usuario);
+    }
+}` },
+      { k: ":w", m: "COMMAND", cmd: ":w", n: "<b>:w</b> salva o arquivo.", t:
+`public class ClienteService {
+    private final ClienteRepository usuarioRepository;
+
+    public void salvar(Cliente usuario) {
+        ¦usuarioRepository.save(usuario);
+    }
+}` },
+      { k: "Enter", m: "NORMAL", cmd: "\"ClienteService.java\" 7L, 177B written", n: "Salvo. Sem o <code>I</code>, <code>Cliente</code> também viraria <code>usuario</code>, quebrando o código.", t:
+`public class ClienteService {
+    private final ClienteRepository usuarioRepository;
+
+    public void salvar(Cliente usuario) {
+        ¦usuarioRepository.save(usuario);
+    }
+}` },
+    ],
+  },
+
+  copiar: {
+    title: "viw + Ctrl+C, depois Ctrl+V no INSERT",
+    desc: "Copiar uma palavra e colar enquanto digita.",
+    frames: [
+      { m: "NORMAL", n: "Cursor no campo <code>email</code>.", t:
+`    private String ¦email;
+
+    public String getEmail() {
+        return ;
+    }` },
+      { k: "viw", m: "VISUAL", n: "<b>v</b> entra no VISUAL e <b>iw</b> seleciona a palavra.", t:
+`    private String «emai¦l»;
+
+    public String getEmail() {
+        return ;
+    }` },
+      { k: "Ctrl+C", m: "NORMAL", n: "<b>Ctrl+C</b> copia a seleção para a área de transferência e volta ao NORMAL. (<b>y</b> faz o mesmo.)", t:
+`    private String ¦email;
+
+    public String getEmail() {
+        return ;
+    }` },
+      { k: "3j", m: "NORMAL", n: "<b>3j</b> desce três linhas. O cursor para no <code>;</code> porque a linha é curta.", t:
+`    private String email;
+
+    public String getEmail() {
+        return ¦;
+    }` },
+      { k: "i", m: "INSERT", n: "<b>i</b> entra no INSERT antes do <code>;</code>.", t:
+`    private String email;
+
+    public String getEmail() {
+        return ¦;
+    }` },
+      { k: "Ctrl+V", m: "INSERT", n: "<b>Ctrl+V</b> cola no INSERT. Fora do Neovim, a mesma cópia cola no navegador ou no Slack.", t:
+`    private String email;
+
+    public String getEmail() {
+        return email¦;
+    }` },
+      { k: "Esc", m: "NORMAL", n: "No NORMAL, <b>p</b> colaria depois do cursor.", t:
+`    private String email;
+
+    public String getEmail() {
+        return emai¦l;
+    }` },
+    ],
+  },
+
+  desfazer: {
+    title: "u e Ctrl+R: desfazer e refazer",
+    desc: "Errou? Volte e avance quantas vezes quiser.",
+    frames: [
+      { m: "NORMAL", n: "Duas linhas de código.", t:
+`        ¦log.info("salvando pedido {}", pedido.id());
+        repositorio.save(pedido);` },
+      { k: "dd", m: "NORMAL", n: "<b>dd</b> apaga a linha do log.", t:
+`        ¦repositorio.save(pedido);` },
+      { k: "u", m: "NORMAL", cmd: "1 more line; before #1  0 seconds ago", n: "<b>u</b> desfaz: a linha volta.", t:
+`        ¦log.info("salvando pedido {}", pedido.id());
+        repositorio.save(pedido);` },
+      { k: "Ctrl+R", m: "NORMAL", cmd: "1 line less; after #1  0 seconds ago", n: "<b>Ctrl+R</b> refaz: a linha sai de novo. <kbd>Ctrl+Z</kbd> e <kbd>Ctrl+Alt+Z</kbd> fazem o mesmo.", t:
+`        ¦repositorio.save(pedido);` },
+    ],
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Realce de sintaxe simples (Java e XML) por caractere.
+// ---------------------------------------------------------------------------
+const JAVA_RE = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|(@\w+)|\b(public|private|protected|class|interface|record|enum|static|final|void|return|new|if|else|throw|throws|int|long|boolean|double|this|null|true|false|for|while|try|catch|import|package|extends|implements)\b|\b(\d+)\b|\b([A-Z]\w*)\b/g;
+const XML_RE = /(<\/?[\w.:-]+>)|(\b\d+(?:\.\d+)*\b)/g;
+
+function classify(text, lang) {
+  const classes = new Array(text.length).fill("");
+  const re = lang === "xml" ? XML_RE : JAVA_RE;
+  re.lastIndex = 0;
+  let m;
+  while ((m = re.exec(text))) {
+    let cls;
+    if (lang === "xml") cls = m[1] ? "kw" : "num";
+    else cls = m[1] ? "com" : m[2] ? "str" : m[3] ? "ann" : m[4] ? "kw" : m[5] ? "num" : "type";
+    for (let i = m.index; i < m.index + m[0].length; i++) classes[i] = cls;
+  }
+  return classes;
+}
+
+// Remove os marcadores e devolve o texto, a posicao do cursor e a selecao.
+function parseFrame(raw) {
+  let text = "", cursor = -1, selecting = false;
+  const selected = [];
+  for (const ch of raw) {
+    if (ch === "¦") { cursor = text.length; continue; }
+    if (ch === "«") { selecting = true; continue; }
+    if (ch === "»") { selecting = false; continue; }
+    selected[text.length] = selecting;
+    text += ch;
+  }
+  return { text, cursor, selected };
+}
+
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function renderCode(frame, lang) {
+  const { text, cursor, selected } = parseFrame(frame.t);
+  const classes = classify(text, lang);
+  const cursorClass = frame.m === "INSERT" ? "cur-bar" : frame.m === "REPLACE" ? "cur-under" : "cur-block";
+  const showCursor = frame.m !== "COMMAND";
+  const lines = [];
+  let line = "", lineNo = 1, cursorLine = 1, col = 0, cursorCol = 0;
+  const flush = () => { lines.push({ html: line, no: lineNo }); line = ""; lineNo++; col = 0; };
+  for (let i = 0; i <= text.length; i++) {
+    const ch = text[i];
+    const isCursor = i === cursor;
+    if (isCursor) { cursorLine = lineNo; cursorCol = col; }
+    if (ch === "\n" || ch === undefined) {
+      if (isCursor && showCursor) line += `<span class="${cursorClass}"> </span>`;
+      if (ch === undefined) { flush(); break; }
+      flush();
+      continue;
+    }
+    const cls = [classes[i], selected[i] ? "sel" : "", isCursor && showCursor ? cursorClass : ""].filter(Boolean).join(" ");
+    line += cls ? `<span class="${cls}">${esc(ch)}</span>` : esc(ch);
+    col++;
+  }
+  const html = lines.map((l) =>
+    `<div class="line${l.no === cursorLine ? " current" : ""}"><span class="no">${l.no}</span><span class="src">${l.html}</span></div>`
+  ).join("");
+  return { html, pos: `${cursorLine}:${cursorCol + 1}` };
+}
+
+const MODE_LABEL = { NORMAL: "NORMAL", INSERT: "INSERT", VISUAL: "VISUAL", VLINE: "V-LINE", VBLOCK: "V-BLOCK", REPLACE: "REPLACE", COMMAND: "COMMAND" };
+
+function plainText(raw) { return parseFrame(raw).text; }
+
+function setupExample(el) {
+  const ex = EXAMPLES[el.dataset.example];
+  if (!ex) return;
+  const frames = ex.frames;
+  el.innerHTML = `
+    <div class="ex-head"><h4>${ex.title}</h4><p>${ex.desc}</p></div>
+    <div class="keys" aria-label="Teclas do exemplo"><span class="label">Teclas:</span>${
+      frames.slice(1).map((f, i) => `<span class="key${f.text ? " text" : ""}" data-i="${i + 1}">${esc(f.text ? "“" + f.k + "”" : f.k)}</span>`).join("")
+    }</div>
+    <div class="screen">
+      <div class="code" aria-live="polite"></div>
+      <div class="statusbar"><span class="pill"></span><span class="cmd"></span><span class="pos"></span></div>
+    </div>
+    <div class="note"></div>
+    <div class="controls">
+      <button type="button" data-act="reset" aria-label="Voltar ao início">⏮</button>
+      <button type="button" data-act="prev" aria-label="Passo anterior">◀</button>
+      <button type="button" data-act="play" class="primary">▶ Reproduzir</button>
+      <button type="button" data-act="next" aria-label="Próximo passo">▶</button>
+      <button type="button" data-act="copy">Copiar o código</button>
+      <span class="step"></span>
+    </div>`;
+  const codeEl = el.querySelector(".code");
+  const pill = el.querySelector(".pill");
+  const cmdEl = el.querySelector(".cmd");
+  const posEl = el.querySelector(".pos");
+  const noteEl = el.querySelector(".note");
+  const stepEl = el.querySelector(".step");
+  const playBtn = el.querySelector('[data-act="play"]');
+  const keyEls = [...el.querySelectorAll(".key")];
+  let index = 0, timer = null;
+
+  function show(i) {
+    index = Math.max(0, Math.min(frames.length - 1, i));
+    const f = frames[index];
+    const r = renderCode(f, ex.lang);
+    codeEl.innerHTML = r.html;
+    pill.className = "pill " + f.m;
+    pill.textContent = MODE_LABEL[f.m] || f.m;
+    cmdEl.textContent = f.cmd || (f.m === "INSERT" ? "-- INSERT --" : f.m === "REPLACE" ? "-- REPLACE --" : f.m === "VISUAL" ? "-- VISUAL --" : f.m === "VLINE" ? "-- VISUAL LINE --" : f.m === "VBLOCK" ? "-- VISUAL BLOCK --" : "");
+    posEl.textContent = f.m === "COMMAND" ? "" : r.pos;
+    noteEl.innerHTML = f.n || "";
+    stepEl.textContent = `passo ${index} de ${frames.length - 1}`;
+    keyEls.forEach((k) => {
+      const ki = Number(k.dataset.i);
+      k.classList.toggle("done", ki < index);
+      k.classList.toggle("now", ki === index);
+    });
+  }
+  function stop() { clearInterval(timer); timer = null; playBtn.textContent = "▶ Reproduzir"; }
+  function play() {
+    if (timer) { stop(); return; }
+    if (index >= frames.length - 1) show(0);
+    playBtn.textContent = "⏸ Pausar";
+    timer = setInterval(() => {
+      if (index >= frames.length - 1) { stop(); return; }
+      show(index + 1);
+    }, 1600);
+  }
+  el.querySelector(".controls").addEventListener("click", async (e) => {
+    const act = e.target.closest("button")?.dataset.act;
+    if (!act) return;
+    if (act === "play") { play(); return; }
+    stop();
+    if (act === "reset") show(0);
+    if (act === "prev") show(index - 1);
+    if (act === "next") show(index + 1);
+    if (act === "copy") {
+      const btn = e.target.closest("button");
+      try {
+        await navigator.clipboard.writeText(plainText(frames[0].t));
+        btn.textContent = "Copiado!";
+      } catch {
+        btn.textContent = "Não foi possível copiar";
+      }
+      setTimeout(() => { btn.textContent = "Copiar o código"; }, 1500);
+    }
+  });
+  keyEls.forEach((k) => k.addEventListener("click", () => { stop(); show(Number(k.dataset.i)); }));
+  keyEls.forEach((k) => { k.style.cursor = "pointer"; k.title = "Ir para este passo"; });
+  show(0);
+}
+
+document.querySelectorAll(".example").forEach(setupExample);
+
+// Tema claro/escuro: segue o sistema; o botao alterna e a escolha fica salva.
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById("theme-btn");
+  let saved = null;
+  try { saved = localStorage.getItem("manual-vim-tema"); } catch {}
+  if (saved) root.dataset.theme = saved;
+  const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const label = () => { btn.textContent = current() === "dark" ? "☀ Tema claro" : "☾ Tema escuro"; };
+  label();
+  btn.addEventListener("click", () => {
+    root.dataset.theme = current() === "dark" ? "light" : "dark";
+    try { localStorage.setItem("manual-vim-tema", root.dataset.theme); } catch {}
+    label();
+  });
+})();
+</script>
+</body>
+</html>
