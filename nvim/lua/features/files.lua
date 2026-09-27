@@ -1,5 +1,7 @@
--- Busca de arquivos e pastas (Ctrl+P) num retangulo no alto da tela, como o
--- "Go to File" do VS Code. Escolher uma pasta a abre no explorador.
+-- Arquivos do projeto: a busca de arquivos e pastas (Ctrl+P), num retangulo
+-- no alto da tela como o "Go to File" do VS Code, e o explorador (Ctrl+E),
+-- uma janela flutuante com a arvore do projeto que abre ao iniciar o Neovim
+-- sem arquivo. O explorador e o do Snacks (plugins/navigation.lua).
 local M = {}
 
 -- Fora da busca e do explorador, mesmo quando nao estao no .gitignore.
@@ -43,6 +45,22 @@ function M.reveal(path)
       Actions.update(picker, { target = path, refresh = true })
     end,
   })
+end
+
+-- Abre o explorador na raiz do projeto do arquivo atual, com o arquivo
+-- selecionado e as pastas ate ele expandidas; se ja estiver aberto, fecha.
+function M.toggle_explorer()
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  if explorer then
+    explorer:close()
+    return
+  end
+  local file = current_file()
+  if file and vim.uv.fs_stat(file) then
+    M.reveal(file)
+  else
+    Snacks.explorer.open({ cwd = M.root(file) })
+  end
 end
 
 -- Arquivos e pastas pelo fd. O fd ja respeita o .gitignore; --hidden inclui
@@ -99,6 +117,26 @@ function M.find(opts)
         end)
       else
         Snacks.picker.actions.jump(picker, item, action)
+      end
+    end,
+  })
+end
+
+function M.setup()
+  -- `nvim` sem arquivo abre o explorador; `nvim .` e `nvim pasta/` ja abrem
+  -- pelo Snacks, que substitui o netrw. UIEnter so acontece com interface:
+  -- scripts com --headless nao abrem o explorador.
+  vim.api.nvim_create_autocmd("UIEnter", {
+    group = vim.api.nvim_create_augroup("FilesStartup", { clear = true }),
+    once = true,
+    callback = function()
+      local empty = vim.api.nvim_buf_get_name(0) == ""
+        and vim.api.nvim_buf_line_count(0) == 1
+        and vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] == ""
+      if vim.fn.argc() == 0 and empty then
+        vim.schedule(function()
+          Snacks.explorer.open({ cwd = vim.fn.getcwd() })
+        end)
       end
     end,
   })

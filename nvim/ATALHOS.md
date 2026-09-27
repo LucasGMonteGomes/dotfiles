@@ -72,13 +72,12 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 
 | Atalho | Onde | Acao |
 |---|---|---|
-| `Ctrl+N` | Editor | Abrir/fechar o Explorer |
-| `Ctrl+N` | Explorer | Fechar o Explorer |
-| `Ctrl+E` | Editor | Levar o cursor ao Explorer sem fecha-lo |
-| `Esc` | Explorer | Voltar ao editor |
-| `Enter` ou `l` | Explorer | Abrir arquivo ou expandir pasta (`src` expande sua estrutura Java) |
+| `Ctrl+E` | Editor | Abrir o Explorer na raiz do projeto, com o arquivo atual selecionado |
+| `Ctrl+E` ou `Esc` | Explorer | Fechar o Explorer e voltar ao arquivo |
+| `Enter` ou `l` | Explorer | Abrir o arquivo (o Explorer fecha) ou expandir/recolher a pasta (`src` expande sua estrutura Java) |
 | `Ctrl+L` | Explorer, sobre um arquivo | Abrir o arquivo em uma divisao vertical a direita |
 | `h` | Explorer | Recolher a pasta atual |
+| `/` | Explorer | Filtrar a arvore pelo nome; `Esc` volta a arvore |
 | `a` ou `Ctrl+A` | Explorer | Criar arquivo/pasta dentro da pasta selecionada |
 | `r` | Explorer | Renomear arquivo ou pasta |
 | `d` | Explorer | Excluir (usa a Lixeira quando disponivel) |
@@ -93,6 +92,8 @@ Para aspas, parenteses, chaves e tags. Ex.: `saiw"` envolve a palavra em aspas; 
 | `Ctrl+Alt+Y` | Editor | Buscar simbolo em todo o projeto |
 | `-` | Editor | Abrir a pasta atual no Oil |
 | `q` ou `Esc` | Oil | Fechar o Oil |
+
+O Explorer e uma janela no centro da tela com a arvore do projeto inteiro: as pastas expandem no lugar. Ele abre sozinho quando o Neovim e iniciado sem arquivo (`nvim`, `nvim .` ou `nvim pasta/`); com um arquivo (`nvim README.md`), o arquivo abre direto e `Ctrl+E` mostra a arvore com ele selecionado. A raiz e o repositorio Git do arquivo (ou a raiz do projeto Maven/Gradle).
 
 ### Busca de arquivos e pastas (`Ctrl+P`)
 

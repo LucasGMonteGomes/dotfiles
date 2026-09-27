@@ -1,33 +1,5 @@
 local ignored_paths = require("features.files").ignored_paths
 
-local function get_explorer()
-  return Snacks.picker.get({ source = "explorer" })[1]
-end
-
-local function toggle_explorer()
-  local explorer = get_explorer()
-  if explorer then
-    explorer:close()
-  else
-    Snacks.explorer.open()
-  end
-end
-
-local function focus_explorer()
-  local explorer = get_explorer()
-  if explorer then
-    explorer:focus("list", { show = true })
-  else
-    Snacks.explorer.open()
-  end
-end
-
-local function focus_editor(picker)
-  if picker.main and vim.api.nvim_win_is_valid(picker.main) then
-    vim.api.nvim_set_current_win(picker.main)
-  end
-end
-
 -- Do explorador, a busca usa a mesma raiz exibida na arvore.
 local function open_file_search(picker)
   local cwd = picker:cwd()
@@ -50,9 +22,8 @@ end
 local function picker_noop() end
 
 local function open_in_right_split(picker, item)
-  -- Uma pasta continua sendo aberta com Enter/l. Ctrl+L e reservado para
-  -- visualizar o arquivo selecionado em uma segunda coluna, sem fechar o
-  -- Explorer.
+  -- Uma pasta continua sendo aberta com Enter/l. Ctrl+L abre o arquivo
+  -- selecionado numa divisao vertical a direita.
   if not item or item.dir then
     return
   end
@@ -150,7 +121,6 @@ return {
         },
         actions = {
           open_or_expand_java_source = open_or_expand_java_source,
-          focus_editor = focus_editor,
           open_file_search = open_file_search,
           open_project_search = open_project_search,
           toggle_terminal = toggle_terminal,
@@ -185,11 +155,21 @@ return {
         },
         sources = {
           explorer = {
+            title = "Explorador",
             hidden = true,
             ignored = false,
             diagnostics = false,
             git_status = true,
+            -- Janela flutuante: fecha ao abrir um arquivo e ao clicar fora.
+            jump = { close = true },
+            auto_close = true,
             win = {
+              -- Esc no filtro (`/`) volta para a arvore; na arvore, fecha.
+              input = {
+                keys = {
+                  ["<Esc>"] = { "focus_list", mode = { "n", "i" } },
+                },
+              },
               list = {
                 keys = {
                   ["<CR>"] = "open_or_expand_java_source",
@@ -201,22 +181,31 @@ return {
                   -- No Explorer Ctrl+A cria, enquanto no editor continua
                   -- abrindo a busca de todos os arquivos.
                   ["<C-a>"] = "explorer_add",
-                  ["<C-n>"] = "close",
+                  ["<C-e>"] = "close",
                   ["<C-p>"] = "open_file_search",
                   ["<C-f>"] = "open_project_search",
                   ["<C-t>"] = "toggle_terminal",
                   ["<C-l>"] = "open_in_right_split",
-                  ["<Esc>"] = "focus_editor",
+                  ["<Esc>"] = "close",
                 },
               },
             },
+            -- Centralizado, com a arvore inteira do projeto; o campo de filtro
+            -- so aparece ao apertar `/`.
             layout = {
-              preset = "sidebar",
               preview = false,
               auto_hide = { "input" },
               layout = {
-                position = "left",
-                width = 34,
+                backdrop = false,
+                width = 0.45,
+                min_width = 60,
+                height = 0.85,
+                border = "rounded",
+                title = "{title}",
+                title_pos = "center",
+                box = "vertical",
+                { win = "input", height = 1, border = "bottom" },
+                { win = "list", border = "none" },
               },
             },
           },
@@ -257,14 +246,11 @@ return {
     },
     keys = {
       {
-        "<C-n>",
-        toggle_explorer,
-        desc = "Abrir/fechar explorador de arquivos",
-      },
-      {
         "<C-e>",
-        focus_explorer,
-        desc = "Focar no explorador sem fecha-lo",
+        function()
+          require("features.files").toggle_explorer()
+        end,
+        desc = "Abrir/fechar o explorador de arquivos",
       },
       {
         "<C-p>",
