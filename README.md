@@ -1,34 +1,34 @@
-# Configurações de terminal e Neovim para Debian
+# Terminal and Neovim Configuration for Debian
 
-Este pacote adapta as configurações enviadas do Windows para o Debian. Ele não
-contém tokens, chaves SSH ou senhas.
+This package adapts the configuration files moved from Windows to Debian. It
+contains no tokens, SSH keys, or passwords.
 
-O destaque é o Neovim, configurado como IDE para Java e Spring Boot: jdtls,
-geração e refatoração de código, build Maven/Gradle, testes, cobertura com
-JaCoCo, depuração e Spring Boot Language Server. Veja o
-[README do Neovim](nvim/README.md) e o [guia de atalhos](nvim/ATALHOS.md).
+The highlight is Neovim, configured as an IDE for Java and Spring Boot: jdtls,
+code generation and refactoring, Maven/Gradle builds, tests, JaCoCo coverage,
+debugging, and Spring Boot Language Server. See the
+[Neovim README](nvim/README.md) and the [keybindings guide](nvim/ATALHOS.md).
 
-## O que foi adaptado
+## What was adapted
 
-| Origem | Implementação no Debian |
+| Source | Debian implementation |
 | --- | --- |
-| Perfil do PowerShell | Perfil compatível com PowerShell 7 no Linux, sem caminhos do Git for Windows |
-| Funções e aliases do PowerShell | Versão equivalente para o Bash, que é o shell padrão do Debian |
-| Tema do Oh My Posh | O mesmo `lucas.omp.json`, compartilhado por Bash e PowerShell |
-| Windows Terminal | Script que cria um perfil novo no GNOME Terminal com a fonte e a paleta One Dark |
-| Neovim | IDE Java/Spring Boot com caminhos do Java descobertos pelo `PATH`/`JAVA_HOME`, todos os JDKs instalados registrados e terminal integrado usando o shell do Linux |
+| PowerShell profile | PowerShell 7-compatible profile on Linux, without Git for Windows paths |
+| PowerShell functions and aliases | Equivalent version for Bash, the default Debian shell |
+| Oh My Posh theme | The same `lucas.omp.json`, shared by Bash and PowerShell |
+| Windows Terminal | Script that creates a new GNOME Terminal profile with the One Dark font and palette |
+| Neovim | Java/Spring Boot IDE with Java paths discovered through `PATH`/`JAVA_HOME`, all installed JDKs registered, and the integrated terminal using the Linux shell |
 
-O instalador cria links simbólicos de `~/.config` para este repositório, então
-qualquer alteração (inclusive o `lazy-lock.json` atualizado pelo `:Lazy sync`)
-aparece no `git status`. Por isso, mantenha o repositório no mesmo lugar depois
-de instalar; se movê-lo, execute `./install.sh` de novo. As configurações
-antigas são movidas para `~/.config-backups` pelo instalador.
-O script do GNOME Terminal cria o perfil **Lucas One Dark** na primeira execução
-e apenas o atualiza nas seguintes; o perfil anterior não é apagado.
+The installer creates symbolic links from `~/.config` to this repository, so
+any change (including `lazy-lock.json` updates made by `:Lazy sync`) appears in
+`git status`. Therefore, keep the repository in the same location after
+installation; if you move it, run `./install.sh` again. The installer moves old
+configurations to `~/.config-backups`.
+The GNOME Terminal script creates the **Lucas One Dark** profile on its first run
+and only updates it on subsequent runs; the previous profile is not deleted.
 
-## 1. Instalar os programas necessários
+## 1. Install the required programs
 
-Instale primeiro as dependências disponíveis no Debian:
+First install the dependencies available in Debian:
 
 ```bash
 sudo apt update
@@ -37,11 +37,11 @@ sudo apt install -y \
   wl-clipboard xclip trash-cli nodejs npm openjdk-21-jdk maven uuid-runtime
 ```
 
-### Neovim 0.12 ou mais recente
+### Neovim 0.12 or later
 
-O pacote `neovim` do Debian 13 fornece a série 0.10, mas esta configuração usa
-APIs do Neovim 0.12. Use o instalador incluído, que instala a versão estável
-oficial somente para o seu usuário:
+The Debian 13 `neovim` package provides the 0.10 series, but this configuration
+uses Neovim 0.12 APIs. Use the included installer, which installs the official
+stable version for your user only:
 
 ```bash
 chmod +x scripts/install-neovim-latest.sh
@@ -50,11 +50,11 @@ exec bash
 nvim --version
 ```
 
-O binário fica em `~/.local/bin/nvim`; o pacote do sistema não é removido.
+The binary is located at `~/.local/bin/nvim`; the system package is not removed.
 
-### Oh My Posh e a fonte
+### Oh My Posh and the font
 
-Instale o Oh My Posh seguindo o método oficial para Linux:
+Install Oh My Posh using the official method for Linux:
 
 ```bash
 curl -s https://ohmyposh.dev/install.sh | bash -s
@@ -64,12 +64,12 @@ oh-my-posh font install JetBrainsMono
 fc-cache -f
 ```
 
-Se o nome `JetBrainsMono` não aparecer na listagem, escolha ali outra Nerd Font
-e depois ajuste a propriedade `font` em `terminal/apply-gnome-terminal.sh`.
+If `JetBrainsMono` does not appear in the list, choose another Nerd Font there
+and then adjust the `font` property in `terminal/apply-gnome-terminal.sh`.
 
-## 2. Aplicar as configurações
+## 2. Apply the configurations
 
-Na raiz deste pacote:
+From the root of this package:
 
 ```bash
 chmod +x install.sh terminal/apply-gnome-terminal.sh
@@ -77,17 +77,17 @@ chmod +x install.sh terminal/apply-gnome-terminal.sh
 exec bash
 ```
 
-Sem opções, o instalador vincula:
+With no options, the installer links:
 
 - `~/.config/nvim`;
-- `~/.config/shell/lucas-terminal.bash` e sua carga pelo `~/.bashrc`;
-- `~/.inputrc`, que inclui o `/etc/inputrc` e faz `Ctrl+Backspace` apagar a
-  palavra anterior;
+- `~/.config/shell/lucas-terminal.bash` and its loading through `~/.bashrc`;
+- `~/.inputrc`, which includes `/etc/inputrc` and makes `Ctrl+Backspace` delete the
+  previous word;
 - `~/.config/powershell/Microsoft.PowerShell_profile.ps1`;
-- `~/.config/oh-my-posh/lucas.omp.json`, tema do prompt usado pelo Bash e pelo
-  PowerShell (vinculado por `--bash` ou `--powershell`).
+- `~/.config/oh-my-posh/lucas.omp.json`, the prompt theme used by Bash and
+  PowerShell (linked with `--bash` or `--powershell`).
 
-Para instalar somente uma parte:
+To install only part of the configuration:
 
 ```bash
 ./install.sh --nvim
@@ -96,67 +96,66 @@ Para instalar somente uma parte:
 ./install.sh --check
 ```
 
-Depois aplique a aparência no GNOME Terminal:
+Then apply the appearance in GNOME Terminal:
 
 ```bash
 ./terminal/apply-gnome-terminal.sh
 ```
 
-Feche e abra o terminal. O perfil criado se chama **Lucas One Dark**. A
-transparência foi reduzida de 50% para 15% para preservar a legibilidade; em
-versões do GNOME Terminal sem suporte a transparência, o script simplesmente
-ignora essa propriedade.
+Close and reopen the terminal. The created profile is called **Lucas One Dark**.
+Transparency was reduced from 50% to 15% to preserve readability; on GNOME
+Terminal versions without transparency support, the script simply ignores this
+property.
 
-Os atalhos do Windows Terminal não foram copiados literalmente. O GNOME
-Terminal conserva os atalhos nativos, como `Ctrl+Shift+T` para uma aba nova, e
-deixa `Ctrl+T` disponível para o terminal integrado do Neovim.
+The Windows Terminal shortcuts were not copied literally. GNOME Terminal keeps
+its native shortcuts, such as `Ctrl+Shift+T` for a new tab, and leaves `Ctrl+T`
+available for Neovim's integrated terminal.
 
-## 3. Primeira inicialização do Neovim
+## 3. First Neovim startup
 
-Abra o editor com acesso à internet:
+Open the editor with internet access:
 
 ```bash
 nvim
 ```
 
-O `lazy.nvim` será baixado e instalará os plugins nas versões do
-`lazy-lock.json`. Ao mesmo tempo, o Mason instala em segundo plano os
-servidores de linguagem e as ferramentas (jdtls, depurador e testes Java,
-Spring Boot Tools, SonarLint, lemminx e outros), avisando quando cada um
-termina. Depois que os avisos pararem, reinicie o Neovim (`Ctrl+Alt+Q`) e
-execute:
+`lazy.nvim` will be downloaded and will install the plugins at the versions in
+`lazy-lock.json`. At the same time, Mason installs language servers and tools in
+the background (jdtls, debugger and Java tests, Spring Boot Tools, SonarLint,
+lemminx, and others), notifying you when each one finishes. After the
+notifications stop, restart Neovim (`Ctrl+Alt+Q`) and run:
 
 ```vim
 :NeotestJava setup
 :checkhealth
 ```
 
-O `:NeotestJava setup` baixa o JUnit Console Launcher usado pelo painel de
-testes (neotest); ele pede confirmação antes de baixar. O `:Mason` mostra o
-andamento das instalações e permite reinstalar um pacote que tenha falhado.
+`:NeotestJava setup` downloads the JUnit Console Launcher used by the test
+panel (neotest); it asks for confirmation before downloading. `:Mason` shows
+installation progress and lets you reinstall a package that failed.
 
-O Java é localizado nesta ordem:
+Java is located in this order:
 
-1. variável `JAVA_HOME`, quando definida;
-2. caminho real do comando `java` encontrado no `PATH`.
+1. The `JAVA_HOME` variable, when set;
+2. The real path of the `java` command found in `PATH`.
 
-Confira no terminal:
+Check in the terminal:
 
 ```bash
 java -version
 readlink -f "$(command -v java)"
 ```
 
-Para o copiar/colar do Neovim funcionar no GNOME/Wayland, `wl-copy` deve ser
-encontrado. O pacote `wl-clipboard` instalado acima o fornece.
+For Neovim copy/paste to work in GNOME/Wayland, `wl-copy` must be available.
+The `wl-clipboard` package installed above provides it.
 
-## 4. PowerShell 7 no Linux (opcional)
+## 4. PowerShell 7 on Linux (optional)
 
-O Bash continua sendo o shell do sistema. O PowerShell é usado só no perfil
-**Lucas PowerShell** do GNOME Terminal, que traz a lista de sugestões do
-histórico enquanto você digita (`PredictionViewStyle ListView`).
+Bash remains the system shell. PowerShell is used only in the GNOME Terminal
+**Lucas PowerShell** profile, which displays the history suggestion list as you
+type (`PredictionViewStyle ListView`).
 
-Instale pelo repositório oficial da Microsoft
+Install from Microsoft's official repository
 (<https://learn.microsoft.com/pt-br/powershell/scripting/install/install-debian>):
 
 ```bash
@@ -166,7 +165,8 @@ sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
 sudo apt update && sudo apt install -y powershell
 ```
 
-Depois instale os módulos do perfil, vincule-o e crie o perfil do terminal:
+Then install the profile modules, link the profile, and create the terminal
+profile:
 
 ```bash
 pwsh -NoLogo -Command \
@@ -175,25 +175,25 @@ pwsh -NoLogo -Command \
 ./terminal/apply-gnome-terminal.sh
 ```
 
-No GNOME Terminal, abra uma aba com o perfil **Lucas PowerShell** pelo menu ao
-lado do botão de nova aba. O **Lucas One Dark** continua sendo o padrão e abre
-o Bash.
+In GNOME Terminal, open a tab with the **Lucas PowerShell** profile from the
+menu next to the new-tab button. **Lucas One Dark** remains the default and
+opens Bash.
 
-Para fazer o terminal integrado do Neovim abrir o PowerShell em vez do Bash:
+To make Neovim's integrated terminal open PowerShell instead of Bash:
 
 ```bash
 export NVIM_TERMINAL_SHELL='pwsh -NoLogo'
 nvim
 ```
 
-Se quiser tornar isso permanente, coloque o `export` no final de
+To make this permanent, add the `export` to the end of
 `~/.config/shell/lucas-terminal.bash`.
 
-## Comandos preservados
+## Preserved commands
 
-- `dc`, `dco`, `di`, `dn`, `dv`, `ds`: namespaces do Docker;
-- `ll`, `lt`: listagem moderna com `eza` quando disponível;
-- `z`: navegação por frequência com `zoxide`;
-- `Ctrl+R`: histórico fuzzy do Bash/PowerShell;
-- `reload`: recarrega o perfil do shell;
-- `ep`: abre a configuração do shell no editor.
+- `dc`, `dco`, `di`, `dn`, `dv`, `ds`: Docker namespaces;
+- `ll`, `lt`: modern listing with `eza` when available;
+- `z`: frequency-based navigation with `zoxide`;
+- `Ctrl+R`: fuzzy Bash/PowerShell history;
+- `reload`: reloads the shell profile;
+- `ep`: opens the shell configuration in the editor.
